@@ -51,8 +51,7 @@ struct FrogPilotNavigation @0xa5cd762cd951a455 {
   navigationConditionMet @0 :Bool;
 }
 
-enum RandomEvents @0xf98d843bfd7004a3 {
-  firefoxSteerSaturated @0;
+struct CustomReserved6 @0xf98d843bfd7004a3 {
 }
 
 struct CustomReserved7 @0xb86e6369214c01c8 {

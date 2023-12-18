@@ -139,13 +139,6 @@ public:
   explicit FrogPilotControlsPanel(QWidget *parent = nullptr);
 };
 
-class FrogPilotVisualsPanel : public FrogPilotPanel {
-  Q_OBJECT
-
-public:
-  explicit FrogPilotVisualsPanel(QWidget *parent = nullptr);
-};
-
 #define ParamController(className, paramName, labelText, descText, iconPath, getValueStrFunc, newValueFunc) \
 class className : public ParamValueControlOld { \
   Q_OBJECT \
@@ -206,12 +199,6 @@ ParamController(AggressiveFollow, "AggressiveFollow", "Time", "Set the following
   return std::clamp(v, 8, 50);
 )
 
-ParamController(CameraView, "CameraView", "Camera View (Cosmetic Only)", "Set your preferred camera view for the onroad UI. This toggle is purely cosmetic and will not affect openpilot's use of the other cameras.", "../frogpilot/assets/toggle_icons/icon_camera.png",
-  const int camera = params.getInt("CameraView");
-  return camera == 0 ? "Auto" : camera == 1 ? "Standard" : camera == 2 ? "Wide" : "Driver";,
-  return v >= 0 ? v % 4 : 3;
-)
-
 ParamController(CESpeed, "CESpeed", "Below", "Switch to 'Experimental Mode' below this speed when there is no lead vehicle.", "../assets/offroad/icon_blank.png",
   const int speed = params.getInt("CESpeed");
   return speed == 0 ? "Off" : QString::number(speed) + (isMetric ? " kph" : " mph");,
@@ -229,30 +216,6 @@ ParamController(CurveSensitivity, "CurveSensitivity", "   Curve Detection Sensit
   return std::clamp(v, 1, 200);
 )
 
-ParamController(CustomColors, "CustomColors", "Colors ", "Replace the stock openpilot colors with a custom color scheme.\n\nWant to submit your own color scheme? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_blank.png",
-  const int colors = params.getInt("CustomColors");
-  return colors == 0 ? "Stock" : colors == 1 ? "Frog" : colors == 2 ? "Tesla" : "Stalin";,
-  return v >= 0 ? v % 4 : 3;
-)
-
-ParamController(CustomIcons, "CustomIcons", "Icons", "Replace the stock openpilot icons with a custom icon pack.\n\nWant to submit your own icon pack? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_blank.png",
-  const int icons = params.getInt("CustomIcons");
-  return icons == 0 ? "Stock" : icons == 1 ? "Frog" : icons == 2 ? "Tesla" : "Stalin";,
-  return v >= 0 ? v % 4 : 3;
-)
-
-ParamController(CustomSignals, "CustomSignals", "Signals", "Enable a custom turn signal animation.\n\nWant to submit your own turn signal animation? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_blank.png",
-  const int turnSignals = params.getInt("CustomSignals");
-  return turnSignals == 0 ? "Stock" : turnSignals == 1 ? "Frog" : "Stalin";,
-  return v >= 0 ? v % 4 : 3;
-)
-
-ParamController(CustomSounds, "CustomSounds", "Sounds", "Replace the stock openpilot sounds with a custom sound pack.\n\nWant to submit your own custom sound pack? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_blank.png",
-  const int sounds = params.getInt("CustomSounds");
-  return sounds == 0 ? "Stock" : sounds == 1 ? "Frog" : sounds == 2 ? "Tesla" : "Stalin";,
-  return v >= 0 ? v % 4 : 3;
-)
-
 ParamController(DeviceShutdown, "DeviceShutdown", "Device Shutdown Timer", "Set the timer for when the device turns off after being offroad to reduce energy waste and prevent battery drain.", "../frogpilot/assets/toggle_icons/icon_time.png",
   const int time = params.getInt("DeviceShutdown");
   return time == 0 ? "Instant" : (time > 0 && time <= 3) ? QString::number(time * 15) + " mins" : QString::number(time - 3) + (time == 4 ? " hour" : " hours");,
@@ -265,15 +228,10 @@ ParamController(LaneChangeTime, "LaneChangeTime", "   Lane Change Timer", "Set a
   return std::clamp(v, 0, 10);
 )
 
-ParamController(LaneLinesWidth, "LaneLinesWidth", "Lanes", "Customize the lane line width.\n\nDefault matches the MUTCD average of 4 inches.", "../assets/offroad/icon_blank.png",
-  return QString::number(params.getInt("LaneLinesWidth")) + (isMetric ? " cm" : " in");,
-  return std::clamp(v, 0, isMetric ? 60 : 24);
-)
-
-ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nFV = Farmville(Default)\nNLP = New Lemon Pie\nBD = Blue Diamond", "../assets/offroad/icon_calibration.png",
+ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nBD = Blue Diamond (Default)\nFV = Farmville\nNLP = New Lemon Pie\nBDv1 = Blue Diamond V1", "../assets/offroad/icon_calibration.png",
   const int model = params.getInt("Model");
-  return model == 0 ? "BD" : model == 1 ? "FV" : "NLP";,
-  return v >= 0 ? v % 3 : 2;
+  return model == 0 ? "BD" : model == 1 ? "FV" : model == 2 ? "NLP" : "BDv1";,
+  return v >= 0 ? v % 4 : 3;
 )
 
 ParamController(Offset1, "Offset1", "0-34", "Set the speed limit offset when the speed limit is between 0 and 34 mph.", "../assets/icon_blank.png",
@@ -316,16 +274,6 @@ ParamController(Offset4Metric, "Offset4", "105-159", "Set the speed limit offset
   return std::clamp(v, 0, 99);
 )
 
-ParamController(PathEdgeWidth, "PathEdgeWidth", "Path Edges", "Customize the path edge width that displays current driving statuses.\n\nDefault is 20% of the total path.\n\nBlue = Navigation\nLight Blue = Always On Lateral\nGreen = Default with 'FrogPilot Colors'\nLight Green = Default with stock colors\nOrange = Experimental Mode Active\nYellow = Conditional Overriden", "../assets/offroad/icon_blank.png",
-  return QString::number(params.getInt("PathEdgeWidth")) + "%";,
-  return std::clamp(v, 0, 100);
-)
-
-ParamController(PathWidth, "PathWidth", "Path ", "Customize the path width.\n\nDefault matches the width of a 2019 Lexus ES 350.", "../assets/offroad/icon_blank.png",
-  return QString::number(params.getInt("PathWidth") / 10.0) + (isMetric ? " m" : " ft");,
-  return std::clamp(v, 0, isMetric ? 30 : 100);
-)
-
 ParamController(RelaxedJerk, "RelaxedJerk", "Jerk Value", "Set the jerk value for the 'Relaxed Personality'.\n\nValue represents the responsiveness of the brake/gas pedals.\n\nHigher value = Less responsive/more 'relaxed'\n\nStock has a value of 1.0.", "../assets/offroad/icon_blank.png",
   return QString::number(params.getInt("RelaxedJerk") / 10.0);,
   return std::clamp(v, 1, 50);
@@ -334,18 +282,6 @@ ParamController(RelaxedJerk, "RelaxedJerk", "Jerk Value", "Set the jerk value fo
 ParamController(RelaxedFollow, "RelaxedFollow", "Time", "Set the following distance for the 'Relaxed Personality'.\n\nValue represents the time (in seconds) to follow the lead vehicle.\n\nStock has a value of 1.75.", "../frogpilot/assets/other_images/relaxed.png",
   return QString::number(params.getInt("RelaxedFollow") / 10.0) + " sec";,
   return std::clamp(v, 10, 50);
-)
-
-ParamController(RoadEdgesWidth, "RoadEdgesWidth", "Road Edges", "Customize the road edges width.\n\nDefault is 1/2 of the MUTCD average lane line width of 4 inches.", "../assets/offroad/icon_blank.png",
-  return QString::number(params.getInt("RoadEdgesWidth")) + (isMetric ? " cm" : " in");,
-  return std::clamp(v, 0, isMetric ? 60 : 24);
-)
-
-ParamController(ScreenBrightness, "ScreenBrightness", "Screen Brightness", "Set a custom screen brightness level or use the default 'Auto' brightness setting.", "../frogpilot/assets/toggle_icons/icon_light.png",
-  const int brightness = params.getInt("ScreenBrightness");
-  uiState()->scene.screen_brightness = brightness;
-  return brightness == 101 ? "Auto" : brightness == 0 ? "Off" : QString::number(brightness) + "%";,
-  return std::clamp(v, 0, 101);
 )
 
 ParamController(SLCFallback, "SLCFallback", "SLC Fallback", "Set your preferred fallback method for when there's no speed limit found in either Navigation, OSM, or the car's dashboard.", "../assets/offroad/icon_blank.png",
@@ -390,12 +326,6 @@ ParamController(StoppingDistance, "StoppingDistance", "   Increase Stopping Dist
   const int distance = params.getInt("StoppingDistance");
   return distance == 0 ? "Off" : QString::number(distance) + (isMetric ? " meters" : " feet");,
   return std::clamp(v, 0, isMetric ? 5 : 15);
-)
-
-ParamController(WheelIcon, "WheelIcon", "Steering Wheel Icon", "Replace the stock openpilot steering wheel icon with a custom icon.\n\nWant to submit your own steering wheel? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_openpilot.png",
-  const int wheel = params.getInt("WheelIcon");
-  return wheel == 0 ? "Stock" : wheel == 1 ? "Lexus" : wheel == 2 ? "Toyota" : wheel == 3 ? "Frog" : wheel == 4 ? "Rocket" : wheel == 5 ? "Hyundai" : "Stalin";,
-  return v >= 0 ? v % 7 : 6;
 )
 
 ParamController(TurnAggressiveness, "TurnAggressiveness", "   Turn Speed Aggressiveness", "Adjusts how quickly the car takes turns. Higher values mean faster turns, while lower values make turns more gentle.", "../assets/offroad/icon_blank.png",

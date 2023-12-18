@@ -99,7 +99,6 @@ def manager_init() -> None:
     ("MyDrivingMode", "3"),      
     ("MySafeModeFactor", "60"),      
     ("LiveSteerRatioApply", "100"),      
-    ("LiveTorqueCache", "0"),      
     ("MyEcoModeFactor", "80"),  
     ("CruiseMaxVals1", "160"),
     ("CruiseMaxVals2", "120"),

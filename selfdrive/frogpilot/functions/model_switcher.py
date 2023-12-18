@@ -13,6 +13,7 @@ MODEL_NAME = {
   0: "blue-diamond",
   1: "farmville",
   2: "new-lemon-pie",
+  3: "blue-diamond-v1",
 }
 
 def set_model_list_parameter(params):

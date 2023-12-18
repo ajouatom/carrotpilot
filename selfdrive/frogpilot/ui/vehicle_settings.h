@@ -3,7 +3,6 @@
 #include <QStringList>
 
 #include "selfdrive/ui/qt/offroad/settings.h"
-#include "selfdrive/ui/ui.h"
 
 class FrogPilotVehiclesPanel : public ListWidget {
   Q_OBJECT

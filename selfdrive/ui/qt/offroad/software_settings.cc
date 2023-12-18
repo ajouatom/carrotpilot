@@ -43,17 +43,29 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
   schedule = params.getInt("UpdateSchedule");
   addItem(preferredSchedule);
 
-  std::map<int, QString> timeLabels;
-  for (int i = 0; i < 24; ++i) {
-    QString hour = QString::number(i % 12 == 0 ? 12 : i % 12);
-    QString meridiem = i < 12 ? "AM" : "PM";
-    timeLabels[i] = QString("%1:00 %2").arg(hour, meridiem);
+  updateTime = new ButtonControl(tr("Update Time"), tr("SELECT"));
+  QStringList hours;
+  for (int h = 0; h < 24; ++h) {
+    const int displayHour = (h % 12 == 0) ? 12 : h % 12;
+    const QString meridiem = (h < 12) ? "AM" : "PM";
+    hours << QString("%1:00 %2").arg(displayHour).arg(meridiem)
+          << QString("%1:30 %2").arg(displayHour).arg(meridiem);
   }
+  connect(updateTime, &ButtonControl::clicked, [=]() {
+    const int currentHourIndex = params.getInt("UpdateTime");
+    const QString currentHourLabel = hours[currentHourIndex];
 
-  //updateTime = new ParamValueControl("UpdateTime", tr("Update Time"), tr("Set your desired update time for automatic updates."), "", 0, 23, timeLabels);
-  //time = params.getInt("UpdateTime");
-  //deviceShutdown = params.getInt("DeviceShutdown") * 3600;
-  //addItem(updateTime);
+    const QString selection = MultiOptionDialog::getSelection(tr("Select a time to automatically update"), hours, currentHourLabel, this);
+    if (!selection.isEmpty()) {
+      const int selectedHourIndex = hours.indexOf(selection);
+      params.putInt("UpdateTime", selectedHourIndex);
+      updateTime->setValue(selection);
+    }
+  });
+  time = params.getInt("UpdateTime");
+  deviceShutdown = params.getInt("DeviceShutdown") * 3600;
+  updateTime->setValue(hours[time]);
+  addItem(updateTime);
 
   // download update btn
   downloadBtn = new ButtonControl(tr("Download"), tr("CHECK"));
@@ -193,20 +205,18 @@ void SoftwarePanel::updateLabels() {
   installBtn->setValue(QString::fromStdString(params.get("UpdaterNewDescription")));
   installBtn->setDescription(QString::fromStdString(params.get("UpdaterNewReleaseNotes")));
 
-  //updateTime->setVisible(params.getInt("UpdateSchedule"));
+  updateTime->setVisible(params.getInt("UpdateSchedule"));
 
   update();
 }
 
 void SoftwarePanel::automaticUpdate() {
   static int timer = 0;
-  static std::chrono::system_clock::time_point lastOffroadTime = std::chrono::system_clock::now();
+  static std::chrono::system_clock::time_point lastOffroadTime;
 
   if (!is_onroad) {
-    if (timer == 0) {
-      lastOffroadTime = std::chrono::system_clock::now();
-    }
-    timer = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - lastOffroadTime).count();
+    timer = (timer == 0) ? 0 : std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - lastOffroadTime).count();
+    lastOffroadTime = std::chrono::system_clock::now();
   } else {
     timer = 0;
   }
@@ -220,6 +230,15 @@ void SoftwarePanel::automaticUpdate() {
     return;
   }
 
+  int updateHour = time / 2;
+  int updateMinute = (time % 2) * 30;
+
+  if (updateHour >= 1 && updateHour <= 11 && time >= 24) {
+    updateHour += 12;
+  } else if (updateHour == 12 && time < 24) {
+    updateHour = 0;
+  }
+
   std::time_t currentTimeT = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
   std::tm now = *std::localtime(&currentTimeT);
 
@@ -230,7 +249,7 @@ void SoftwarePanel::automaticUpdate() {
     lastCheckedDay = now.tm_yday;
   }
 
-  if (now.tm_hour < time) return;
+  if (now.tm_hour != updateHour || now.tm_min < updateMinute) return;
 
   std::string lastUpdateStr = params.get("Updated");
   std::tm lastUpdate = {};
@@ -241,6 +260,10 @@ void SoftwarePanel::automaticUpdate() {
     lastUpdate.tm_mon -= 1;
   }
   std::time_t lastUpdateTimeT = std::mktime(&lastUpdate);
+
+  if (lastUpdate.tm_yday == now.tm_yday) {
+    return;
+  }
 
   if (!isDownloadCompleted) {
     std::chrono::hours durationSinceLastUpdate = std::chrono::duration_cast<std::chrono::hours>(std::chrono::system_clock::now() - std::chrono::system_clock::from_time_t(lastUpdateTimeT));

@@ -101,7 +101,7 @@ private:
   int schedule;
   int time;
 
-  //ParamValueControl *updateTime;
+  ButtonControl *updateTime;
 };
 class CarrotPanel : public QWidget {
     Q_OBJECT

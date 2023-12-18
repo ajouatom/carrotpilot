@@ -176,6 +176,7 @@ typedef struct UIScene {
 
   float light_sensor;
   bool started, ignition, is_metric, map_on_left, longitudinal_control;
+  bool world_objects_visible = false;
   uint64_t started_frame;
 
   // FrogPilot variables
@@ -188,7 +189,7 @@ typedef struct UIScene {
   bool blind_spot_right;
   bool compass;
   bool conditional_experimental;
-  bool custom_road_ui;
+  bool custom_onroad_ui;
   bool custom_theme;
   bool driver_camera;
   bool enabled;
@@ -196,9 +197,9 @@ typedef struct UIScene {
   bool experimental_mode_via_press;
   bool lead_info;
   bool map_open;
+  bool model_ui;
   bool mute_dm;
   bool personalities_via_screen;
-  bool random_events;
   bool road_name_ui;
   bool rotating_wheel;
   bool show_driver_camera;
@@ -214,7 +215,6 @@ typedef struct UIScene {
   int conditional_speed;
   int conditional_speed_lead;
   int conditional_status;
-  int current_random_event;
   int custom_colors;
   int custom_signals;
   int screen_brightness;
@@ -246,9 +246,6 @@ class UIState : public QObject {
 public:
   UIState(QObject* parent = 0);
   void updateStatus();
-  inline bool worldObjectsVisible() const {
-    return sm->rcv_frame("liveCalibration") > scene.started_frame;
-  }
   inline bool engaged() const {
     return scene.started && (*sm)["controlsState"].getControlsState().getEnabled();
   }

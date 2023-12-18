@@ -120,7 +120,7 @@ FrogPilotVehiclesPanel::FrogPilotVehiclesPanel(SettingsWindow *parent) : ListWid
 
     connect(toggles["TSS2Tune"], &ToggleControl::toggleFlipped, [=]() {
       if (ConfirmationDialog::toggle("Reboot required to take effect.", "Reboot Now", parent)) {
-        Hardware::reboot();
+        params.putBool("DoReboot", true);
       }
     });
 

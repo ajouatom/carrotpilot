@@ -17,9 +17,7 @@ AlertStatus = log.ControlsState.AlertStatus
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 EventName = car.CarEvent.EventName
-
 FrogPilotEventName = custom.FrogPilotEvents
-RandomEventName = custom.RandomEvents
 
 
 # Alert priorities
@@ -49,7 +47,6 @@ class ET:
 # get event name from enum
 EVENT_NAME = {v: k for k, v in EventName.schema.enumerants.items()}
 EVENT_NAME.update({v: k for k, v in FrogPilotEventName.schema.enumerants.items()})
-EVENT_NAME.update({v: k for k, v in RandomEventName.schema.enumerants.items()})
 
 
 class Events:

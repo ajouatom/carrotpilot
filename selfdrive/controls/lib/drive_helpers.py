@@ -52,12 +52,10 @@ CRUISE_INTERVAL_SIGN = {
 
 
 class VCruiseHelper:
-  def __init__(self, CP, is_metric):
+  def __init__(self, CP):
     self.CP = CP
     self.v_cruise_kph = V_CRUISE_UNSET
     self.v_cruise_cluster_kph = V_CRUISE_UNSET
-    self.v_cruise_offset = 3 # adjustable offset
-    self.v_cruise_offset = int(round(self.v_cruise_offset * (1 if is_metric else CV.MPH_TO_KPH)))
     self.v_cruise_kph_last = 0
     self.button_timers = {ButtonType.decelCruise: 0, ButtonType.accelCruise: 0}
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
@@ -204,18 +202,12 @@ class VCruiseHelper:
       self.v_cruise_kph = CRUISE_NEAREST_FUNC[button_type](self.v_cruise_kph / v_cruise_delta) * v_cruise_delta
     else:
       self.v_cruise_kph += v_cruise_delta * CRUISE_INTERVAL_SIGN[button_type]
-    
-    # Apply offset 
-    v_cruise_offset = (self.v_cruise_offset * CRUISE_INTERVAL_SIGN[button_type]) if long_press else 0
-    if v_cruise_offset < 0:
-      v_cruise_offset = self.v_cruise_offset - v_cruise_delta
-    self.v_cruise_kph += v_cruise_offset
 
     # If set is pressed while overriding, clip cruise speed to minimum of vEgo
     if CS.gasPressed and button_type in (ButtonType.decelCruise, ButtonType.setCruise):
       self.v_cruise_kph = max(self.v_cruise_kph, CS.vEgo * CV.MS_TO_KPH)
 
-    self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), self.cruiseSpeedMin, V_CRUISE_MAX)
+    self.v_cruise_kph = clip(round(self.v_cruise_kph, 1), V_CRUISE_MIN, V_CRUISE_MAX)
 
   def update_button_timers(self, CS, enabled):
     # increment timer for buttons still pressed

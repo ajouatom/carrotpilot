@@ -3,7 +3,6 @@
 from libcpp cimport bool
 from libcpp.string cimport string
 from libcpp.vector cimport vector
-import threading
 
 cdef extern from "common/params.h":
   cpdef enum ParamKeyType:
@@ -21,6 +20,9 @@ cdef extern from "common/params.h":
     int getInt(string, bool) nogil
     int remove(string) nogil
     int put(string, string) nogil
+    void putNonBlocking(string, string) nogil
+    void putBoolNonBlocking(string, bool) nogil
+    void putIntNonBlocking(string, int) nogil
     int putBool(string, bool) nogil
     int putInt(string, int) nogil
     bool checkKey(string) nogil
@@ -89,7 +91,7 @@ cdef class Params:
     """
     Warning: This function blocks until the param is written to disk!
     In very rare cases this can take over a second, and your code will hang.
-    Use the put_nonblocking helper function in time sensitive code, but
+    Use the put_nonblocking, put_bool_nonblocking in time sensitive code, but
     in general try to avoid writing params as much as possible.
     """
     cdef string k = self.check_key(key)
@@ -107,6 +109,22 @@ cdef class Params:
     with nogil:
       self.p.putInt(k, val)
 
+  def put_nonblocking(self, key, dat):
+    cdef string k = self.check_key(key)
+    cdef string dat_bytes = ensure_bytes(dat)
+    with nogil:
+      self.p.putNonBlocking(k, dat_bytes)
+
+  def put_bool_nonblocking(self, key, bool val):
+    cdef string k = self.check_key(key)
+    with nogil:
+      self.p.putBoolNonBlocking(k, val)
+
+  def put_int_nonblocking(self, key, int val):
+    cdef string k = self.check_key(key)
+    with nogil:
+      self.p.putIntNonBlocking(k, val)
+
   def remove(self, key):
     cdef string k = self.check_key(key)
     with nogil:
@@ -118,12 +136,3 @@ cdef class Params:
 
   def all_keys(self):
     return self.p.allKeys()
-
-def put_nonblocking(key, val, d=""):
-  threading.Thread(target=lambda: Params(d).put(key, val)).start()
-
-def put_bool_nonblocking(key, bool val, d=""):
-  threading.Thread(target=lambda: Params(d).put_bool(key, val)).start()
-
-def put_int_nonblocking(key, int val, d=""):
-  threading.Thread(target=lambda: Params(d).put_int(key, val)).start()

@@ -258,7 +258,7 @@ def public_token_input(postvars):
   if postvars is None or "pk_token_val" not in postvars or postvars.get("pk_token_val")[0] == "":
     return postvars
   else:
-    token = postvars.get("pk_token_val")
+    token = postvars.get("pk_token_val").strip()
     if "pk." not in token:
       return postvars
     else:
@@ -269,7 +269,7 @@ def app_token_input(postvars):
   if postvars is None or "sk_token_val" not in postvars or postvars.get("sk_token_val")[0] == "":
     return postvars
   else:
-    token = postvars.get("sk_token_val")
+    token = postvars.get("sk_token_val").strip()
     if "sk." not in token:
       return postvars
     else:
@@ -280,7 +280,6 @@ def gmap_key_input(postvars):
   if postvars is None or "gmap_key_val" not in postvars or postvars.get("gmap_key_val")[0] == "":
     return postvars
   else:
-    token = postvars.get("gmap_key_val")
+    token = postvars.get("gmap_key_val").strip()
     params.put("GMapKey", token)
   return token
-

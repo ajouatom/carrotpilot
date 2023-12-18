@@ -450,8 +450,6 @@ struct CarControl {
       promptRepeat @7;
       promptDistracted @8;
 
-      firefox @9;
-
       longEngaged @10;
       longDisengaged @11;
 
@@ -466,7 +464,7 @@ struct CarControl {
       bsdWarning @20;
       speedDown @21;
       stopStop @22;
-      audioTurn @23;
+      audioTurn @9;
       
     }
   }

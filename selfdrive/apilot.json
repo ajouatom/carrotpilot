@@ -29,19 +29,6 @@
     },
     {
       "group": "조향튜닝",
-      "name": "LiveTorqueCache",
-      "title": "LiveTorqueCache(0)",
-      "descr": "주기적으로 LiveTorque를 저장",
-      "egroup": "LAT",
-      "etitle": "LiveTorqueCache(0)",
-      "edescr": "Caching Live Torque parameters periodically",
-      "min": 0,
-      "max": 1,
-      "default": 0,
-      "unit": 1
-    },
-    {
-      "group": "조향튜닝",
       "name": "LateralTorqueCustom",
       "title": "_LateralTorqueCustom(0)",
       "descr": "0:LiveTorque, 1:CustomTorque",

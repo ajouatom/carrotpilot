@@ -22,7 +22,7 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(QWidget *parent) : FrogPilotPanel
     {"FireTheBabysitter", "Fire the Babysitter", "Disable some of openpilot's 'Babysitter Protocols'.", "../frogpilot/assets/toggle_icons/icon_babysitter.png"},
     {"LateralTune", "Lateral Tuning", "Change the way openpilot steers.", "../frogpilot/assets/toggle_icons/icon_lateral_tune.png"},
     {"LongitudinalTune", "Longitudinal Tuning", "Change the way openpilot accelerates and brakes.", "../frogpilot/assets/toggle_icons/icon_longitudinal_tune.png"},
-    {"Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nBD = Blue Diamond (Default)\nFV = Farmville\nNLP = New Lemon Pie", "../assets/offroad/icon_calibration.png"},
+    {"Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nBD = Blue Diamond (Default)\nFV = Farmville\nNLP = New Lemon Pie\nBDv1 = Blue Diamond V1", "../assets/offroad/icon_calibration.png"},
     {"MTSCEnabled", "Map Turn Speed Control", "When enabled, the car will slow down when it predicts a lateral acceleration greater than 2.0 m/s^2.", "../frogpilot/assets/toggle_icons/icon_speed_map.png"},
     {"NudgelessLaneChange", "Nudgeless Lane Change", "Switch lanes without having to nudge the steering wheel.", "../frogpilot/assets/toggle_icons/icon_lane.png"},
     {"PauseLateralOnSignal", "Pause Lateral On Turn Signal", "Pauses lateral control when a turn signal is active.", "../frogpilot/assets/toggle_icons/icon_pause_lane.png"},
@@ -115,70 +115,6 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(QWidget *parent) : FrogPilotPanel
         new CurveSensitivity(),
         new TurnAggressiveness(),
       });
-    } else {
-      mainLayout->addWidget(control);
-      if (key != std::get<0>(toggles.back())) mainLayout->addWidget(horizontalLine());
-    }
-  }
-  setInitialToggleStates();
-}
-
-FrogPilotVisualsPanel::FrogPilotVisualsPanel(QWidget *parent) : FrogPilotPanel(parent) {
-  mainLayout = new QVBoxLayout(this);
-
-  QLabel *const descriptionLabel = new QLabel("Click on the toggle names to see a detailed toggle description", this);
-  mainLayout->addWidget(descriptionLabel);
-  mainLayout->addSpacing(25);
-  mainLayout->addWidget(whiteHorizontalLine());
-
-  static const std::vector<std::tuple<QString, QString, QString, QString>> toggles = {
-    {"CustomTheme", "Custom Theme", "Enable the ability to use custom themes.", "../frogpilot/assets/wheel_images/frog.png"},
-    {"CameraView", "Camera View (Cosmetic Only)", "Set your preferred camera view for the onroad UI. This toggle is purely cosmetic and will not affect openpilot's use of the other cameras.", "../frogpilot/assets/toggle_icons/icon_camera.png"},
-    {"Compass", "Compass", "Add a compass to the onroad UI that indicates your current driving direction.", "../frogpilot/assets/toggle_icons/icon_compass.png"},
-    {"CustomUI", "Custom UI", "Customize the UI to your liking.", "../assets/offroad/icon_road.png"},
-    {"DriverCamera", "Driver Camera On Reverse", "Displays the driver camera when in reverse.", "../assets/img_driver_face_static.png"},
-    {"GreenLightAlert", "Green Light Alert", "Displays an alert when a light turns from red to green.", "../frogpilot/assets/toggle_icons/icon_green_light.png"},
-    {"RandomEvents", "Random Events", "A fun random mode that has a small chance of random events happening when certain conditions are met. i.e. Steering saturated event, braking too hard, fast acceleration, etc.", "../frogpilot/assets/toggle_icons/icon_random.png"},
-    {"RotatingWheel", "Rotating Steering Wheel", "The steering wheel in top right corner of the onroad UI rotates alongside your physical steering wheel.", "../frogpilot/assets/toggle_icons/icon_rotate.png"},
-    {"ScreenBrightness", "Screen Brightness", "Choose a custom screen brightness level or use the default 'Auto' brightness setting.", "../frogpilot/assets/toggle_icons/icon_light.png"},
-    {"SilentMode", "Silent Mode", "Disables all openpilot sounds for a completely silent experience.", "../frogpilot/assets/toggle_icons/icon_mute.png"},
-    {"WheelIcon", "Steering Wheel Icon", "Replace the stock openpilot steering wheel icon with a custom icon.\n\nWant to submit your own steering wheel? Message me on Discord\n@FrogsGoMoo!", "../assets/offroad/icon_openpilot.png"},
-  };
-
-  for (const auto &[key, label, desc, icon] : toggles) {
-    ParamControl *control = createParamControl(key, label, desc, icon, this);
-    if (key == "CameraView") {
-      mainLayout->addWidget(new CameraView());
-      mainLayout->addWidget(horizontalLine());
-    } else if (key == "CustomUI") {
-      createSubControl(key, label, desc, icon, {
-        createDualParamControl(new LaneLinesWidth(), new RoadEdgesWidth()),
-        createDualParamControl(new PathWidth(), new PathEdgeWidth())
-      });
-      createSubButtonControl(key, {
-        {"AccelerationPath", "Acceleration Path"},
-        {"AdjacentPath", "Adjacent Paths"},
-        {"BlindSpotPath", "Blind Spot Path"},
-      }, mainLayout);
-      createSubButtonControl(key, {
-        {"ShowFPS", "FPS Counter"},
-        {"LeadInfo", "Lead Info and Logics"},
-        {"RoadNameUI", "Road Name"},
-      }, mainLayout);
-      createSubButtonControl(key, {
-        {"UnlimitedLength", "'Unlimited' Road UI Length"},
-      }, mainLayout);
-    } else if (key == "CustomTheme") {
-      createSubControl(key, label, desc, icon, {
-        createDualParamControl(new CustomColors(), new CustomIcons()),
-        createDualParamControl(new CustomSignals(), new CustomSounds()),
-      });
-    } else if (key == "ScreenBrightness") {
-      mainLayout->addWidget(new ScreenBrightness());
-      mainLayout->addWidget(horizontalLine());
-    } else if (key == "WheelIcon") {
-      mainLayout->addWidget(new WheelIcon());
-      mainLayout->addWidget(horizontalLine());
     } else {
       mainLayout->addWidget(control);
       if (key != std::get<0>(toggles.back())) mainLayout->addWidget(horizontalLine());
@@ -422,7 +358,6 @@ void FrogPilotPanel::setParams() {
     {"PathEdgeWidth", "20"},
     {"PathWidth", "61"},
     {"PauseLateralOnSignal", "0"},
-    {"RandomEvents", FrogsGoMoo ? "1" : "0"},
     {"RelaxedFollow", "30"},
     {"RelaxedJerk", "50"},
     {"RoadEdgesWidth", "2"},

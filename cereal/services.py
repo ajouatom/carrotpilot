@@ -89,7 +89,6 @@ services: dict[str, tuple] = {
   "frogpilotLateralPlan": (True, 20., 5),
   "frogpilotLongitudinalPlan": (True, 20., 5),
   "frogpilotNavigation": (True, 1., 10),
-  "randomEvents": (True, 1., 1),
 
   "roadLimitSpeed": (False, 0.),
 

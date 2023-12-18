@@ -25,6 +25,7 @@
 
 #include "selfdrive/frogpilot/ui/frogpilot_settings.h"
 #include "selfdrive/frogpilot/ui/vehicle_settings.h"
+#include "selfdrive/frogpilot/ui/visual_settings.h"
 #include "selfdrive/frogpilot/navigation/ui/navigation_settings.h"
 
 TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
@@ -570,7 +571,6 @@ CarrotPanel::CarrotPanel(QWidget* parent) : QWidget(parent) {
     latLongToggles->addItem(new CValueControl("UseModelPath", "UseModelPath(0)", "", "../assets/offroad/icon_shell.png", 0, 1, 1));
     latLongToggles->addItem(new CValueControl("PathOffset", "PathOffset", "(-)left, (+)right, when UseLaneLineSpeed > 0", "../assets/offroad/icon_road.png", -50, 50, 1));
     latLongToggles->addItem(new CValueControl("LiveSteerRatioApply", "LAT: LiveSteerRatioApply(100)", "오버스티어가 발생하면 줄입니다.", "../assets/offroad/icon_road.png", 50, 110, 1));
-    latLongToggles->addItem(new CValueControl("LiveTorqueCache", "LAT: LiveTorqueCache(0)", "주기적으로 LiveTorqueParameter를 저장.", "../assets/offroad/icon_road.png", 0, 1, 1));
     latLongToggles->addItem(new CValueControl("LateralTorqueCustom", "LAT: TorqueCustom(0)", "", "../assets/offroad/icon_road.png", 0, 2, 1));
     latLongToggles->addItem(new CValueControl("LateralTorqueAccelFactor", "LAT: TorqueAccelFactor(2500)", "", "../assets/offroad/icon_road.png", 1000, 4000, 10));
     latLongToggles->addItem(new CValueControl("LateralTorqueFriction", "LAT: TorqueFriction(100)", "", "../assets/offroad/icon_road.png", 0, 1000, 10));

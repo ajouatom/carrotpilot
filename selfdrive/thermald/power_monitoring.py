@@ -3,7 +3,7 @@ import threading
 from datetime import datetime, timedelta
 from typing import Optional
 
-from openpilot.common.params import Params, put_nonblocking
+from openpilot.common.params import Params
 from openpilot.system.hardware import HARDWARE
 from openpilot.common.swaglog import cloudlog
 from openpilot.selfdrive.statsd import statlog
@@ -71,7 +71,7 @@ class PowerMonitoring:
       self.car_battery_capacity_uWh = max(self.car_battery_capacity_uWh, 0)
       self.car_battery_capacity_uWh = min(self.car_battery_capacity_uWh, CAR_BATTERY_CAPACITY_uWh)
       if now - self.last_save_time >= 10:
-        put_nonblocking("CarBatteryCapacity", str(int(self.car_battery_capacity_uWh)))
+        self.params.put_nonblocking("CarBatteryCapacity", str(int(self.car_battery_capacity_uWh)))
         self.last_save_time = now
 
       # First measurement, set integration time
@@ -146,14 +146,18 @@ class PowerMonitoring:
 
   def update_shutdown_time(self):
     now = datetime.now()
-    next_update_time = datetime(now.year, now.month, now.day, self.download_time)
 
     # Adjust for daily or weekly schedule
+    hours = self.download_time // 2
+    minutes = (self.download_time % 2) * 30
+
+    next_update_time = datetime(now.year, now.month, now.day, hours, minutes)
+
     if now >= next_update_time:
       if self.download_schedule == 1:  # Daily
         next_update_time += timedelta(days=1)
       elif self.download_schedule == 2:  # Weekly
-        days_to_next_sunday = (6 - now.weekday()) % 7
+        days_to_next_sunday = (6 - now.weekday()) % 7 or 7
         next_update_time += timedelta(days=days_to_next_sunday)
 
     # Add one hour buffer to give time for download
@@ -161,4 +165,4 @@ class PowerMonitoring:
 
     # Update shutdown time if next update is within 24 hours
     if next_update_time - now <= timedelta(hours=24):
-      self.device_shutdown_time = (next_update_time - now).seconds
+      self.device_shutdown_time = (next_update_time - now).total_seconds()

@@ -149,10 +149,10 @@ def get_nn_model_path(car, eps_firmware) -> Tuple[Union[str, None, float]]:
   else:
     check_model = car
   model_path, max_similarity = check_nn_path(check_model)
-  if 0.0 <= max_similarity < 0.9:
+  if car not in model_path or 0.0 <= max_similarity < 0.9:
     check_model = car
     model_path, max_similarity = check_nn_path(check_model)
-    if 0.0 <= max_similarity < 0.9:
+    if car not in model_path or 0.0 <= max_similarity < 0.9:
       model_path = None
   return model_path, max_similarity
 
@@ -490,8 +490,8 @@ class CarStateBase(ABC):
     self.v_ego_clu_kf = KF1D(x0=x0, A=A, C=C[0], K=K)
 
     # FrogPilot variables
-    self.params = Params()
-    self.params_memory = Params("/dev/shm/params")
+    self.param = Params()
+    self.param_memory = Params("/dev/shm/params")
 
     self.display_menu = False
     self.distance_previously_pressed = False
@@ -501,10 +501,8 @@ class CarStateBase(ABC):
 
     self.display_timer = 0
     self.distance_button = 0
-    self.personality_profile = self.params.get_int("LongitudinalPersonality")
-    self.previous_personality_profile = self.params.get_int("LongitudinalPersonality")
-
-    self.cruise_gap_count = 0 # ajouatom
+    self.personality_profile = self.param.get_int("LongitudinalPersonality")
+    self.previous_personality_profile = self.param.get_int("LongitudinalPersonality")
 
   def update_speed_kf(self, v_ego_raw):
     if abs(v_ego_raw - self.v_ego_kf.x[0][0]) > 2.0:  # Prevent large accelerations when car starts at non zero speed

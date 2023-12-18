@@ -287,12 +287,12 @@ def create_acc_commands_mix_scc(CP, packer, enabled, accel, upper_jerk, lower_je
 
   return commands
 
-def create_acc_commands(packer, enabled, accel, upper_jerk, idx, lead_visible, set_speed, stopping, long_override, use_fca, cruise_available):
+def create_acc_commands(packer, enabled, accel, upper_jerk, idx, lead_visible, set_speed, stopping, long_override, use_fca, cruise_available, personality):
   commands = []
 
   scc11_values = {
     "MainMode_ACC": 1 if cruise_available else 0,
-    "TauGapSet": 4,
+    "TauGapSet": personality + 1,
     "VSetDis": set_speed if enabled else 0,
     "AliveCounterACC": idx % 0x10,
     "ObjValid": 1, # close lead makes controls tighter

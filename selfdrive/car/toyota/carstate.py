@@ -4,7 +4,7 @@ from cereal import car
 from openpilot.common.conversions import Conversions as CV
 from openpilot.common.numpy_fast import mean
 from openpilot.common.filter_simple import FirstOrderFilter
-from openpilot.common.params import put_bool_nonblocking, put_int_nonblocking
+from openpilot.common.params import Params
 from openpilot.common.realtime import DT_CTRL
 from opendbc.can.can_define import CANDefine
 from opendbc.can.parser import CANParser
@@ -189,10 +189,10 @@ class CarState(CarStateBase):
       self.personality_profile = cp.vl["PCM_CRUISE_SM"]["DISTANCE_LINES"] - 1
 
       # Sync with the onroad UI button
-      if self.params_memory.get_bool("PersonalityChangedViaUI"):
+      if self.param_memory.get_bool("PersonalityChangedViaUI"):
         self.profile_restored = False
-        self.previous_personality_profile = self.params.get_int("LongitudinalPersonality")
-        self.params_memory.put_bool("PersonalityChangedViaUI", False)
+        self.previous_personality_profile = self.param.get_int("LongitudinalPersonality")
+        self.param_memory.put_bool("PersonalityChangedViaUI", False)
 
       # Set personality to the previous drive's personality or when the user changes it via the UI
       if self.personality_profile == self.previous_personality_profile:
@@ -214,8 +214,8 @@ class CarState(CarStateBase):
           self.distance_button = cp.vl["SDSU"]["FD_BUTTON"]
 
         if self.personality_profile != self.previous_personality_profile and self.personality_profile >= 0:
-          self.params.put_int("LongitudinalPersonality", self.personality_profile)
-          self.params_memory.put_bool("PersonalityChangedViaWheel", True)
+          self.param.put_int("LongitudinalPersonality", self.personality_profile)
+          self.param_memory.put_bool("PersonalityChangedViaWheel", True)
           self.previous_personality_profile = self.personality_profile
 
     # Toggle Experimental Mode from steering wheel function
@@ -225,18 +225,18 @@ class CarState(CarStateBase):
       if lkas_pressed and not self.lkas_previously_pressed:
         if self.conditional_experimental_mode:
           # Set "CEStatus" to work with "Conditional Experimental Mode"
-          conditional_status = self.params_memory.get_int("CEStatus")
+          conditional_status = self.param_memory.get_int("CEStatus")
           override_value = 0 if conditional_status in (1, 2, 3, 4) else 1 if conditional_status >= 5 else 2
-          self.params_memory.put_int("CEStatus", override_value)
+          self.param_memory.put_int("CEStatus", override_value)
         else:
-          experimental_mode = self.params.get_bool("ExperimentalMode")
+          experimental_mode = self.param.get_bool("ExperimentalMode")
           # Invert the value of "ExperimentalMode"
           put_bool_nonblocking("ExperimentalMode", not experimental_mode)
       self.lkas_previously_pressed = lkas_pressed
 
     # Traffic signals for Speed Limit Controller - Credit goes to the DragonPilot team!
     self._update_traffic_signals(cp_cam)
-    self.params_memory.put_int("CarStateSpeedLimit", self._calculate_speed_limit())
+    self.param_memory.put_int("CarStateSpeedLimit", self._calculate_speed_limit())
 
     return ret
 
