@@ -2,7 +2,7 @@ import math
 import numpy as np
 from cereal import log
 from common.filter_simple import FirstOrderFilter
-from common.numpy_fast import interp
+from common.numpy_fast import interp, clip
 from common.realtime import DT_MDL
 from common.swaglog import cloudlog
 #from common.logger import sLogger
