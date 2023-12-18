@@ -323,7 +323,8 @@ class LanePlanner:
     self.lane_width_certainty.update(l_prob * r_prob)
     current_lane_width = abs(self.rll_y[0] - self.lll_y[0])
     self.lane_width_estimate.update(current_lane_width)
-    speed_lane_width = interp(v_ego, [0., 31.], [2.8, 3.5])
+    #speed_lane_width = interp(v_ego, [0., 31.], [2.8, 3.5])
+    speed_lane_width = interp(v_ego, [0., 60.], [2.8, 3.5])
     self.lane_width = self.lane_width_certainty.x * self.lane_width_estimate.x + \
                       (1 - self.lane_width_certainty.x) * speed_lane_width
 
@@ -332,7 +333,7 @@ class LanePlanner:
     path_from_right_lane = self.rll_y - clipped_lane_width / 2.0
     self.d_prob = l_prob + r_prob - l_prob * r_prob
 
-    #self.d_prob = max(l_prob, r_prob)
+    self.d_prob = max(l_prob, r_prob)
     self.d_prob *= self.lane_change_multiplier
 
     self.lane_width_left_filtered.update(self.lane_width_left)
@@ -354,10 +355,13 @@ class LanePlanner:
       curvature = 0.0
       if len(vcurv) > 0:
         curvature = vcurv[-1]
-        if curvature < -0.1:
-          offset_curve = - self.adjustCurveOffset;
-        elif curvature > 0.1:
-          offset_curve = self.adjustCurveOffset
+        offset_curve = interp(abs(curvature), [0.01, 0.15], [0.0, self.adjustCurveOffset]) * np.sign(curvature)
+        #if curvature < -0.1:
+        #  offset_curve = - self.adjustCurveOffset;
+        #elif curvature > 0.1:
+        #  offset_curve = self.adjustCurveOffset
+        #else:
+        #  offset_curve = 0.0
 
         if self.lane_width_left_filtered.x > 1.5 and self.lane_width_right_filtered.x > 1.5:
           offset_lane = 0.0
@@ -368,9 +372,9 @@ class LanePlanner:
         elif self.lane_width_right_filtered.x > 2.5:
           offset_lane = -self.adjustLaneOffset
 
-      #lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
-      lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
-      diff_center = lane_path_y[0] - path_xyz[:,1][0]
+      lane_path_y = path_from_left_lane if l_prob > 0.5 or l_prob > r_prob else path_from_right_lane
+      #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
+      diff_center = lane_path_y[5] - path_xyz[:,1][5]
       if self.d_prob > 0.1:
         diff_center = 0.0
       offset_total = clip(offset_curve + offset_lane + diff_center, - self.adjustLaneOffset, self.adjustLaneOffset)
@@ -378,7 +382,7 @@ class LanePlanner:
         self.lane_offset_filtered.update(offset_total)
       else:
         self.lane_offset_filtered.x = 0.0
-      self.debugText = "d={:.2f},{:.1f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(diff_center, self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+      self.debugText = "d={:.2f},{:.1f},vC={:.2f},offset={:.2f}+{:.2f}={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(diff_center, self.d_prob, curvature, offset_curve, offset_lane, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
       if False:
         safe_idxs = np.isfinite(self.ll_t)
         if safe_idxs[0]:
