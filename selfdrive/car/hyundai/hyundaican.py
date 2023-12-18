@@ -130,11 +130,12 @@ def create_clu11_button(packer, frame, clu11, button, car_fingerprint):
   return packer.make_can_msg("CLU11", bus, values)
 
 def create_lfahda_mfc(packer, CC, blinking_signal):
+  activeAPM = CC.hudControl.activeAPM
   values = {
     "LFA_Icon_State": 2 if CC.latActive else 1 if CC.enabled else 0,
-    "HDA_Active": 1 if CC.enabled else 0,
-    "HDA_Icon_State": 2 if CC.enabled else 0,
-    "HDA_VSetReq": 1 if CC.enabled else 0,
+    "HDA_Active": 1 if activeAPM >= 200 else 0,
+    "HDA_Icon_State": 0 if activeAPM >= 1000 and blinking_signal else 2 if activeAPM >= 200 else 0,
+    "HDA_VSetReq": 1 if activeAPM >= 200 else 0,
     "HDA_USM" : 2,
     "HDA_Icon_Wheel" : 1 if CC.latActive else 0,
     "HDA_Chime" : 1 if CC.latActive else 0,

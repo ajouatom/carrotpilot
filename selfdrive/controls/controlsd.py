@@ -815,6 +815,7 @@ class Controls:
 
     CC.cruiseControl.activate = self.carrotCruiseActivate > 0
     CC.hudControl.softHold = self.v_cruise_helper.softHoldActive
+    CC.hudControl.activeAPM = self.v_cruise_helper.activeAPM
         
     hudControl.rightLaneVisible = CC.latActive
     hudControl.leftLaneVisible = CC.latActive
