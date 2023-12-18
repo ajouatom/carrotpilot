@@ -378,10 +378,10 @@ class LanePlanner:
       #if safe_idxs[0]:
       #  lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
       #  path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
-      safe_idxs = np.isfinite(self.ll_x)
-      if safe_idxs[0]:
-        lane_path_y_interp = np.interp(self.pos_x, self.ll_x[safe_idxs], lane_path_y[safe_idxs])
-        path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+      #safe_idxs = np.isfinite(self.ll_x)
+      #if safe_idxs[0]:
+      lane_path_y_interp = np.interp(path_xyz[:,0], self.ll_x, lane_path_y)
+      path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
 
     # debug
     #if len(vcurv) > 0:
