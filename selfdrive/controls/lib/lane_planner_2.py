@@ -332,7 +332,7 @@ class LanePlanner:
     path_from_right_lane = self.rll_y - clipped_lane_width / 2.0
     self.d_prob = l_prob + r_prob - l_prob * r_prob
 
-    #self.d_prob = max(l_prob, r_prob)
+    self.d_prob = max(l_prob, r_prob)
     self.d_prob *= self.lane_change_multiplier
 
     self.lane_width_left_filtered.update(self.lane_width_left)
@@ -368,8 +368,8 @@ class LanePlanner:
         elif self.lane_width_right_filtered.x > 2.5:
           offset_lane = -self.adjustLaneOffset
 
-      #lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
-      lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
+      lane_path_y = path_from_left_lane if l_prob > 0.5 or l_prob > r_prob else path_from_right_lane
+      #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
       diff_center = lane_path_y[0] - path_xyz[:,1][0]
       if self.d_prob > 0.1:
         diff_center = 0.0
