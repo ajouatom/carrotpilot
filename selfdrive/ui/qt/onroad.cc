@@ -1065,7 +1065,7 @@ void AnnotatedCameraWidget::paintEvent(QPaintEvent *event) {
 
   if (s->scene.world_objects_visible && !showDriverCamera) {
     update_model(s, model, sm["uiPlan"].getUiPlan());
-    drawLaneLines(painter, s);
+    if(s->show_mode == 0) drawLaneLines(painter, s);
 
     if (s->scene.longitudinal_control && sm.rcv_frame("radarState") > s->scene.started_frame) {
       auto radar_state = sm["radarState"].getRadarState();

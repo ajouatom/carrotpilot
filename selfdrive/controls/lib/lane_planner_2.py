@@ -347,26 +347,26 @@ class LanePlanner:
     else:
       self.adjustLaneOffset = float(Params().get_int("AdjustLaneOffset")) * 0.01
       self.adjustCurveOffset = float(Params().get_int("AdjustCurveOffset")) * 0.01
-      offset = 0.0
+      offset_curve = 0.0
+      offset_lane = 0.0
       #curvature = self.curvature * 100.0
       curvature = 0.0
       if len(vcurv) > 0:
         curvature = vcurv[-1]
         if curvature < -0.1:
-          offset = - self.adjustCurveOffset;
+          offset_curve = - self.adjustCurveOffset;
         elif curvature > 0.1:
-          offset = self.adjustCurveOffset
-        elif self.lane_width_left_filtered.x > 1.5 and self.lane_width_right_filtered.x > 1.5:
-          offset = 0.0
+          offset_curve = self.adjustCurveOffset
+
+        if self.lane_width_left_filtered.x > 1.5 and self.lane_width_right_filtered.x > 1.5:
+          offset_lane = 0.0
         elif self.lane_width_left_filtered.x < 2.5 and self.lane_width_right_filtered.x < 2.5:
-          offset = 0.0
+          offset_lane = 0.0
         elif self.lane_width_left_filtered.x > 2.5:
-          offset = self.adjustLaneOffset
+          offset_lane = self.adjustLaneOffset
         elif self.lane_width_right_filtered.x > 2.5:
-          offset = -self.adjustLaneOffset
-      else:
-        offset = 0.0
-      self.lane_offset_filtered.update(offset)
+          offset_lane = -self.adjustLaneOffset
+      self.lane_offset_filtered.update(offset_curve+offset_lane)
       lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
       lane_path_y += self.lane_offset_filtered.x
       self.debugText = "vC={:.2f},offset={:.1f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
