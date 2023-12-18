@@ -1028,14 +1028,6 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .1, alert_rate=0.75),
   },
 
-  # Random Events
-  RandomEventName.firefoxSteerSaturated: {
-    ET.WARNING: Alert(
-      "Turn Exceeds Steering Limit",
-      "IE Has Stopped Responding...",
-      AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.firefox, 2.),
-  },
   EventName.laneChangeRoadEdge: {
     ET.WARNING: Alert(
       "Car Detected in Blindspot or RoadEdge",
