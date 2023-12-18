@@ -207,13 +207,20 @@ class LateralPlanner:
     #self.path_xyz = self.LP.get_d_path(self.v_ego, self.t_idxs, self.path_xyz, self.lanelines_active)
 
     # Turn off lanes during lane change
+    self.LP.offset_apply = True
+    if self.DH.desire != log.LateralPlan.Desire.none:
+      self.LP.offset_apply = False
     if self.useLaneLineMode:
-      if self.DH.desire == log.LateralPlan.Desire.laneChangeRight or self.DH.desire == log.LateralPlan.Desire.laneChangeLeft:
+      #if self.DH.desire == log.LateralPlan.Desire.laneChangeRight or self.DH.desire == log.LateralPlan.Desire.laneChangeLeft:
+      if self.DH.desire != log.LateralPlan.Desire.none:
         self.LP.lane_change_multiplier = self.DH.lane_change_ll_prob
+        self.lanelines_active = False
       else:
         self.LP.lane_change_multiplier = 1.0
+        self.lanelines_active = True
     else:
       self.LP.lane_change_multiplier = 0.0
+      self.lanelines_active = False
 
     self.lanelines_active = True if self.LP.lane_change_multiplier > 0.01 else False
 
