@@ -378,7 +378,7 @@ class LanePlanner:
         self.lane_offset_filtered.update(offset_total)
       else:
         self.lane_offset_filtered.x = 0.0
-      self.debugText = "d={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(diff_center, self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+      self.debugText = "d={:.2f},{:.1f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(diff_center, self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
       if False:
         safe_idxs = np.isfinite(self.ll_t)
         if safe_idxs[0]:
