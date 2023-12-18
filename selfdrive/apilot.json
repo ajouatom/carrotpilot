@@ -797,10 +797,10 @@
     {
       "group": "조향일반",
       "name": "UseModelPath",
-      "title": "UseModelPath(0)",
+      "title": "(x)UseModelPath(0)",
       "descr": "",
       "egroup": "LAT",
-      "etitle": "UseModelPath",
+      "etitle": "(x)UseModelPath",
       "edescr": "",
       "min": 0,
       "max": 1,

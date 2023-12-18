@@ -570,7 +570,7 @@ CarrotPanel::CarrotPanel(QWidget* parent) : QWidget(parent) {
     latLongToggles->addItem(new CValueControl("UseLaneLineSpeed", "UseLaneLine Speed KPH(0)", "Above set speed: laneline. Below: laneless mode. lat_mpc", "../assets/offroad/icon_shell.png", 0, 200, 5));
     latLongToggles->addItem(new CValueControl("AdjustLaneOffset", "AdjustLaneOffset(0)cm", "", "../assets/offroad/icon_shell.png", 0, 500, 5));
     latLongToggles->addItem(new CValueControl("AdjustCurveOffset", "AdjustCurveOffset(0)cm", "", "../assets/offroad/icon_shell.png", 0, 500, 5));
-    latLongToggles->addItem(new CValueControl("UseModelPath", "UseModelPath(0)", "", "../assets/offroad/icon_shell.png", 0, 1, 1));
+    //latLongToggles->addItem(new CValueControl("UseModelPath", "UseModelPath(0)", "", "../assets/offroad/icon_shell.png", 0, 1, 1));
     latLongToggles->addItem(new CValueControl("PathOffset", "PathOffset", "(-)left, (+)right, when UseLaneLineSpeed > 0", "../assets/offroad/icon_road.png", -50, 50, 1));
     latLongToggles->addItem(new CValueControl("LiveSteerRatioApply", "LAT: LiveSteerRatioApply(100)", "오버스티어가 발생하면 줄입니다.", "../assets/offroad/icon_road.png", 50, 110, 1));
     latLongToggles->addItem(new CValueControl("LateralTorqueCustom", "LAT: TorqueCustom(0)", "", "../assets/offroad/icon_road.png", 0, 2, 1));
