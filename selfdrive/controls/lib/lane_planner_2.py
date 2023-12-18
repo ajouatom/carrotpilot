@@ -331,7 +331,7 @@ class LanePlanner:
     path_from_right_lane = self.rll_y - clipped_lane_width / 2.0
     self.d_prob = l_prob + r_prob - l_prob * r_prob
 
-    self.d_prob = max(l_prob, r_prob)
+    #self.d_prob = max(l_prob, r_prob)
     self.d_prob *= self.lane_change_multiplier
 
     self.lane_width_left_filtered.update(self.lane_width_left)
@@ -366,11 +366,11 @@ class LanePlanner:
           offset_lane = self.adjustLaneOffset
         elif self.lane_width_right_filtered.x > 2.5:
           offset_lane = -self.adjustLaneOffset
-      self.lane_offset_filtered.update(offset_curve if offset_curve != 0 else offset_lane)
-      lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
+      self.lane_offset_filtered.update(clip(offset_curve + offset_lane, - self.adjustLaneOffset, self.adjustLaneOffset)
       self.debugText = "m={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
 
-      #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
+      #lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
+      lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
 
       if False:
         safe_idxs = np.isfinite(self.ll_t)
