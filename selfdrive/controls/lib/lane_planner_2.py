@@ -323,7 +323,8 @@ class LanePlanner:
     self.lane_width_certainty.update(l_prob * r_prob)
     current_lane_width = abs(self.rll_y[0] - self.lll_y[0])
     self.lane_width_estimate.update(current_lane_width)
-    speed_lane_width = interp(v_ego, [0., 31.], [2.8, 3.5])
+    #speed_lane_width = interp(v_ego, [0., 31.], [2.8, 3.5])
+    speed_lane_width = interp(v_ego, [0., 60.], [2.8, 3.5])
     self.lane_width = self.lane_width_certainty.x * self.lane_width_estimate.x + \
                       (1 - self.lane_width_certainty.x) * speed_lane_width
 
@@ -354,10 +355,13 @@ class LanePlanner:
       curvature = 0.0
       if len(vcurv) > 0:
         curvature = vcurv[-1]
-        if curvature < -0.1:
-          offset_curve = - self.adjustCurveOffset;
-        elif curvature > 0.1:
-          offset_curve = self.adjustCurveOffset
+        offset_curve = interp(abs(curvature), [0.01, 0.15], [0.0, self.adjustCurveOffset]) * np.sign(curvature)
+        #if curvature < -0.1:
+        #  offset_curve = - self.adjustCurveOffset;
+        #elif curvature > 0.1:
+        #  offset_curve = self.adjustCurveOffset
+        #else:
+        #  offset_curve = 0.0
 
         if self.lane_width_left_filtered.x > 1.5 and self.lane_width_right_filtered.x > 1.5:
           offset_lane = 0.0
