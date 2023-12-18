@@ -78,6 +78,7 @@ class HyundaiFlags(IntFlag):
   NAVI_CLUSTER = 0x4000
   SCC_BUS2 = 0x8000
   HAS_LFAHDA = 0x10000
+  HAS_LFA_BUTTON = 0x20000
 
 class CAR(StrEnum):
   # Hyundai

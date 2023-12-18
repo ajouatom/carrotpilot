@@ -457,7 +457,7 @@ void update_model(UIState *s,
   update_line_data(s, lane_lines[5], scene.blind_spot_path ? scene.lane_width_right / 2 : 0, 0, 0, &scene.track_right_adjacent_lane_vertices, max_idx);
   }
   else if (show_path_mode == 0) {
-      update_line_data2(s, plan_position, s->show_path_width, 0.8, s->show_z_offset, &scene.track_vertices, max_idx);
+      update_line_data2(s, plan_position, s->show_path_width, s->show_z_offset, s->show_z_offset, &scene.track_vertices, max_idx);
   }
   else if(show_path_mode < 9 || show_path_mode == 13 || show_path_mode == 14 || show_path_mode == 15)
     update_line_data_dist(s, plan_position, s->show_path_width, 0.8, s->show_z_offset, &scene.track_vertices, max_distance, false);

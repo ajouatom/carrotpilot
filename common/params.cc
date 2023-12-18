@@ -283,6 +283,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     { "TFollowSpeedAdd", PERSISTENT },
     { "TFollowSpeedAddM", PERSISTENT },
     { "UseLaneLineSpeed", PERSISTENT },
+    { "AdjustLaneOffset", PERSISTENT },
+    { "AdjustCurveOffset", PERSISTENT },
     { "UseModelPath", PERSISTENT },
     { "PathOffset", PERSISTENT },
     { "SoftHoldMode", PERSISTENT },

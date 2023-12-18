@@ -339,6 +339,8 @@ class CarInterface(CarInterfaceBase):
         ret.flags |= HyundaiFlags.NAVI_CLUSTER.value
       if 1157 in fingerprint[0] or 1157 in fingerprint[2]:
         ret.flags |= HyundaiFlags.HAS_LFAHDA.value
+      if 913 in fingerprint[0]:
+        ret.flags |= HyundaiFlags.HAS_LFA_BUTTON.value
        
       if Params().get_bool("SccConnectedBus2"):
         ret.flags |= HyundaiFlags.SCC_BUS2.value

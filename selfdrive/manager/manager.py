@@ -120,6 +120,8 @@ def manager_init() -> None:
     ("SoftHoldMode", "0"),       
     ("CruiseEcoControl", "4"),
     ("UseLaneLineSpeed", "0"),    
+    ("AdjustLaneOffset", "0"),    
+    ("AdjustCurveOffset", "0"),    
     ("UseModelPath", "0"),    
     ("PathOffset", "0"),  
     ("LateralTorqueCustom", "0"),       
