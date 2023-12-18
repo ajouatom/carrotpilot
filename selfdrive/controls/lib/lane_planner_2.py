@@ -374,7 +374,7 @@ class LanePlanner:
 
       lane_path_y = path_from_left_lane if l_prob > 0.5 or l_prob > r_prob else path_from_right_lane
       #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
-      diff_center = lane_path_y[0] - path_xyz[:,1][0]
+      diff_center = lane_path_y[5] - path_xyz[:,1][5]
       if self.d_prob > 0.1:
         diff_center = 0.0
       offset_total = clip(offset_curve + offset_lane + diff_center, - self.adjustLaneOffset, self.adjustLaneOffset)
