@@ -299,7 +299,7 @@ class CarState(CarStateBase):
         else:
           experimental_mode = self.param.get_bool("ExperimentalMode")
           # Invert the value of "ExperimentalMode"
-          put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+          self.param.put_bool_nonblocking("ExperimentalMode", not experimental_mode)
       self.lkas_previously_pressed = lkas_pressed
 
     return ret

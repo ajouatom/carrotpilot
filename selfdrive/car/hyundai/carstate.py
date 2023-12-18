@@ -258,7 +258,7 @@ class CarState(CarStateBase):
     if self.personalities_via_wheel:
       if self.cruise_buttons[-1] == Buttons.GAP_DIST and self.cruise_gap_count >= 70:
         if self.cruise_gap_count == 70:
-          put_int_nonblocking("MyDrivingMode", Params().get_int("MyDrivingMode") % 4 + 1) # 1,2,3,4 (1:eco, 2:safe, 3:normal, 4:high speed)
+          self.param.put_int_nonblocking("MyDrivingMode", Params().get_int("MyDrivingMode") % 4 + 1) # 1,2,3,4 (1:eco, 2:safe, 3:normal, 4:high speed)
       elif self.prev_cruise_buttons == Buttons.GAP_DIST and self.cruise_buttons[-1] == Buttons.NONE and self.cruise_gap_count < 70:
         # Sync with the onroad UI button
         if self.param_memory.get_bool("PersonalityChangedViaUI"):
@@ -284,7 +284,7 @@ class CarState(CarStateBase):
         else:
           experimental_mode = self.param.get_bool("ExperimentalMode")
           # Invert the value of "ExperimentalMode"
-          put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+          self.param.put_bool_nonblocking("ExperimentalMode", not experimental_mode)
       self.lkas_previously_pressed = lkas_pressed
 
     return ret
@@ -400,7 +400,7 @@ class CarState(CarStateBase):
         else:
           experimental_mode = self.param.get_bool("ExperimentalMode")
           # Invert the value of "ExperimentalMode"
-          put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+          self.param.put_bool_nonblocking("ExperimentalMode", not experimental_mode)
       self.lkas_previously_pressed = lkas_pressed
 
     return ret
