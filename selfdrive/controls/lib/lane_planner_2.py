@@ -367,7 +367,7 @@ class LanePlanner:
         elif self.lane_width_right_filtered.x > 2.5:
           offset_lane = -self.adjustLaneOffset
       self.lane_offset_filtered.update(clip(offset_curve + offset_lane, - self.adjustLaneOffset, self.adjustLaneOffset))
-      self.debugText = "m={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+      self.debugText = "d={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(lane_path_y[0] - path_xyz[:,1][0], self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
 
       #lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
       lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
