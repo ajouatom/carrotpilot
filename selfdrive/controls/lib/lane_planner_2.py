@@ -10,7 +10,7 @@ from common.params import Params
 
 TRAJECTORY_SIZE = 33
 # positive numbers go right
-CAMERA_OFFSET = 0.0 #0.08
+CAMERA_OFFSET = 0.08
 MIN_LANE_DISTANCE = 2.6
 MAX_LANE_DISTANCE = 3.7
 MAX_LANE_CENTERING_AWAY = 1.85
@@ -331,7 +331,7 @@ class LanePlanner:
     path_from_right_lane = self.rll_y - clipped_lane_width / 2.0
     self.d_prob = l_prob + r_prob - l_prob * r_prob
 
-    self.d_prob = max(l_prob, r_prob)
+    #self.d_prob = max(l_prob, r_prob)
     self.d_prob *= self.lane_change_multiplier
 
     self.lane_width_left_filtered.update(self.lane_width_left)
@@ -366,15 +366,21 @@ class LanePlanner:
           offset_lane = self.adjustLaneOffset
         elif self.lane_width_right_filtered.x > 2.5:
           offset_lane = -self.adjustLaneOffset
-      self.lane_offset_filtered.update(offset_curve+offset_lane)
-      lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
-      lane_path_y += self.lane_offset_filtered.x
-      self.debugText = "vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+      self.lane_offset_filtered.update(clip(offset_curve + offset_lane, - self.adjustLaneOffset, self.adjustLaneOffset)
+      self.debugText = "m={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
 
-      #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
-      safe_idxs = np.isfinite(self.ll_t)
-      if safe_idxs[0]:
-        lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
+      #lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
+      lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
+
+      if False:
+        safe_idxs = np.isfinite(self.ll_t)
+        if safe_idxs[0]:
+          lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
+          path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+      else:
+        #safe_idxs = np.isfinite(self.ll_x)
+        #if safe_idxs[0]:
+        lane_path_y_interp = np.interp(path_xyz[:,0] + v_ego * 0.1, self.ll_x, lane_path_y)
         path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
 
     # debug
@@ -385,6 +391,6 @@ class LanePlanner:
       #sLogger.Send("vC--- LX" + "{:.1f}".format(self.lll_y[0]) + " RX" + "{:.1f}".format(self.rll_y[0]) + " LW" + "{:.1f}".format(self.lane_width) + " LP" + "{:.1f}".format(l_prob) + " RP" + "{:.1f}".format(r_prob) + " RS" + "{:.1f}".format(self.rll_std) + " LS" + "{:.1f}".format(self.lll_std))
       #self.debugText = "vC--- LX" + "{:.1f}".format(self.lll_y[0]) + " RX" + "{:.1f}".format(self.rll_y[0]) + " LW" + "{:.1f}".format(self.lane_width) + " LP" + "{:.1f}".format(l_prob) + " RP" + "{:.1f}".format(r_prob) + " RS" + "{:.1f}".format(self.rll_std) + " LS" + "{:.1f}".format(self.lll_std)
 
-    path_xyz[:, 1] += CAMERA_OFFSET
+    path_xyz[:, 1] += (CAMERA_OFFSET + self.lane_offset_filtered.x)
 
     return path_xyz
