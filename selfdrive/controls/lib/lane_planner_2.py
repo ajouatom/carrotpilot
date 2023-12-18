@@ -375,7 +375,7 @@ class LanePlanner:
         diff_center = 0.0
       offset_total = clip(offset_curve + offset_lane + diff_center, - self.adjustLaneOffset, self.adjustLaneOffset) if self.offset_apply else 0.
       self.lane_offset_filtered.update(offset_total)
-      self.debugText = "{},d={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.offset_apply, diff_center, self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+      self.debugText = "{:.2f},d={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(offset_total, diff_center, self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
       if False:
         safe_idxs = np.isfinite(self.ll_t)
         if safe_idxs[0]:
