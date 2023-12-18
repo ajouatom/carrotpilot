@@ -108,6 +108,8 @@ class LanePlanner:
       self.l_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeLeft]
       self.r_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeRight]
 
+    self.p_x = np.array(md.position.x)
+
   def get_stock_path(self, CS, v_ego, path_t, path_xyz, vcurv):
     # Reduce reliance on lanelines that are too far apart or
     # will be in a few seconds
@@ -373,6 +375,8 @@ class LanePlanner:
 
       #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
       safe_idxs = np.isfinite(self.ll_t)
+      print("self.ll_t=", self.ll_t)
+      print("safe_idxs=", safe_idxs)
       if safe_idxs[0]:
         lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
         path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
