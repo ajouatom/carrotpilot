@@ -73,7 +73,7 @@ class LanePlanner:
     self.lane_width_right = 0.0
     self.lane_width_left_filtered = FirstOrderFilter(1.0, 0.95, DT_MDL)
     self.lane_width_right_filtered = FirstOrderFilter(1.0, 0.95, DT_MDL)
-    self.lane_offset_filtered = FirstOrderFilter(1.0, 0.95, DT_MDL)
+    self.lane_offset_filtered = FirstOrderFilter(0.0, 0.98, DT_MDL)
 
   def parse_model(self, md):
 
@@ -366,7 +366,7 @@ class LanePlanner:
           offset_lane = self.adjustLaneOffset
         elif self.lane_width_right_filtered.x > 2.5:
           offset_lane = -self.adjustLaneOffset
-      self.lane_offset_filtered.update(clip(offset_curve + offset_lane, - self.adjustLaneOffset, self.adjustLaneOffset)
+      self.lane_offset_filtered.update(clip(offset_curve + offset_lane, - self.adjustLaneOffset, self.adjustLaneOffset))
       self.debugText = "m={:.2f},vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.d_prob, curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
 
       #lane_path_y = path_from_right_lane if r_prob > 0.5 or r_prob > l_prob else path_from_left_lane
