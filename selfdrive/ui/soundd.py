@@ -40,7 +40,6 @@ sound_list: Dict[int, Tuple[str, Optional[int], float]] = {
 
   AudibleAlert.warningSoft: ("warning_soft.wav", None, MAX_VOLUME),
   AudibleAlert.warningImmediate: ("warning_immediate.wav", None, MAX_VOLUME),
-  AudibleAlert.firefox: ("firefox.wav", None, MAX_VOLUME),
   AudibleAlert.longEngaged: ("tici_engaged.wav", None, MAX_VOLUME),
   AudibleAlert.longDisengaged: ("tici_disengaged.wav", None, MAX_VOLUME),
   AudibleAlert.trafficSignGreen: ("traffic_sign_green.wav", None, MAX_VOLUME),
