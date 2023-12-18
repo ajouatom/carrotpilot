@@ -374,14 +374,17 @@ class LanePlanner:
       self.debugText = "vC={:.2f},offset={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(curvature, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
 
       #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
-      #safe_idxs = np.isfinite(self.ll_t)
-      #if safe_idxs[0]:
-      #  lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
-      #  path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
-      #safe_idxs = np.isfinite(self.ll_x)
-      #if safe_idxs[0]:
-      lane_path_y_interp = np.interp(path_xyz[:,0], self.ll_x, lane_path_y)
-      path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+
+      if True:
+        safe_idxs = np.isfinite(self.ll_t)
+        if safe_idxs[0]:
+          lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
+          path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+      else:
+        #safe_idxs = np.isfinite(self.ll_x)
+        #if safe_idxs[0]:
+        lane_path_y_interp = np.interp(path_xyz[:,0], self.ll_x, lane_path_y)
+        path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
 
     # debug
     #if len(vcurv) > 0:
