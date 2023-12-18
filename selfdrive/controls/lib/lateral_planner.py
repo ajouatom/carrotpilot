@@ -208,7 +208,7 @@ class LateralPlanner:
 
     # Turn off lanes during lane change
     self.LP.offset_apply = False
-    if self.DH.lane_change_state == lateralPlan.LaneChangeState.off:
+    if self.DH.lane_change_state == log.LateralPlan.LaneChangeState.off:
       self.LP.offset_apply = True
     if self.useLaneLineMode:
       #if self.DH.desire == log.LateralPlan.Desire.laneChangeRight or self.DH.desire == log.LateralPlan.Desire.laneChangeLeft:
