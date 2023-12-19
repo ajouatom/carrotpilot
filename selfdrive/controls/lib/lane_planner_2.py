@@ -10,7 +10,7 @@ from common.params import Params
 
 TRAJECTORY_SIZE = 33
 # positive numbers go right
-CAMERA_OFFSET = 0.08
+CAMERA_OFFSET = 0 #0.08
 MIN_LANE_DISTANCE = 2.6
 MAX_LANE_DISTANCE = 3.7
 MAX_LANE_CENTERING_AWAY = 1.85
@@ -349,6 +349,7 @@ class LanePlanner:
     else:
       self.adjustLaneOffset = float(Params().get_int("AdjustLaneOffset")) * 0.01
       self.adjustCurveOffset = float(Params().get_int("AdjustCurveOffset")) * 0.01
+      ADJUST_OFFSET_LIMIT = 0.4
       offset_curve = 0.0
       offset_lane = 0.0
       #curvature = self.curvature * 100.0
@@ -377,7 +378,7 @@ class LanePlanner:
       diff_center = lane_path_y[5] - path_xyz[:,1][5]
       if self.d_prob > 0.1:
         diff_center = 0.0
-      offset_total = clip(offset_curve + offset_lane + diff_center, - self.adjustLaneOffset, self.adjustLaneOffset)
+      offset_total = clip(offset_curve + offset_lane + diff_center, - ADJUST_OFFSET_LIMIT, ADJUST_OFFSET_LIMIT)
       if self.offset_apply:
         self.lane_offset_filtered.update(offset_total)
       else:
