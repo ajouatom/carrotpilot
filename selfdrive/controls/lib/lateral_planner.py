@@ -222,7 +222,7 @@ class LateralPlanner:
       self.LP.lane_change_multiplier = 0.0
       self.lanelines_active = False
 
-    self.lanelines_active = True if self.LP.lane_change_multiplier > 0.01 else False
+    self.lanelines_active = True if self.LP.d_prob > 0.3 else False
 
     # lanelines calculation?
     self.LP.lane_width_left = self.DH.lane_width_left
