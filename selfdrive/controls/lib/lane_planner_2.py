@@ -364,7 +364,7 @@ class LanePlanner:
         #else:
         #  offset_curve = 0.0
 
-        if self.lane_width_left_filtered.x > 1.5 and self.lane_width_right_filtered.x > 1.5:
+        if self.lane_width_left_filtered.x > 1.8 and self.lane_width_right_filtered.x > 1.8:
           offset_lane = 0.0
         elif self.lane_width_left_filtered.x < 2.5 and self.lane_width_right_filtered.x < 2.5:
           offset_lane = 0.0
