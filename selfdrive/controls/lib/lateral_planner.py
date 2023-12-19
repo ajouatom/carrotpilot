@@ -214,13 +214,10 @@ class LateralPlanner:
       #if self.DH.desire == log.LateralPlan.Desire.laneChangeRight or self.DH.desire == log.LateralPlan.Desire.laneChangeLeft:
       if self.DH.desire != log.LateralPlan.Desire.none:
         self.LP.lane_change_multiplier = self.DH.lane_change_ll_prob
-        self.lanelines_active = False
       else:
         self.LP.lane_change_multiplier = 1.0
-        self.lanelines_active = True
     else:
       self.LP.lane_change_multiplier = 0.0
-      self.lanelines_active = False
 
     # lanelines calculation?
     self.LP.lane_width_left = self.DH.lane_width_left
