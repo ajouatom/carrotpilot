@@ -381,7 +381,7 @@ class LanePlanner:
       if self.lane_change_multiplier > 0.5:
         diff_center = 0.0
       offset_total = clip(offset_curve + offset_lane + diff_center, - ADJUST_OFFSET_LIMIT, ADJUST_OFFSET_LIMIT)
-      if self.offset_apply and self.d_prob > 0.3:
+      if self.offset_apply and self.d_prob > 0.2:
         self.lane_offset_filtered.update(offset_total)
       else:
         self.lane_offset_filtered.x = 0.0

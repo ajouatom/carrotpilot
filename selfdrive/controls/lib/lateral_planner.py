@@ -208,16 +208,13 @@ class LateralPlanner:
 
     # Turn off lanes during lane change
     self.LP.offset_apply = False
-    if self.DH.lane_change_state == log.LateralPlan.LaneChangeState.off:
+    if self.DH.lane_change_state == log.LateralPlan.LaneChangeState.off or not self.useLaneLineMode:
       self.LP.offset_apply = True
-    if self.useLaneLineMode:
-      #if self.DH.desire == log.LateralPlan.Desire.laneChangeRight or self.DH.desire == log.LateralPlan.Desire.laneChangeLeft:
-      if self.DH.desire != log.LateralPlan.Desire.none:
-        self.LP.lane_change_multiplier = self.DH.lane_change_ll_prob
-      else:
-        self.LP.lane_change_multiplier = 1.0
+    #if self.DH.desire == log.LateralPlan.Desire.laneChangeRight or self.DH.desire == log.LateralPlan.Desire.laneChangeLeft:
+    if self.DH.desire != log.LateralPlan.Desire.none:
+      self.LP.lane_change_multiplier = self.DH.lane_change_ll_prob
     else:
-      self.LP.lane_change_multiplier = 0.0
+      self.LP.lane_change_multiplier = 1.0
 
     # lanelines calculation?
     self.LP.lane_width_left = self.DH.lane_width_left
