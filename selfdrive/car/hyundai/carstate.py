@@ -276,6 +276,8 @@ class CarState(CarStateBase):
     if self.experimental_mode_via_press and ret.cruiseState.available and self.CP.flags & HyundaiFlags.HAS_LFA_BUTTON.value:
       lkas_pressed = cp.vl["BCM_PO_11"]["LFA_Pressed"]
       if lkas_pressed and not self.lkas_previously_pressed:
+        self.param.put_int_nonblocking("MyDrivingMode", Params().get_int("MyDrivingMode") % 4 + 1) # 1,2,3,4 (1:eco, 2:safe, 3:normal, 4:high speed)
+      if False: #lkas_pressed and not self.lkas_previously_pressed:
         if self.conditional_experimental_mode:
           # Set "CEStatus" to work with "Conditional Experimental Mode"
           conditional_status = self.param_memory.get_int("CEStatus")
