@@ -373,11 +373,11 @@ class LanePlanner:
     #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
 
     # offset_center = lane_line_center - laneless_center
-    x_center_dist = v_ego * 1.0  # after 1sec x dist
-    lane_path_y_center = interp(x_center_dist, self.ll_x, lane_path_y)
-    path_xyz_y_center = interp(x_center_dist, path_xyz[:,0], path_xyz[:,1])
-    #diff_center = lane_path_y[5] - path_xyz[:,1][5] if not self.lanefull_mode else 0.0
-    diff_center = lane_path_y_center - path_xyz_y_center if not self.lanefull_mode else 0.0
+    #x_center_dist = v_ego * 1.0  # after 1sec x dist
+    #lane_path_y_center = interp(x_center_dist, self.ll_x, lane_path_y)
+    #path_xyz_y_center = interp(x_center_dist, path_xyz[:,0], path_xyz[:,1])
+    #diff_center = lane_path_y_center - path_xyz_y_center if not self.lanefull_mode else 0.0
+    diff_center = lane_path_y[5] - path_xyz[:,1][5] if not self.lanefull_mode else 0.0
     offset_total = clip(offset_curve + offset_lane + diff_center, - ADJUST_OFFSET_LIMIT, ADJUST_OFFSET_LIMIT)
 
     ## self.d_prob = 0 if lane_changing
