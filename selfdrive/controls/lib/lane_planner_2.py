@@ -381,7 +381,7 @@ class LanePlanner:
       if self.lane_change_multiplier < 0.5:
         self.lane_offset_filtered.x = 0.0
       else:
-        self.lane_offset_filtered.update(interp(self.d_prob, [0, 0.3], [0, offset_total])
+        self.lane_offset_filtered.update(interp(self.d_prob, [0, 0.3], [0, offset_total]))
 
       self.debugText = "off:{:.2f},dc:{:.2f},{:.1f},vC:{:.2f},oc:{:.2f},ol:{:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.lane_offset_filtered.x, diff_center, self.d_prob, curvature, offset_curve, offset_lane, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
 
