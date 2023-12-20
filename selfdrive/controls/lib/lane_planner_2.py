@@ -347,7 +347,7 @@ class LanePlanner:
 
     self.adjustLaneOffset = float(Params().get_int("AdjustLaneOffset")) * 0.01
     self.adjustCurveOffset = float(Params().get_int("AdjustCurveOffset")) * 0.01
-    ADJUST_OFFSET_LIMIT = max(self.adjustLaneOffset, self.adjustCurveOffset)
+    ADJUST_OFFSET_LIMIT = 0.4 #max(self.adjustLaneOffset, self.adjustCurveOffset)
     offset_curve = 0.0
     offset_lane = 0.0
     #curvature = self.curvature * 100.0
