@@ -567,7 +567,7 @@ CarrotPanel::CarrotPanel(QWidget* parent) : QWidget(parent) {
     cruiseToggles->addItem(new CValueControl("MySafeModeFactor", "DRIVEMODE: SAFE ratio(60%)", "Accel/StopDistance/DecelRatio/Gap control ratio", "../assets/offroad/icon_road.png", 10, 90, 10));
 
     latLongToggles = new ListWidget(this);
-    latLongToggles->addItem(new CValueControl("UseLaneLineSpeed", "UseLaneLine Speed KPH(0)", "Above set speed: laneline. Below: laneless mode. lat_mpc", "../assets/offroad/icon_shell.png", 0, 200, 5));
+    latLongToggles->addItem(new CValueControl("UseLaneLineSpeed", "Use Laneline mode (0)", "Lainline mode, lat_mpc control used", "../assets/offroad/icon_shell.png", 0, 1, 1));
     latLongToggles->addItem(new CValueControl("AdjustLaneOffset", "AdjustLaneOffset(0)cm", "", "../assets/offroad/icon_shell.png", 0, 500, 5));
     latLongToggles->addItem(new CValueControl("AdjustCurveOffset", "AdjustCurveOffset(0)cm", "", "../assets/offroad/icon_shell.png", 0, 500, 5));
     //latLongToggles->addItem(new CValueControl("UseModelPath", "UseModelPath(0)", "", "../assets/offroad/icon_shell.png", 0, 1, 1));
