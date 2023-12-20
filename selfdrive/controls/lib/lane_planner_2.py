@@ -383,7 +383,10 @@ class LanePlanner:
       else:
         self.lane_offset_filtered.update(interp(self.d_prob, [0, 0.3], [0, offset_total]))
 
-      self.debugText = "off:{:.2f},dc:{:.2f},{:.1f},vC:{:.2f},oc:{:.2f},ol:{:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.lane_offset_filtered.x, diff_center, self.d_prob, curvature, offset_curve, offset_lane, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+      #self.debugText = "off:{:.2f},dc:{:.2f},dp:{:.1f},vC:{:.2f},oc:{:.2f},ol:{:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.lane_offset_filtered.x, diff_center, self.d_prob, curvature, offset_curve, offset_lane, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+      self.debugText = "OFFSET({:.2f}={:.2f}+{:.2f}+{:.2f}),dp:{:.1f},lp:{}".format(
+        self.lane_offset_filtered.x,
+        diff_center, offset_lane, offset_curve, self.d_prob, self.lanefull_mode)
 
       if self.lanefull_mode:        
         if False:
