@@ -312,8 +312,7 @@ void MapWindow::initializeGL() {
   m_map->setMargins({0, 350, 0, 50});
   m_map->setPitch(MIN_PITCH);
   
-  int mapbox_style = Params().getInt("MabboxStyle");
-  printf("####################MapboxStyle = %d\n", mapbox_style);
+  int mapbox_style = Params().getInt("MapboxStyle");
   
   switch(mapbox_style) {
     case 1:
