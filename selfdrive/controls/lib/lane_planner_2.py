@@ -415,7 +415,8 @@ class LanePlanner:
       #self.debugText = "vC--- LX" + "{:.1f}".format(self.lll_y[0]) + " RX" + "{:.1f}".format(self.rll_y[0]) + " LW" + "{:.1f}".format(self.lane_width) + " LP" + "{:.1f}".format(l_prob) + " RP" + "{:.1f}".format(r_prob) + " RS" + "{:.1f}".format(self.rll_std) + " LS" + "{:.1f}".format(self.lll_std)
 
     bx = np.linspace(0, 1, TRAJECTORY_SIZE)
-    offset = np.interp(bx, bx, np.linspace(0, self.lane_offset_filtered.x, TRAJECTORY_SIZE))
+    by = np.array([self.lane_offset_filtered.x * min(i / 10, 1) for i in x])
+    offset = np.interp(bx, bx, by)
     path_xyz[:, 1] += (CAMERA_OFFSET + offset)
     #path_xyz[:, 1] += (CAMERA_OFFSET + self.lane_offset_filtered.x)
 
