@@ -404,7 +404,7 @@ class LanePlanner:
         #safe_idxs = np.isfinite(self.ll_x)
         #if safe_idxs[0]:
         lane_path_y_interp = np.interp(path_xyz[:,0] + v_ego * 0.1, self.ll_x, lane_path_y)
-        path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+        path_xyz[:,1] = self.d_prob * (lane_path_y_interp + self.lane_offset_filtered.x)  + (1.0 - self.d_prob) * path_xyz[:,1]
 
     # debug
     #if len(vcurv) > 0:
@@ -414,6 +414,7 @@ class LanePlanner:
       #sLogger.Send("vC--- LX" + "{:.1f}".format(self.lll_y[0]) + " RX" + "{:.1f}".format(self.rll_y[0]) + " LW" + "{:.1f}".format(self.lane_width) + " LP" + "{:.1f}".format(l_prob) + " RP" + "{:.1f}".format(r_prob) + " RS" + "{:.1f}".format(self.rll_std) + " LS" + "{:.1f}".format(self.lll_std))
       #self.debugText = "vC--- LX" + "{:.1f}".format(self.lll_y[0]) + " RX" + "{:.1f}".format(self.rll_y[0]) + " LW" + "{:.1f}".format(self.lane_width) + " LP" + "{:.1f}".format(l_prob) + " RP" + "{:.1f}".format(r_prob) + " RS" + "{:.1f}".format(self.rll_std) + " LS" + "{:.1f}".format(self.lll_std)
 
-    path_xyz[:, 1] += (CAMERA_OFFSET + self.lane_offset_filtered.x)
+    #path_xyz[:, 1] += (CAMERA_OFFSET + self.lane_offset_filtered.x)
+    path_xyz[:, 1] += CAMERA_OFFSET
 
     return path_xyz
