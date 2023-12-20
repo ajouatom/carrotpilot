@@ -77,6 +77,7 @@ def manager_init() -> None:
     ("AutoResumeFromGasSpeed", "0"),
     ("AutoCancelFromGasMode", "0"),    
     ("AutoCruiseControl", "0"),    
+    ("MapboxStyle", "0"),    
     ("AutoCurveSpeedCtrlUse", "0"),
     ("AutoCurveSpeedFactor", "100"),
     ("AutoCurveSpeedFactorIn", "50"),

@@ -418,6 +418,19 @@
       "unit": 1
     },
     {
+      "group": "시작",
+      "name": "MapboxStyle",
+      "title": "맵박스 스타일",
+      "descr": "",
+      "egroup": "START",
+      "etitle": "MapboxStyle",
+      "edescr": "",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "unit": 1
+    },
+    {
       "group": "크루즈",
       "name": "AutoResumeFromBrakeReleaseTrafficSign",
       "title": "브레이크해제 크루즈ON:주행,신호",

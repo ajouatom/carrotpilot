@@ -311,7 +311,21 @@ void MapWindow::initializeGL() {
 
   m_map->setMargins({0, 350, 0, 50});
   m_map->setPitch(MIN_PITCH);
-  m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj");
+  
+  int mapbox_style = Params().getInt("MabboxStyle");
+  
+  switch(mapbox_style) {
+    case 1:
+      m_map->setStyleUrl("mapbox://styles/mapbox/navigation-night-v1"); 
+      break;
+    case 2:
+      m_map->setStyleUrl("mapbox://styles/mapbox/satellite-streets-v12");
+      break;
+    case 0:  
+      m_map->setStyleUrl("mapbox://styles/commaai/clkqztk0f00ou01qyhsa5bzpj");
+    default:
+      break;
+  }
 
   QObject::connect(m_map.data(), &QMapboxGL::mapChanged, [=](QMapboxGL::MapChange change) {
     // set global animation duration to 0 ms so visibility changes are instant
