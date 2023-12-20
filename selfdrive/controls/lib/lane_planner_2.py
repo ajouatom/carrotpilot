@@ -374,8 +374,8 @@ class LanePlanner:
 
     # offset_center = lane_line_center - laneless_center
     
-    lane_path_y_center = interp(1.0, path_t, lane_path_y)
-    path_xyz_y_center = interp(1.0, path_t, path_xyz[:,1])
+    lane_path_y_center = interp(5.0, path_t, lane_path_y)
+    path_xyz_y_center = interp(5.0, path_t, path_xyz[:,1])
     diff_center = lane_path_y_center - path_xyz_y_center if not self.lanefull_mode else 0.0
     #diff_center = lane_path_y[5] - path_xyz[:,1][5] if not self.lanefull_mode else 0.0
     offset_total = clip(offset_curve + offset_lane + diff_center, - ADJUST_OFFSET_LIMIT, ADJUST_OFFSET_LIMIT)
