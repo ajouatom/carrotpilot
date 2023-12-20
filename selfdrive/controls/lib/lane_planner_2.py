@@ -74,7 +74,8 @@ class LanePlanner:
     self.lane_width_left_filtered = FirstOrderFilter(1.0, 0.95, DT_MDL)
     self.lane_width_right_filtered = FirstOrderFilter(1.0, 0.95, DT_MDL)
     self.lane_offset_filtered = FirstOrderFilter(0.0, 0.98, DT_MDL)
-    self.offset_apply = False
+
+    self.lanefull_mode = False
 
   def parse_model(self, md):
 
@@ -334,68 +335,67 @@ class LanePlanner:
     self.d_prob = l_prob + r_prob - l_prob * r_prob
 
     self.d_prob = max(l_prob, r_prob)
-    self.d_prob *= self.lane_change_multiplier
+
+    ## self.d_prob: lane_prob
+    # lanefull: offset + mix (laneline path, laneless)
+    # laneless: offset + laneless
 
     if self.lane_width_left > 0:
       self.lane_width_left_filtered.update(self.lane_width_left)
     if self.lane_width_right > 0:
       self.lane_width_right_filtered.update(self.lane_width_right)
 
-    if False:
-      lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
-      safe_idxs = np.isfinite(self.ll_t)
-      if safe_idxs[0]:
-        lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
-        path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+    self.adjustLaneOffset = float(Params().get_int("AdjustLaneOffset")) * 0.01
+    self.adjustCurveOffset = float(Params().get_int("AdjustCurveOffset")) * 0.01
+    ADJUST_OFFSET_LIMIT = 0.4
+    offset_curve = 0.0
+    offset_lane = 0.0
+    #curvature = self.curvature * 100.0
+    curvature = 0.0
+    if len(vcurv) > 0:
 
-    else:
-      self.adjustLaneOffset = float(Params().get_int("AdjustLaneOffset")) * 0.01
-      self.adjustCurveOffset = float(Params().get_int("AdjustCurveOffset")) * 0.01
-      ADJUST_OFFSET_LIMIT = 0.4
-      offset_curve = 0.0
-      offset_lane = 0.0
-      #curvature = self.curvature * 100.0
-      curvature = 0.0
-      if len(vcurv) > 0:
-        curvature = vcurv[-1]
-        offset_curve = interp(abs(curvature), [0.01, 0.15], [0.0, self.adjustCurveOffset]) * np.sign(curvature)
-        #if curvature < -0.1:
-        #  offset_curve = - self.adjustCurveOffset;
-        #elif curvature > 0.1:
-        #  offset_curve = self.adjustCurveOffset
-        #else:
-        #  offset_curve = 0.0
+      ## curve offset
+      curvature = vcurv[-1]
+      offset_curve = interp(abs(curvature), [0.01, 0.15], [0.0, self.adjustCurveOffset]) * np.sign(curvature)
 
-        if self.lane_width_left_filtered.x > 1.8 and self.lane_width_right_filtered.x > 1.8:
-          offset_lane = 0.0
-        elif self.lane_width_left_filtered.x < 2.5 and self.lane_width_right_filtered.x < 2.5:
-          offset_lane = 0.0
-        elif self.lane_width_left_filtered.x > 2.5:
-          offset_lane = self.adjustLaneOffset
-        elif self.lane_width_right_filtered.x > 2.5:
-          offset_lane = -self.adjustLaneOffset
+      # roadedge offset
+      if self.lane_width_left_filtered.x > 1.8 and self.lane_width_right_filtered.x > 1.8:
+        offset_lane = 0.0
+      elif self.lane_width_left_filtered.x < 2.5 and self.lane_width_right_filtered.x < 2.5:
+        offset_lane = 0.0
+      elif self.lane_width_left_filtered.x > 2.5:
+        offset_lane = self.adjustLaneOffset
+      elif self.lane_width_right_filtered.x > 2.5:
+        offset_lane = -self.adjustLaneOffset
 
+      #select lane path
       lane_path_y = path_from_left_lane if l_prob > 0.5 or l_prob > r_prob else path_from_right_lane
       #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
-      diff_center = lane_path_y[5] - path_xyz[:,1][5]
-      if self.lane_change_multiplier > 0.5:
-        diff_center = 0.0
+
+      # offset_center = lane_line_center - laneless_center
+      diff_center = lane_path_y[5] - path_xyz[:,1][5] if not self.lanefull_mode else 0.0
       offset_total = clip(offset_curve + offset_lane + diff_center, - ADJUST_OFFSET_LIMIT, ADJUST_OFFSET_LIMIT)
-      if self.offset_apply and self.d_prob > 0.2:
-        self.lane_offset_filtered.update(offset_total)
-      else:
+
+      ## self.d_prob = 0 if lane_changing
+      self.d_prob *= self.lane_change_multiplier
+      if self.lane_change_multiplier < 0.5:
         self.lane_offset_filtered.x = 0.0
-      self.debugText = "d={:.2f},{:.1f},vC={:.2f},offset={:.2f}+{:.2f}={:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(diff_center, self.d_prob, curvature, offset_curve, offset_lane, self.lane_offset_filtered.x, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
-      if False:
-        safe_idxs = np.isfinite(self.ll_t)
-        if safe_idxs[0]:
-          lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
-          path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
       else:
-        #safe_idxs = np.isfinite(self.ll_x)
-        #if safe_idxs[0]:
-        lane_path_y_interp = np.interp(path_xyz[:,0] + v_ego * 0.1, self.ll_x, lane_path_y)
-        path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+        self.lane_offset_filtered.update(interp(self.d_prob, [0, 0.3], [0, offset_total])
+
+      self.debugText = "off:{:.2f},dc:{:.2f},{:.1f},vC:{:.2f},oc:{:.2f},ol:{:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.lane_offset_filtered.x, diff_center, self.d_prob, curvature, offset_curve, offset_lane, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
+
+      if self.lanefull_mode:        
+        if False:
+          safe_idxs = np.isfinite(self.ll_t)
+          if safe_idxs[0]:
+            lane_path_y_interp = np.interp(path_t, self.ll_t[safe_idxs], lane_path_y[safe_idxs])
+            path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
+        else:
+          #safe_idxs = np.isfinite(self.ll_x)
+          #if safe_idxs[0]:
+          lane_path_y_interp = np.interp(path_xyz[:,0] + v_ego * 0.1, self.ll_x, lane_path_y)
+          path_xyz[:,1] = self.d_prob * lane_path_y_interp + (1.0 - self.d_prob) * path_xyz[:,1]
 
     # debug
     #if len(vcurv) > 0:
