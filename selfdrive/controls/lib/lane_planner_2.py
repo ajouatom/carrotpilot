@@ -414,8 +414,8 @@ class LanePlanner:
       #sLogger.Send("vC--- LX" + "{:.1f}".format(self.lll_y[0]) + " RX" + "{:.1f}".format(self.rll_y[0]) + " LW" + "{:.1f}".format(self.lane_width) + " LP" + "{:.1f}".format(l_prob) + " RP" + "{:.1f}".format(r_prob) + " RS" + "{:.1f}".format(self.rll_std) + " LS" + "{:.1f}".format(self.lll_std))
       #self.debugText = "vC--- LX" + "{:.1f}".format(self.lll_y[0]) + " RX" + "{:.1f}".format(self.rll_y[0]) + " LW" + "{:.1f}".format(self.lane_width) + " LP" + "{:.1f}".format(l_prob) + " RP" + "{:.1f}".format(r_prob) + " RS" + "{:.1f}".format(self.rll_std) + " LS" + "{:.1f}".format(self.lll_std)
 
-    bx = np.linespace(0, 1, TRAJECTORY_SIZE)
-    offset = np.interp(bx, bx, np.linespace(0, self.lane_offset_filtered.x, TRAJECTORY_SIZE))
+    bx = np.linspace(0, 1, TRAJECTORY_SIZE)
+    offset = np.interp(bx, bx, np.linspace(0, self.lane_offset_filtered.x, TRAJECTORY_SIZE))
     path_xyz[:, 1] += (CAMERA_OFFSET + offset)
     #path_xyz[:, 1] += (CAMERA_OFFSET + self.lane_offset_filtered.x)
 
