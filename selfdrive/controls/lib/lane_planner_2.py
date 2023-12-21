@@ -388,11 +388,12 @@ class LanePlanner:
       self.lane_offset_filtered.update(interp(self.d_prob, [0, 0.3], [0, offset_total]))
 
     #self.debugText = "off:{:.2f},dc:{:.2f},dp:{:.1f},vC:{:.2f},oc:{:.2f},ol:{:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.lane_offset_filtered.x, diff_center, self.d_prob, curvature, offset_curve, offset_lane, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
-    self.debugText = "OFFSET({:.2f}={:.2f}+{:.2f}+{:.2f}),Vc:{:.2f},dp:{:.1f},lf:{}".format(
+    self.debugText = "OFFSET({:.2f}={:.2f}+{:.2f}+{:.2f}),Vc:{:.2f},dp:{:.1f},lf:{},lrw={:.1f},{:.1f}".format(
       self.lane_offset_filtered.x,
       diff_center, offset_lane, offset_curve,
       curvature,
-      self.d_prob, self.lanefull_mode)
+      self.d_prob, self.lanefull_mode,
+      self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
 
     if self.lanefull_mode:        
       if False:
