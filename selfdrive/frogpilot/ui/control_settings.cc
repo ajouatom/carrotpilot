@@ -111,7 +111,7 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : ListWid
       });
       toggle = customPersonalitiesToggle;
     } else if (param == "AggressiveFollow" || param == "StandardFollow" || param == "RelaxedFollow") {
-      toggle = new ParamValueControl(param, title, desc, icon, 10, 50, [](int value) {return QString::number(value / 10.0) + " seconds";}, this);
+      toggle = new ParamValueControl(param, title, desc, icon, 8, 50, [](int value) {return QString::number(value / 10.0) + " seconds";}, this);
     } else if (param == "AggressiveJerk" || param == "StandardJerk" || param == "RelaxedJerk") {
       toggle = new ParamValueControl(param, title, desc, icon, 1, 50, [](int value) {return QString::number(value / 10.0);}, this);
 
