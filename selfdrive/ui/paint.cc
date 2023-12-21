@@ -1027,6 +1027,14 @@ void DrawApilot::drawGapInfo(const UIState* s, int x, int y) {
     static char _strDrivingMode[128]="";
     if (strcmp(strDrivingMode, _strDrivingMode)) ui_draw_text_a(s, x + dxGap + 15, y + 120, strDrivingMode, 30, COLOR_WHITE, BOLD);
     strcpy(_strDrivingMode, strDrivingMode);
+
+    char strLatControl[128]="";
+    int useLaneLineSpeed = Params().getInt("UseLaneLineSpeed");
+    strcpy(strLatControl, (useLaneLineSpeed > 0) ? "Laneline Follow Mode" : "Laneless Mode");
+    static char _strLatControlMode[128]="";
+    if (strcmp(strLatControlMode, _strLatControlMode)) ui_draw_text_a(s, x + dxGap + 15, y + 120, strLatControlMode, 30, COLOR_WHITE, BOLD);
+    strcpy(_strLatControlMode, strLatControlMode);
+
     dxGap -= 60;
     if (s->show_gap_info > 0) {
 #ifdef __TEST
