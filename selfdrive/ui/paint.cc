@@ -1111,7 +1111,7 @@ void DrawApilot::drawSpeed(const UIState* s, int x, int y) {
         //    curveSpeed = -curveSpeed;
         //}
         if (vtscOffset > 0.5) {
-            speedCtrlActive = true;
+            //speedCtrlActive = true;
             curveSpeed = applyMaxSpeed - vtscOffset;
         }
 
