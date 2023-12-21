@@ -230,7 +230,7 @@ ParamController(LaneChangeTime, "LaneChangeTime", "   Lane Change Timer", "Set a
 
 ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nBD = Blue Diamond (Default)\nFV = Farmville\nNLP = New Lemon Pie\nBDv1 = Blue Diamond V1", "../assets/offroad/icon_calibration.png",
   const int model = params.getInt("Model");
-  return model == 0 ? "BD" : model == 1 ? "FV" : model == 2 ? "NLP" : model == 3 ? "ND" : "BDv1";,
+  return model == 0 ? "BD" : model == 1 ? "FV" : model == 2 ? "NLP" : model == 3 ? "BDv1" : "ND";,
   return v >= 0 ? v % 5 : 4;
 )
 
