@@ -1103,10 +1103,15 @@ void DrawApilot::drawSpeed(const UIState* s, int x, int y) {
         float cruiseMaxSpeed = controls_state.getVCruiseCluster();// scc_smoother.getCruiseMaxSpeed();
         float applyMaxSpeed = controls_state.getVCruise();// HW: controls_state.getVCruiseOut();// scc_smoother.getApplyMaxSpeed();
         float curveSpeed = 0;//HW: controls_state.getCurveSpeed();
+        static float vtscOffset = 0.1 * s->scene.vtsc_offset * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH) + 0.9 * vtscOffset;
         bool speedCtrlActive = false;
-        if (curveSpeed < 0) {
+        //if (curveSpeed < 0) {
+        //    speedCtrlActive = true;
+        //    curveSpeed = -curveSpeed;
+        //}
+        if (vtscOffset > 0.5) {
             speedCtrlActive = true;
-            curveSpeed = -curveSpeed;
+            curveSpeed = applyMaxSpeed - vtscOffset;
         }
 
         //float xCruiseTarget = lp.getXCruiseTarget() * 3.6;
