@@ -277,6 +277,7 @@ class CarState(CarStateBase):
       lkas_pressed = cp.vl["BCM_PO_11"]["LFA_Pressed"]
       self.lkas_pressed_count = self.lkas_pressed_count + 1 if lkas_pressed else 0
       if self.lkas_pressed_count >= 70:
+        lkas_pressed = False
         if self.lkas_pressed_count == 70:
           self.param.put_int_nonblocking("UseLaneLineSpeed", (Params().get_int("UseLaneLineSpeed") + 1) % 2)
       elif not lkas_pressed and self.lkas_previously_pressed and self.lkas_pressed_count < 70:
