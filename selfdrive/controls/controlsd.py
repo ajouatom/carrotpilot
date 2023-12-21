@@ -1012,13 +1012,14 @@ class Controls:
         self.step()
         self.rk.monitor_time()
         self.prof.display()
+
+        # Update FrogPilot parameters
+        if self.params_memory.get_bool("FrogPilotTogglesUpdated"):
+          self.update_frogpilot_params()
+
     except SystemExit:
       e.set()
       t.join()
-
-      # Update FrogPilot parameters
-      if self.params_memory.get_bool("FrogPilotTogglesUpdated"):
-        self.update_frogpilot_params()
 
   def update_frogpilot_params(self):
     for obj in [self.CI, self.CS]:

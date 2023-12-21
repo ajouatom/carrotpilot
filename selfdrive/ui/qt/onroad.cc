@@ -504,10 +504,10 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   speed *= s.scene.is_metric ? MS_TO_KPH : MS_TO_MPH;
 
   auto speed_limit_sign = nav_instruction.getSpeedLimitSign();
-  speedLimit = slcSpeedLimit ? slcSpeedLimit : nav_alive ? nav_instruction.getSpeedLimit() : 0.0;
+  speedLimit = slcOverridden ? slcOverriddenSpeed : slcSpeedLimit ? slcSpeedLimit : nav_alive ? nav_instruction.getSpeedLimit() : 0.0;
   speedLimit *= (s.scene.is_metric ? MS_TO_KPH : MS_TO_MPH);
-  if (slcSpeedLimit) {
-    speedLimit = std::round(speedLimit - (showSLCOffset ? slcSpeedLimitOffset : 0));
+  if (slcSpeedLimit && !slcOverridden) {
+    speedLimit = speedLimit - (showSLCOffset ? slcSpeedLimitOffset : 0);
   }
 
   has_us_speed_limit = (nav_alive && speed_limit_sign == cereal::NavInstruction::SpeedLimitSign::MUTCD) || slcSpeedLimit;
@@ -544,7 +544,7 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   p.fillRect(0, 0, width(), UI_HEADER_HEIGHT, bg);
 
   QString speedLimitStr = (speedLimit > 1) ? QString::number(std::nearbyint(speedLimit)) : "–";
-  QString speedLimitOffsetStr = (slcSpeedLimitOffset > 1) ? "+" + QString::number(std::nearbyint(slcSpeedLimitOffset)) : "–";
+  QString speedLimitOffsetStr = (showSLCOffset) ? "+" + QString::number(std::nearbyint(slcSpeedLimitOffset)) : "–";
   QString speedStr = QString::number(std::nearbyint(speed));
   QString setSpeedStr = is_cruise_set ? QString::number(std::nearbyint(setSpeed - fmax(vtscOffset - 1, 0))) : "–";
 
@@ -1207,6 +1207,7 @@ void AnnotatedCameraWidget::updateFrogPilotVariables() {
   roadNameUI = scene.road_name_ui;
   showDriverCamera = scene.show_driver_camera;
   slcOverridden = scene.speed_limit_overridden;
+  slcOverriddenSpeed = scene.speed_limit_overridden_speed;
   slcSpeedLimit = scene.speed_limit;
   slcSpeedLimitOffset = scene.speed_limit_offset * (is_metric ? MS_TO_KPH : MS_TO_MPH);
   stoppedEquivalence = scene.stopped_equivalence;
@@ -1382,13 +1383,15 @@ void Compass::paintEvent(QPaintEvent *event) {
 
   // Draw cardinal directions
   p.setFont(InterFont(20, QFont::Bold));
-  const QString directions[] = {"N", "E", "S", "W"};
-  const int angles[] = {0, 90, 180, 270};
-  const int alignmentFlags[] = {Qt::AlignTop | Qt::AlignHCenter, Qt::AlignRight | Qt::AlignVCenter, Qt::AlignBottom | Qt::AlignHCenter, Qt::AlignLeft | Qt::AlignVCenter};
+  const QString directions[] = {"N", "E", "S", "W", "N"};
+  const int fromAngles[] = {0, 23, 113, 203, 293};
+  const int toAngles[] = {68, 158, 248, 338, 360};
+  const int alignmentFlags[] = {Qt::AlignTop | Qt::AlignHCenter, Qt::AlignRight | Qt::AlignVCenter, Qt::AlignBottom | Qt::AlignHCenter, Qt::AlignLeft | Qt::AlignVCenter, Qt::AlignTop | Qt::AlignHCenter};
   int directionOffset = 20;
-  for (int i = 0; i < 4; ++i) {
+
+  for (int i = 0; i < 5; ++i) {
     const int offset = (directions[i] == "E") ? -5 : (directions[i] == "W" ? 5 : 0);
-    p.setOpacity((bearingDeg >= angles[i] - 22 && bearingDeg < angles[i] + 23) ? 1.0 : 0.2);
+    p.setOpacity((bearingDeg >= fromAngles[i] && bearingDeg < toAngles[i]) ? 1.0 : 0.2);
     QRect textRect(x - innerCompass + offset + directionOffset, y - innerCompass + directionOffset, innerCompass * 2 - 2 * directionOffset, innerCompass * 2 - 2 * directionOffset);
     p.drawText(textRect, alignmentFlags[i], directions[i]);
   }

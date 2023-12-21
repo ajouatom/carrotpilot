@@ -17,13 +17,13 @@ class SpeedLimitController:
     self.write_nav_state()
 
   def update_current_max_velocity(self, max_v: float, load_state: bool = True, write_state: bool = True) -> None:
-    self.car_speed_limit = params_memory.get_int("CarStateSpeedLimit")
+    self.car_speed_limit = params_memory.get_int("CarStateSpeedLimit") / 100
     if load_state:
       self.load_state()
 
   @property
   def offset(self) -> float:
-    if self.speed_limit < 15:
+    if self.speed_limit < 14:
       return self.offset1
     elif self.speed_limit < 24:
       return self.offset2
@@ -102,9 +102,9 @@ class SpeedLimitController:
     self.offset3 = params.get_int("Offset3") * conversion
     self.offset4 = params.get_int("Offset4") * conversion
 
-    self.highest = params.get_int("SLCPriority") == 15
-    self.lowest = params.get_int("SLCPriority") == 16
     self.speed_limit_priority = params.get_int("SLCPriority")
+    self.highest = self.speed_limit_priority == 15
+    self.lowest = self.speed_limit_priority == 16
 
     slc_fallback = params.get_int("SLCFallback")
     self.use_experimental_mode = slc_fallback == 1

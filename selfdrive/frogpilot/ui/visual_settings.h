@@ -12,9 +12,8 @@ public:
 
 private:
   void hideEvent(QHideEvent *event);
-  void showCustomOnroadUI(bool visible);
-  void showCustomThemes(bool visible);
-  void showModelUI(bool visible);
+  void hideSubToggles();
+  void setDefaults();
   void updateMetric();
 
   ButtonControl *backButton;
@@ -26,6 +25,7 @@ private:
   std::map<std::string, ToggleControl*> toggles;
 
   bool isMetric;
+  bool previousIsMetric;
 
   Params params;
   Params paramsMemory{"/dev/shm/params"};

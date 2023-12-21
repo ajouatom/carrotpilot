@@ -231,23 +231,23 @@ class CarState(CarStateBase):
         else:
           experimental_mode = self.param.get_bool("ExperimentalMode")
           # Invert the value of "ExperimentalMode"
-          self.param.put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+          self.param.put_bool("ExperimentalMode", not experimental_mode)
       self.lkas_previously_pressed = lkas_pressed
 
     # Traffic signals for Speed Limit Controller - Credit goes to the DragonPilot team!
-    self._update_traffic_signals(cp_cam)
-    self.param_memory.put_int("CarStateSpeedLimit", self._calculate_speed_limit())
+    self.update_traffic_signals(cp_cam)
+    self.param_memory.put_int("CarStateSpeedLimit", self.calculate_speed_limit() * 100)
 
     return ret
 
-  def _update_traffic_signals(self, cp_cam):
+  def update_traffic_signals(self, cp_cam):
     signals = ["TSGN1", "SPDVAL1", "SPLSGN1", "TSGN2", "SPLSGN2", "TSGN3", "SPLSGN3", "TSGN4", "SPLSGN4"]
     new_values = {signal: cp_cam.vl["RSA1"].get(signal, cp_cam.vl["RSA2"].get(signal)) for signal in signals}
 
     if new_values != self.traffic_signals:
       self.traffic_signals.update(new_values)
 
-  def _calculate_speed_limit(self):
+  def calculate_speed_limit(self):
     tsgn1 = self.traffic_signals.get("TSGN1", None)
     spdval1 = self.traffic_signals.get("SPDVAL1", None)
 

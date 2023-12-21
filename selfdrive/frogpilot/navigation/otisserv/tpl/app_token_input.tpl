@@ -1,10 +1,3 @@
-{% extends "layout.html" %}
-
-{% block title %}
-  addr_input
-{% endblock %}
-
-{% block main %}
 <form name="setSkTokenForm" method="post">
     <fieldset class="uk-fieldset">
         <legend class="uk-legend">Set your Mapbox <b>Secret Token</b></legend>
@@ -15,5 +8,3 @@
         </div>
     </fieldset>
 </form>
-
-{% endblock %}

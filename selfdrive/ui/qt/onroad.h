@@ -196,6 +196,7 @@ private:
   float laneWidthRight;
   float obstacleDistance;
   float obstacleDistanceStock;
+  float slcOverriddenSpeed;
   float slcSpeedLimit;
   float slcSpeedLimitOffset;
   float stoppedEquivalence;

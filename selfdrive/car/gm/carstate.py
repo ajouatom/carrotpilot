@@ -191,7 +191,7 @@ class CarState(CarStateBase):
           self.display_menu = False
 
       if self.personality_profile != self.previous_personality_profile:
-        self.param.put_int_nonblocking("LongitudinalPersonality", self.personality_profile)
+        self.param.put_int("LongitudinalPersonality", self.personality_profile)
         self.param_memory.put_bool("PersonalityChangedViaWheel", True)
         self.previous_personality_profile = self.personality_profile
 

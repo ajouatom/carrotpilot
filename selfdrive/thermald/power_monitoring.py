@@ -43,11 +43,8 @@ class PowerMonitoring:
     device_shutdown_setting = self.params.get_int("DeviceShutdown")
     # If the toggle is set for < 1 hour, configure by 15 minute increments
     self.device_shutdown_time = (device_shutdown_setting - 3) * 3600 if device_shutdown_setting >= 4 else device_shutdown_setting * (60 * 15)
-
     self.download_schedule = self.params.get_int("UpdateSchedule")
     self.download_time = self.params.get_int("UpdateTime")
-
-    self.update_shutdown_time()
 
   # Calculation tick
   def calculate(self, voltage: Optional[int], ignition: bool):

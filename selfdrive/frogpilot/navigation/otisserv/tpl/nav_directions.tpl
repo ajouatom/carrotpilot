@@ -1,6 +1,5 @@
-{% block main %}
-  <div id="destinationHeading" style="font-weight: bold;"></div>
-  <div id="jsonOutput" style="text-align: left;"></div>
+<div id="destinationHeading" style="font-weight: bold;"></div>
+<div id="jsonOutput"></div>
 <script>
   let useMetricUnits = false;
   let previousNavdirectionsUuid = null;
@@ -98,7 +97,6 @@
         // Display the values on the webpage
         if (i === 0) {
           jsonOutputDiv.innerHTML += `
-            <hr>
             <p>${instruction0}</p>
             <hr>
           `;
@@ -125,4 +123,3 @@
   // Periodically fetch `CurrentStep.json` and display data every 5 seconds
   setInterval(fetchAndDisplayData, 5000); // Adjust the interval as needed (in milliseconds)
 </script>
-{% endblock %}

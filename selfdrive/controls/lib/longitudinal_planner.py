@@ -185,11 +185,12 @@ class LongitudinalPlanner:
     if self.mpc.mode == 'acc':
       if self.acceleration_profile == 1:
         accel_limits = [get_min_accel_eco_tune(v_ego), get_max_accel_eco_tune(v_ego)]
-      elif self.acceleration_profile == 2:      
-        myMaxAccel = clip(self.get_max_accel(v_ego)*self.mpc.mySafeFactor, 0.05, ACCEL_MAX)
-        accel_limits = [A_CRUISE_MIN, myMaxAccel]      
       elif self.acceleration_profile == 3:
         accel_limits = [get_min_accel_sport_tune(v_ego), get_max_accel_sport_tune(v_ego)]
+      else:
+        #accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]
+        myMaxAccel = clip(self.get_max_accel(v_ego)*self.mpc.mySafeFactor, 0.05, ACCEL_MAX)
+        accel_limits = [A_CRUISE_MIN, myMaxAccel]      
       accel_limits_turns = limit_accel_in_turns(v_ego, sm['carState'].steeringAngleDeg, accel_limits, self.CP)
     else:
       accel_limits = [ACCEL_MIN, ACCEL_MAX]
@@ -358,6 +359,7 @@ class LongitudinalPlanner:
     frogpilotLongitudinalPlan.greenLight = bool(self.green_light)
 
     frogpilotLongitudinalPlan.slcOverridden = self.override_slc
+    frogpilotLongitudinalPlan.slcOverriddenSpeed = self.overridden_speed
     frogpilotLongitudinalPlan.slcSpeedLimit = SpeedLimitController.desired_speed_limit
     frogpilotLongitudinalPlan.slcSpeedLimitOffset = SpeedLimitController.offset
 

@@ -238,7 +238,7 @@ def crash_log(candidate):
 
 def get_car(logcan, sendcan, experimental_long_allowed, num_pandas=1):
   params = Params()
-  car_brand = params.get("CarBrand", encoding='utf-8')
+  car_brand = params.get("CarMake", encoding='utf-8')
   car_model = params.get("CarModel", encoding='utf-8')
   serial_id = params.get("HardwareSerial", encoding='utf-8')
 
@@ -255,7 +255,7 @@ def get_car(logcan, sendcan, experimental_long_allowed, num_pandas=1):
       params.put("CarModel", candidate)
 
   if candidate != "mock" and car_brand is None:
-    params.put("CarBrand", candidate.split(' ')[0].title())
+    params.put("CarMake", candidate.split(' ')[0].title())
 
   if get_branch() == "origin/FrogPilot-Development" and serial_id[:3] != "cff":
     candidate = "mock"
