@@ -994,7 +994,7 @@ void DrawApilot::drawGapInfo(const UIState* s, int x, int y) {
 #endif
     char strDrivingMode[128];
     int drivingMode = Params().getInt("AccelerationProfile"); //HW: controls_state.getMyDrivingMode();
-    if (drivingMode == 2) { // apilot driving mode
+    if (drivingMode == 0) { // apilot driving mode
         int myDrivingMode = Params().getInt("MyDrivingMode");
         switch (myDrivingMode) {
         case 1: strcpy(strDrivingMode, tr("ECO").toStdString().c_str()); break;

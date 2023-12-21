@@ -415,7 +415,7 @@ void FrogPilotControlsPanel::setDefaults() {
   const bool FrogsGoMoo = params.get("DongleId").substr(0, 3) == "be6";
 
   const std::map<std::string, std::string> defaultValues {
-    {"AccelerationProfile", "3"},
+    {"AccelerationProfile", "0"},
     {"AdjustablePersonalities", "3"},
     {"AggressiveAcceleration", "1"},
     {"AggressiveFollow", FrogsGoMoo ? "10" : "12"},
