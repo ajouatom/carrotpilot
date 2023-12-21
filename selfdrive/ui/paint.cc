@@ -1011,7 +1011,8 @@ void DrawApilot::drawGapInfo(const UIState* s, int x, int y) {
         case 2: strcpy(strDrivingMode, "NOR"); break;
         case 3: strcpy(strDrivingMode, "SPT"); break;
         default:
-            strcpy(strDrivingMode, "ERR"); break;
+            sprintf(strDrivingMode,"ERR%d", drivingMode); break;
+            //strcpy(strDrivingMode, "ERR"); break;
         }
     }
 
