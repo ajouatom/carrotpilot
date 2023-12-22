@@ -412,7 +412,7 @@ def get_lead_apilot(v_ego, ready, tracks, lead_msg, model_v_ego, md, lane_width)
 
   lead_dict = {'status': False}
   if track is not None:
-    lead_dict = track.get_RadarState2(lead_msg.prob, lead_msg, mixRadarInfo=False)
+    lead_dict = track.get_RadarState2(lead_msg.prob, lead_msg, mixRadarInfo=0)
     global_vision_aLeadTau = _LEAD_ACCEL_TAU # 레이더 -> 비젼 전환시, 순간적인 비젼 accel값의 변화로 인한 주행충격을 방지하기 위함. (시험)
   elif lead_msg.prob > .5:
     lead_dict = get_RadarState_from_vision(lead_msg, v_ego, model_v_ego)
@@ -442,7 +442,7 @@ class RadarD:
 
   def update(self, sm: messaging.SubMaster, rr: Optional[car.RadarData]):
     #self.showRadarInfo = int(Params().get("ShowRadarInfo"))
-    #self.mixRadarInfo = int(Params().get("MixRadarInfo"))
+    self.mixRadarInfo = int(Params().get("MixRadarInfo"))
     self.aLeadTau = float(Params().get_int("ALeadTau")) / 100. 
     self.aLeadTauStart = float(Params().get_int("ALeadTauStart")) / 100. 
 

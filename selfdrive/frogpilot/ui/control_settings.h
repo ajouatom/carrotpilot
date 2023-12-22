@@ -13,11 +13,14 @@ public:
 private:
   void hideEvent(QHideEvent *event);
   void hideSubToggles();
+  void parentToggleClicked();
   void setDefaults();
   void updateMetric();
 
-  ButtonControl *backButton;
+  ButtonControl *slscPriorityButton;
   ButtonIconControl *modelSelectorButton;
+  DualParamValueControl *conditionalSpeedsImperial;
+  DualParamValueControl *conditionalSpeedsMetric;
 
   std::set<QString> conditionalExperimentalKeys;
   std::set<QString> customPersonalitiesKeys;
@@ -28,11 +31,10 @@ private:
   std::set<QString> speedLimitControllerKeys;
   std::set<QString> visionTurnControlKeys;
 
-  std::map<std::string, ToggleControl*> toggles;
-
-  bool isMetric;
-  bool previousIsMetric;
+  std::map<std::string, ParamControl*> toggles;
 
   Params params;
   Params paramsMemory{"/dev/shm/params"};
+
+  bool isMetric = params.getBool("IsMetric");
 };

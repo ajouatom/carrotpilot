@@ -128,6 +128,7 @@ def manager_init() -> None:
     ("LateralTorqueCustom", "0"),       
     ("LateralTorqueAccelFactor", "2500"),       
     ("LateralTorqueFriction", "100"),       
+    ("SteerActuatorDelay", "40"),       
     ("CruiseOnDist", "0"),
     ("SteerRatioApply", "0"),
   ]

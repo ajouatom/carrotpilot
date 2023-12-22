@@ -600,7 +600,7 @@ static void update_state(UIState *s) {
       scene.speed_limit_overridden = frogpilotLongitudinalPlan.getSlcOverridden();
       scene.speed_limit_overridden_speed = frogpilotLongitudinalPlan.getSlcOverriddenSpeed();
     }
-    scene.vtsc_offset = frogpilotLongitudinalPlan.getVtscOffset();
+    scene.adjusted_cruise = frogpilotLongitudinalPlan.getAdjustedCruise();
   }
   if (sm.updated("gpsLocation")) {
     const auto gpsLocation = sm["gpsLocation"].getGpsLocation();
@@ -643,7 +643,6 @@ void ui_update_params(UIState *s) {
   scene.blind_spot_path = scene.custom_onroad_ui && params.getBool("BlindSpotPath");
   scene.lead_info = scene.custom_onroad_ui && params.getBool("LeadInfo");
   scene.road_name_ui = scene.custom_onroad_ui && params.getBool("RoadNameUI");
-  scene.rotating_wheel = scene.custom_onroad_ui && params.getBool("RotatingWheel");
   scene.show_fps = scene.custom_onroad_ui && params.getBool("ShowFPS");
 
   scene.custom_theme = params.getBool("CustomTheme");
@@ -663,6 +662,8 @@ void ui_update_params(UIState *s) {
 
   scene.mute_dm = params.getBool("FireTheBabysitter") && params.getBool("MuteDM");
   scene.personalities_via_screen = (params.getInt("AdjustablePersonalities") == 2 || params.getInt("AdjustablePersonalities") == 3);
+
+  scene.rotating_wheel = params.getBool("RotatingWheel");
   scene.speed_limit_controller = params.getBool("SpeedLimitController");
 
   scene.wheel_icon = params.getInt("WheelIcon");
@@ -778,6 +779,7 @@ void UIState::update() {
   updateStatus();
 
   if (sm->frame % UI_FREQ == 0) {
+    //printf("ui watchdog....\n");
     watchdog_kick(nanos_since_boot());
   }
   emit uiUpdate(*this);

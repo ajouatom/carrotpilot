@@ -13,11 +13,11 @@ class SpeedLimitController:
 
   def __init__(self) -> None:
     self.update_frogpilot_params()
+    self.write_car_state()
     self.write_map_state()
     self.write_nav_state()
 
   def update_current_max_velocity(self, max_v: float, load_state: bool = True, write_state: bool = True) -> None:
-    self.car_speed_limit = params_memory.get_int("CarStateSpeedLimit") / 100
     if load_state:
       self.load_state()
 
@@ -85,8 +85,12 @@ class SpeedLimitController:
     return self.speed_limit + self.offset if self.speed_limit else 0
 
   def load_state(self):
-    self.nav_speed_limit = json.loads(params_memory.get("NavSpeedLimit"))
+    self.car_speed_limit = json.loads(params_memory.get("CarSpeedLimit"))
     self.map_speed_limit = json.loads(params_memory.get("MapSpeedLimit"))
+    self.nav_speed_limit = json.loads(params_memory.get("NavSpeedLimit"))
+
+  def write_car_state(self):
+    params_memory.put("CarSpeedLimit", json.dumps(self.car_speed_limit))
 
   def write_map_state(self):
     params_memory.put("MapSpeedLimit", json.dumps(self.map_speed_limit))

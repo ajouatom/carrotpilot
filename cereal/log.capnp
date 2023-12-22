@@ -1027,6 +1027,7 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   trafficState @37 :Int32;
   xState @38 :Int32;
   debugLongText @39 : Text;
+  debugLongText2 @40 : Text;
 
   enum LongitudinalPlanSource {
     cruise @0;

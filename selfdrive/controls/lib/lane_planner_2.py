@@ -369,7 +369,16 @@ class LanePlanner:
       offset_lane = -self.adjustLaneOffset
 
     #select lane path
-    lane_path_y = path_from_left_lane if l_prob > 0.5 or l_prob > r_prob else path_from_right_lane
+    if self.lane_width <= 2.2:
+      # 차선이 좁아지면, 도로경계쪽에 있는 차선 위주로 따라가도록함. 다시생각해봐야...
+      if l_prob > 0.5 and self.lane_width_left_filtered.x < 2.0:
+        lane_path_y = path_from_left_lane
+      elif r_prob > 0.5 and self.lane_width_right_filtered.x < 2.0:
+        lane_path_y = path_from_right_lane
+      else:
+        lane_path_y = path_from_left_lane if l_prob > 0.5 or l_prob > r_prob else path_from_right_lane
+    else:
+      lane_path_y = path_from_left_lane if l_prob > 0.5 or l_prob > r_prob else path_from_right_lane
     #lane_path_y = (l_prob * path_from_left_lane + r_prob * path_from_right_lane) / (l_prob + r_prob + 0.0001)
 
     # offset_center = lane_line_center - laneless_center
@@ -386,6 +395,9 @@ class LanePlanner:
       self.lane_offset_filtered.x = 0.0
     else:
       self.lane_offset_filtered.update(interp(self.d_prob, [0, 0.3], [0, offset_total]))
+
+    ## laneless at lowspeed
+    self.d_prob *= interp(v_ego*3.6, [5., 10.], [0.0, 1.0])
 
     #self.debugText = "off:{:.2f},dc:{:.2f},dp:{:.1f},vC:{:.2f},oc:{:.2f},ol:{:.2f},LP={:.1f},RP={:.1f},LW={:.1f},RW={:.1f}".format(self.lane_offset_filtered.x, diff_center, self.d_prob, curvature, offset_curve, offset_lane, l_prob, r_prob, self.lane_width_left_filtered.x, self.lane_width_right_filtered.x)
     self.debugText = "OFFSET({:.2f}={:.2f}+{:.2f}+{:.2f}),Vc:{:.2f},dp:{:.1f},lf:{},lrw={:.1f},{:.1f}".format(

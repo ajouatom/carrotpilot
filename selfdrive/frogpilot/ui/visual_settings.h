@@ -16,17 +16,14 @@ private:
   void setDefaults();
   void updateMetric();
 
-  ButtonControl *backButton;
-
   std::set<QString> customOnroadUIKeys;
   std::set<QString> customThemeKeys;
   std::set<QString> modelUIKeys;
 
-  std::map<std::string, ToggleControl*> toggles;
-
-  bool isMetric;
-  bool previousIsMetric;
+  std::map<std::string, ParamControl*> toggles;
 
   Params params;
   Params paramsMemory{"/dev/shm/params"};
+
+  bool isMetric = params.getBool("IsMetric");
 };

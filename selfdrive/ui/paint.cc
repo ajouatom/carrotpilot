@@ -1031,7 +1031,7 @@ void DrawApilot::drawGapInfo(const UIState* s, int x, int y) {
 
     char strLatControlMode[128]="";
     int useLaneLineSpeed = Params().getInt("UseLaneLineSpeed");
-    strcpy(strLatControlMode, (useLaneLineSpeed > 0) ? "Laneline Follow Mode" : "Laneless Mode");
+    strcpy(strLatControlMode, (useLaneLineSpeed > 0) ? tr("Lane Follow").toStdString().c_str() : tr("Laneless").toStdString().c_str());
     static char _strLatControlMode[128]="";
     if (strcmp(strLatControlMode, _strLatControlMode)) ui_draw_text_a(s, x + dxGap + 15, y + 120, strLatControlMode, 30, COLOR_WHITE, BOLD);
     strcpy(_strLatControlMode, strLatControlMode);
@@ -1094,7 +1094,7 @@ void DrawApilot::drawSpeed(const UIState* s, int x, int y) {
     }
 
     // 속도표시
-    static float vtscOffset = 0.0;
+    static float cruiseAdjustment = 0.0;
     if (true) {
 
         //bool is_metric = s->scene.is_metric;
@@ -1105,15 +1105,17 @@ void DrawApilot::drawSpeed(const UIState* s, int x, int y) {
         float cruiseMaxSpeed = controls_state.getVCruiseCluster();// scc_smoother.getCruiseMaxSpeed();
         float applyMaxSpeed = controls_state.getVCruise();// HW: controls_state.getVCruiseOut();// scc_smoother.getApplyMaxSpeed();
         float curveSpeed = 0;//HW: controls_state.getCurveSpeed();
-        vtscOffset = 0.1 * s->scene.vtsc_offset * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH) + 0.9 * vtscOffset;
+        //cruiseAdjustment = 0.1 * s->scene.cruiseAdjustment * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH) + 0.9 * cruiseAdjustment;
+        //cruiseAdjustment = fmax((0.1 * fmax(setSpeed - scene.adjusted_cruise - setSpeed, 0) * (is_metric ? MS_TO_KPH : MS_TO_MPH) + 0.9 * cruiseAdjustment) - 1, 0);
+        cruiseAdjustment = s->scene.adjusted_cruise * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH) * 0.1 + cruiseAdjustment * 0.9;
         bool speedCtrlActive = false;
         //if (curveSpeed < 0) {
         //    speedCtrlActive = true;
         //    curveSpeed = -curveSpeed;
         //}
-        if (vtscOffset > 0.5) {
+        if (cruiseAdjustment > 0.5) {
             //speedCtrlActive = true;
-            curveSpeed = applyMaxSpeed - vtscOffset;
+            curveSpeed = cruiseAdjustment; // applyMaxSpeed - cruiseAdjustment;
         }
 
         //float xCruiseTarget = lp.getXCruiseTarget() * 3.6;
@@ -1709,7 +1711,14 @@ void DrawApilot::drawLeadApilot(const UIState* s) {
     //const UIScene& scene = s->scene;
 
 #ifndef __TEST
-    if (!sm.alive("controlsState") || !sm.alive("radarState") || !sm.alive("carControl")) return;
+    if (!sm.alive("controlsState") || !sm.alive("radarState") || !sm.alive("carControl")) {
+        printf("not ready....\n");
+        return;
+    }
+    if (!sm.alive("lateralPlan") || !sm.alive("longitudinalPlan") || !sm.alive("liveParameters") || !sm.alive("roadLimitSpeed") || !sm.alive("liveTorqueParameters")) {
+        printf("not ready 2....\n");
+        return;
+    }
 #endif
     makeData(s);
 
@@ -1844,6 +1853,10 @@ void DrawApilot::drawDebugText(UIState* s, bool show) {
     qstr = QString::fromStdString(lp.getDebugLongText().cStr());
     y += dy;
     ui_draw_text(s, text_x, y, qstr.toStdString().c_str(), 35, COLOR_WHITE, BOLD, 0.0f, 0.0f);
+    qstr = QString::fromStdString(lp.getDebugLongText2().cStr());
+    y += dy;
+    ui_draw_text(s, text_x, y, qstr.toStdString().c_str(), 35, COLOR_WHITE, BOLD, 0.0f, 0.0f);
+
     const auto live_params = sm["liveParameters"].getLiveParameters();
     float   liveSteerRatio = live_params.getSteerRatio();
     sprintf(str, "LiveSR = %.2f", liveSteerRatio);

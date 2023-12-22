@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QStringList>
+#include <set>
 
 #include "selfdrive/ui/qt/offroad/settings.h"
 
@@ -16,13 +17,19 @@ private:
   void setToggles();
 
   ButtonControl *selectMakeButton;
+  ButtonControl *selectModelButton;
 
   QLabel *noToggles;
 
-  QString previousMakeSelection;
+  QString carMake;
+  QString previousCarMake;
+
   QStringList models;
 
   std::map<std::string, ParamControl*> toggles;
+
+  std::set<QString> gmKeys;
+  std::set<QString> toyotaKeys;
 
   Params params;
   Params paramsMemory{"/dev/shm/params"};

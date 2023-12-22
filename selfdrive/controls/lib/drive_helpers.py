@@ -675,7 +675,8 @@ def get_lag_adjusted_curvature(CP, v_ego, psis, curvatures, curvature_rates, dis
   v_ego = max(MIN_SPEED, v_ego)
 
   # TODO this needs more thought, use .2s extra for now to estimate other delays
-  delay = CP.steerActuatorDelay + .2
+  #delay = CP.steerActuatorDelay + .2
+  delay = max(0.01, float(Params().get_int("SteerActuatorDelay")) * 0.01)
 
   # MPC can plan to turn the wheel and turn back before t_delay. This means
   # in high delay cases some corrections never even get commanded. So just use

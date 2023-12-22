@@ -98,7 +98,7 @@ void FrogPilotNavigationPanel::updateStatuses() {
   const int totalFiles = extractFromJson<int>(osmDownloadProgress, "\"total_files\":");
   const int downloadedFiles = extractFromJson<int>(osmDownloadProgress, "\"downloaded_files\":");
 
-  if (downloadedFiles >= totalFiles && !osmDownloadProgress.empty()) {
+  if (paramsMemory.get("OSMDownloadLocations").empty()) {
     downloadActive = false;
     updateDownloadedLabel();
   }
@@ -223,8 +223,10 @@ void FrogPilotNavigationPanel::downloadMaps() {
 void FrogPilotNavigationPanel::removeMaps(QWidget *parent) {
   if (ConfirmationDialog::yesorno("Are you sure you want to delete all of your downloaded maps?", parent)) {
     std::thread([&] {
+      lastMapsDownload->setVisible(false);
       removeOfflineMapsButton->setVisible(false);
       offlineMapsSize->setText(formatSize(0));
+      params.remove("LastMapsUpdate");
       std::system("rm -rf /data/media/0/osm/offline");
     }).detach();
   }
@@ -452,7 +454,7 @@ Primeless::Primeless(QWidget *parent) : QWidget(parent) {
   list->addItem(ipLabel);
 
   std::vector<QString> searchOptions{tr("MapBox"), tr("Amap"), tr("Google")};
-  ButtonParamControl *searchInput = new ButtonParamControl("SearchInput", tr("Destination Search Provider"), 
+  ButtonParamControl *searchInput = new ButtonParamControl("SearchInput", tr("Destination Search Provider"),
                                        tr("Select a search provider for destination queries in Navigate on Openpilot. Options include MapBox (recommended), Amap, and Google Maps."),
                                        "", searchOptions);
   list->addItem(searchInput);
@@ -558,7 +560,7 @@ void Primeless::createMapboxKeyControl(ButtonControl *&control, const QString &l
 }
 
 void Primeless::updateStep() {
-  currentStep = setupCompleted ? "../frogpilot/navigation/navigation_training/setup_completed.png" : 
+  currentStep = setupCompleted ? "../frogpilot/navigation/navigation_training/setup_completed.png" :
                 (mapboxPublicKeySet && mapboxSecretKeySet) ? "../frogpilot/navigation/navigation_training/both_keys_set.png" :
                 mapboxPublicKeySet ? "../frogpilot/navigation/navigation_training/public_key_set.png" : "../frogpilot/navigation/navigation_training/no_keys_set.png";
 

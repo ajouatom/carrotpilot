@@ -11,6 +11,7 @@ from opendbc.can.parser import CANParser
 from openpilot.selfdrive.car.interfaces import CarStateBase
 from openpilot.selfdrive.car.toyota.values import ToyotaFlags, CAR, DBC, STEER_THRESHOLD, NO_STOP_TIMER_CAR, \
                                                   TSS2_CAR, RADAR_ACC_CAR, EPS_SCALE, UNSUPPORTED_DSU_CAR
+from openpilot.selfdrive.frogpilot.functions.speed_limit_controller import SpeedLimitController
 
 SteerControlType = car.CarParams.SteerControlType
 
@@ -236,7 +237,9 @@ class CarState(CarStateBase):
 
     # Traffic signals for Speed Limit Controller - Credit goes to the DragonPilot team!
     self.update_traffic_signals(cp_cam)
-    self.param_memory.put_int("CarStateSpeedLimit", self.calculate_speed_limit() * 100)
+    SpeedLimitController.load_state()
+    SpeedLimitController.car_speed_limit = self.calculate_speed_limit()
+    SpeedLimitController.write_car_state()
 
     return ret
 

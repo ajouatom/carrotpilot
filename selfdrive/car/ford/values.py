@@ -61,7 +61,7 @@ class RADAR:
 
 DBC: Dict[str, Dict[str, str]] = defaultdict(lambda: dbc_dict("ford_lincoln_base_pt", RADAR.DELPHI_MRR))
 
-# CAN-FD radar is not yet supported
+# F-150 radar is not yet supported
 DBC[CAR.F_150_MK14] = dbc_dict("ford_lincoln_base_pt", None)
 DBC[CAR.F_150_LIGHTNING_MK1] = dbc_dict("ford_lincoln_base_pt", None)
 DBC[CAR.MUSTANG_MACH_E_MK1] = dbc_dict("ford_lincoln_base_pt", None)
@@ -105,7 +105,6 @@ CAR_INFO: Dict[str, Union[CarInfo, List[CarInfo]]] = {
     FordCarInfo("Ford Maverick 2022", "LARIAT Luxury"),
     FordCarInfo("Ford Maverick 2023", "Co-Pilot360 Assist"),
   ],
-  CAR.MUSTANG_MACH_E_MK1: FordCarInfo("Ford Mustang Mach-E 2021-23", "Co-Pilot360 Active 2.0"),
 }
 
 FW_QUERY_CONFIG = FwQueryConfig(
@@ -233,61 +232,15 @@ FW_VERSIONS = {
     ],
     (Ecu.abs, 0x760, None): [
       b'PL34-2D053-CA\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'NL34-2D053-CA\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
     (Ecu.fwdRadar, 0x764, None): [
       b'ML3T-14D049-AL\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
     (Ecu.fwdCamera, 0x706, None): [
       b'PJ6T-14H102-ABJ\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'ML3T-14H102-ABS\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
     (Ecu.engine, 0x7E0, None): [
       b'PL3A-14C204-BRB\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'PL3A-14C204-BTB\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'ML3A-14C204-VHD\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-  },
-  CAR.F_150_LIGHTNING_MK1: {
-    (Ecu.abs, 0x760, None): [
-      b'PL38-2D053-AA\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-    (Ecu.fwdCamera, 0x706, None): [
-      b'ML3T-14H102-ABT\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-    (Ecu.fwdRadar, 0x764, None): [
-      b'ML3T-14D049-AL\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-    (Ecu.engine, 0x7E0, None): [
-      b'NL3A-14C204-BAR\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-  },
-  CAR.MUSTANG_MACH_E_MK1: {
-    (Ecu.eps, 0x730, None): [
-      b'LJ9C-14D003-AK\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'LJ9C-14D003-AM\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'LJ9C-14D003-CC\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'LJ9C-14D003-EA\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-    (Ecu.abs, 0x760, None): [
-      b'LK9C-2D053-CC\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'LK9C-2D053-CD\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'LK9C-2D053-CK\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-    (Ecu.fwdRadar, 0x764, None): [
-      b'ML3T-14D049-AK\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'ML3T-14D049-AL\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-    (Ecu.fwdCamera, 0x706, None): [
-      b'ML3T-14H102-ABS\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'ML3T-14H102-ABP\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'PJ6T-14H102-ABK\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-    ],
-    (Ecu.engine, 0x7E0, None): [
-      b'MJ98-14C204-BBP\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'MJ98-14C204-AXD\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'NJ98-14C204-VE\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
-      b'PJ98-14C204-BE\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
   },
   CAR.F_150_LIGHTNING_MK1: {

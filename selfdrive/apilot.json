@@ -67,6 +67,19 @@
       "unit": 1
     },
     {
+      "group": "조향튜닝",
+      "name": "SteerActuatorDelay",
+      "title": "SteerActuatorDelay(40)",
+      "descr": "값이크면 조향을 좀더 미리함(일반,10msec)",
+      "egroup": "LAT",
+      "etitle": "SteerActuatorDelay(40)",
+      "edescr": "",
+      "min": 1,
+      "max": 100,
+      "default": 40,
+      "unit": 1
+    },
+    {
       "group": "크루즈",
       "name": "CruiseEcoControl",
       "title": "크루즈연비제어(4km/h)",

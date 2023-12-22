@@ -1251,6 +1251,14 @@ This may take up to a minute.</source>
       <source>Path</source>
       <translation>패쓰</translation>
     </message>
+    <message>
+      <source>Lane Follow</source>
+      <translation>레인모드</translation>
+    </message>
+    <message>
+      <source>Laneless</source>
+      <translation>레인리스</translation>
+    </message>
   </context>
   <context>
     <name>CommunityPanel</name>
