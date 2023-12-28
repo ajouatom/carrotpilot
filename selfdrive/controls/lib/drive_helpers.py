@@ -84,6 +84,7 @@ class VCruiseHelper:
     self.frame = 0
     self._log_timer = 0
     self.debugText = ""
+    self.debugText2 = ""
     self._first = True
     self.activeAPM = 0
     self.rightBlinker_ext = False
@@ -351,6 +352,8 @@ class VCruiseHelper:
           self.rightBlinker_ext = True
         elif msg.xArg == "LEFT":
           self.leftBlinker_ext = True
+      elif msg.xCmd == "DETECT":
+        self.debugText2 = "xIndex={}, [{}]".format(msg.xIndex, msg.xArg)
     else:
       self.rightBlinker_ext = self.leftBlinker_ext = False
     return v_cruise_kph

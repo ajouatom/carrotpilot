@@ -915,7 +915,7 @@ class Controls:
     controlsState.experimentalMode = self.experimental_mode
 
     controlsState.debugText1 = self.v_cruise_helper.debugText
-    controlsState.debugText2 = ""
+    controlsState.debugText2 = self.v_cruise_helper.debugText2
 
     lat_tuning = self.CP.lateralTuning.which()
     if self.joystick_mode:
