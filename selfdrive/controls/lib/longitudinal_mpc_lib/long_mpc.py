@@ -480,8 +480,8 @@ class LongitudinalMpc:
 
     if not conditional_experimental_mode:
       v_cruise, stop_x, self.mode = self.update_apilot(carstate, radarstate, model, v_cruise)
-      self.debugLongText = "{} {},tf={:.2f},{:.1f},stop={:.1f},{:.1f},xv={:.0f},{:.0f}".format(
-        str(self.xState), str(self.trafficState), t_follow[0], t_follow[0]*v_ego+6.0, stop_x, self.stopDist,x[-1],v[-1])
+      self.debugLongText = "{},{},{:.1f},tf={:.2f},{:.1f},stop={:.1f},{:.1f},xv={:.0f},{:.0f}".format(
+        str(self.xState), str(self.trafficState), v_cruise*3.6, t_follow[0], t_follow[0]*v_ego+6.0, stop_x, self.stopDist,x[-1],v[-1])
     else:
       stop_x = 1000.0
       self.xState = XState.e2eCruise
