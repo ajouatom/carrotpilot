@@ -529,7 +529,7 @@
   },
   {
     "filename": "ShowDebugUI",
-    "content": "1"
+    "content": "0"
   },
   {
     "filename": "ShowDeviceState",
@@ -593,7 +593,7 @@
   },
   {
     "filename": "ShowPlotMode",
-    "content": "4"
+    "content": "0"
   },
   {
     "filename": "ShowRadarInfo",
