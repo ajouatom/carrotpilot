@@ -384,7 +384,7 @@ class LongitudinalPlanner:
       if self.vtsc_target == 0 or np.isnan(self.vtsc_target):
         self.vtsc_target = v_cruise
       else:
-        self.vtsc_target = np.max(self.vtsc_target, 10. / 3.6)
+        self.vtsc_target = max(self.vtsc_target, 10. / 3.6)
     else:
       self.vtsc_target = v_cruise
 
