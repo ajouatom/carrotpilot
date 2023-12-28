@@ -527,6 +527,10 @@ class Controls:
     self.can_enable = drivingGear and not self.events.contains(ET.NO_ENTRY)
 
     self.v_cruise_helper.update_v_cruise(CS, self.enabled, self.is_metric, self.reverse_cruise_increase, self)
+    if self.v_cruise_helper.leftBlinker_ext:
+      CS.leftBlinker = True
+    if self.v_cruise_helper.rightBlinker_ext:
+      CS.rightBlinker = True
 
     #############################################################
     if self.v_cruise_helper.cruiseActivate > 0:
