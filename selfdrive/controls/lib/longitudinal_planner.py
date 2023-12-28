@@ -364,7 +364,7 @@ class LongitudinalPlanner:
       self.slc_target = v_cruise
 
     # Pfeiferj's Vision Turn Controller
-    if self.vision_turn_controller:
+    if self.vision_turn_controller and v_ego > 10 / 3.6:
       # Set the curve sensitivity
       orientation_rate = np.array(np.abs(modelData.orientationRate.z)) * self.curve_sensitivity
       velocity = np.array(modelData.velocity.x)
