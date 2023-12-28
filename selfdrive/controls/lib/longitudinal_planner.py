@@ -383,8 +383,8 @@ class LongitudinalPlanner:
       self.vtsc_target = np.clip(self.vtsc_target, 0, v_cruise)
       if self.vtsc_target == 0 or np.isnan(self.vtsc_target):
         self.vtsc_target = v_cruise
-      else:
-        self.vtsc_target = max(self.vtsc_target, 10. / 3.6)
+      #else:
+      #  self.vtsc_target = max(self.vtsc_target, 10. / 3.6)
     else:
       self.vtsc_target = v_cruise
 
