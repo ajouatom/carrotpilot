@@ -381,8 +381,10 @@ class LongitudinalPlanner:
       # Get the target velocity for the maximum curve
       self.vtsc_target = (adjusted_target_lat_a / max_curve) ** 0.5
       self.vtsc_target = np.clip(self.vtsc_target, 0, v_cruise)
-      if self.vtsc_target == 0:
+      if self.vtsc_target == 0 or np.isnan(self.vtsc_target):
         self.vtsc_target = v_cruise
+      else:
+        self.vtsc_target = np.nanmax(self.vtsc_target, 10. / 3.6)
     else:
       self.vtsc_target = v_cruise
 
