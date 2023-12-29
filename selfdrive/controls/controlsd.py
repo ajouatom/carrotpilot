@@ -531,7 +531,7 @@ class Controls:
     #############################################################
     if self.v_cruise_helper.cruiseActivate > 0:
       #print("[state_transition] cruiseActivate, noEntry=",self.events.contains(ET.NO_ENTRY), " self.enabled = ", self.enabled)
-      self.v_cruise_helper.cruiseActivate = 0
+      pass
     if not self.enabled and self.v_cruise_helper.cruiseActivate > 0: #ajouatom
       if self.can_enable:
         self.events.add(EventName.buttonEnable)
