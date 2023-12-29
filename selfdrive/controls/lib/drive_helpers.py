@@ -87,8 +87,8 @@ class VCruiseHelper:
     self.debugText2 = ""
     self._first = True
     self.activeAPM = 0
-    self.rightBlinkerExt = False
-    self.leftBlinkerExt = False
+    self.rightBlinkerExtCount = 0
+    self.leftBlinkerExtCount = 0
     
     #ajouatom: params
     self.params_count = 0
@@ -279,7 +279,6 @@ class VCruiseHelper:
       self.v_cruise_kph_set = self.cruiseSpeedMin
     v_cruise_kph = self.v_cruise_kph_set    
     v_cruise_kph = self._update_cruise_buttons(CS, v_cruise_kph, controls)
-    v_cruise_kph = self.update_apilot_cmd(controls, v_cruise_kph)
     v_cruise_kph_apply = self.cruise_control_speed(v_cruise_kph)
     apn_limit_kph = self.update_speed_apilot(CS, controls, self.v_cruise_kph)
     v_cruise_kph_apply = min(v_cruise_kph_apply, apn_limit_kph)
@@ -321,7 +320,7 @@ class VCruiseHelper:
       self.xIndex = msg.xIndex
       if msg.xCmd == "SPEED":
         if msg.xArg == "UP":
-          v_cruise_kph = self.v_cruise_speed_up(v_cruise_kph, self.roadSpeed)
+          v_cruise_kph = self.v_cruise_speed_up(v_cruise_kph)
         elif msg.xArg == "DOWN":
           if self.v_ego_kph_set < v_cruise_kph:
             v_cruise_kph = self.v_ego_kph_set
@@ -329,33 +328,39 @@ class VCruiseHelper:
             v_cruise_kph -= 10
         else:
           v_cruise_kph = clip(int(msg.xArg), self.cruiseSpeedMin, V_CRUISE_MAX)
-      #elif msg.xCmd == "CRUISE":
-      #  if msg.xArg == "ON":
-      #    longActiveUser = 1
-      #  elif msg.xArg == "OFF":
-      #    self.userCruisePaused = True
-      #    longActiveUser = -1
-      #  elif msg.xArg == "GO":
-      #    if longActiveUser <= 0:
-      #      longActiveUser = 1
-      #    elif self.xState in [XState.softHold, XState.e2eStop]:
-      #      controls.cruiseButtonCounter += 1
-      #    else:
-      #      v_cruise_kph = self.v_cruise_speed_up(v_cruise_kph, self.roadSpeed)
-      #  elif msg.xArg == "STOP":
-      #    if self.xState in [XState.e2eStop, XState.e2eCruisePrepare]:
-      #      controls.cruiseButtonCounter -= 1
-      #    else:
-      #      v_cruise_kph = 20
+      elif msg.xCmd == "CRUISE":
+        if msg.xArg == "ON":
+          if not controls.enabled:
+            self.cruiseActivate = 1
+        elif msg.xArg == "OFF":
+          if controls.enabled:
+            self.cruiseActiveReady = 1
+            self.cruiseActivate = -1
+            controls.events.add(EventName.audioPrompt)
+        elif msg.xArg == "GO":
+          if not controls.enabled:
+            self.cruiseActivate = 1
+          elif self.softHoldActive > 0:
+            self.softHoldActive = 0
+          #elif self.xState in [XState.softHold, XState.e2eStop]:
+          #  controls.cruiseButtonCounter += 1
+          else:
+            v_cruise_kph = self.v_cruise_speed_up(v_cruise_kph)
+        elif msg.xArg == "STOP":
+          #if self.xState in [XState.e2eStop, XState.e2eCruisePrepare]:
+          #  controls.cruiseButtonCounter -= 1
+          #else:
+          v_cruise_kph = 20
       elif msg.xCmd == "LANECHANGE":
         if msg.xArg == "RIGHT":
-          self.rightBlinkerExt = True
+          self.rightBlinkerExtCount = 20
         elif msg.xArg == "LEFT":
-          self.leftBlinkerExt = True
+          self.leftBlinkerExtCount = 20
       elif msg.xCmd == "DETECT":
         self.debugText2 = "DETECT[{}]={}".format(msg.xIndex, msg.xArg)
     else:
-      self.rightBlinkerExt = self.leftBlinkerExt = False
+      self.rightBlinkerExtCount = max(self.rightBlinkerExtCount - 1, 0)
+      self.leftBlinkerExtCount = max(self.leftBlinkerExtCount - 1, 0)
     return v_cruise_kph
 
   def _add_log(self, log):
@@ -538,6 +543,8 @@ class VCruiseHelper:
       if self.lead_vRel > 0.5:
         lead_v_kph = (self.lead_vRel + CS.vEgoCluster) * CV.MS_TO_KPH
         v_cruise_kph = max(v_cruise_kph, min(lead_v_kph, self.roadSpeed * self.autoSpeedUptoRoadSpeedLimit))
+
+    v_cruise_kph = self.update_apilot_cmd(controls, v_cruise_kph)
 
     if self.autoCruiseControl < 1 or self.autoCruiseCancelState or not controls.can_enable:
       if self.cruiseActivate != 0:
