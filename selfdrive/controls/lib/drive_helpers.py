@@ -526,17 +526,14 @@ class VCruiseHelper:
         self.cruiseActivate = 1
     elif not controls.enabled and self.brake_pressed_count < 0 and self.gas_pressed_count < 0:
       cruiseOnDist = abs(self.cruiseOnDist)
-      if cruiseOnDist > 0 and CS.vEgo > 0.2 and self.lead_vRel < 0 and 0 < self.lead_dRel < cruiseOnDist:
+      if self.autoCruiseControl >= 2 and self.lead_vRel < 0 and 0 < self.lead_dRel < CS.vEgo ** 2 / (2.5 * 2):
+        self._add_log("Cruise Activated")
+        self.cruiseActivate = 1
+      if cruiseOnDist > 0 and CS.vEgo > 0.2 and  0 < self.lead_dRel < cruiseOnDist:
         self._make_event(controls, EventName.stopStop)
         if cruiseOnDist > 0:
           self._add_log("CruiseOnDist Activate")
           self.cruiseActivate = 1
-      elif self.autoCruiseControl >= 2:
-        dist = CS.vEgo ** 2 / (2.5 * 2)
-        if 0 < self.lead_dRel < dist:
-          self._add_log("Cruise Activated")
-          self.cruiseActivate = 1
-        pass
     elif controls.enabled and self.autoSpeedUptoRoadSpeedLimit > 0.:
       if self.lead_vRel > 0.5:
         lead_v_kph = (self.lead_vRel + CS.vEgoCluster) * CV.MS_TO_KPH
