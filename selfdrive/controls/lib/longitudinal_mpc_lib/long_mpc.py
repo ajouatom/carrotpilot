@@ -490,7 +490,7 @@ class LongitudinalMpc:
     if self.mode == 'acc':
       self.params[:,5] = LEAD_DANGER_FACTOR
 
-      x2 = stop_x * np.ones(N+1) + self.trafficStopDistanceAdjust #if self.xState == XState.e2eStop else 1000.0 * np.ones(N+1)
+      x2 = stop_x * np.ones(N+1) + self.trafficStopDistanceAdjust if v_ego > 0.1 else 0 #if self.xState == XState.e2eStop else 1000.0 * np.ones(N+1)
 
 
       # Fake an obstacle for cruise, this ensures smooth acceleration to set speed

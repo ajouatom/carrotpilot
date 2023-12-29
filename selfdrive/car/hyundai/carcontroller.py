@@ -191,7 +191,7 @@ class CarController:
         else:
           jerk_u = min(max(0.5, jerk * 2.0), jerk_max)
           #jerk_l = min(max(1.0, -jerk * 2.0), jerk_max)
-          jerk_l = min(max(1.2, -jerk * 2.0), jerk_max) ## 1.0으로 하니 덜감속, 1.5로하니 너무감속, 1.2로 한번해보자(231228)
+          jerk_l = min(max(1.2, -jerk * 2.0), jerkLimit) ## 1.0으로 하니 덜감속, 1.5로하니 너무감속, 1.2로 한번해보자(231228)
           cb_upper = clip(0.9 + accel * 0.2, 0, 1.2)
           cb_lower = clip(0.8 + accel * 0.2, 0, 1.2)
         
