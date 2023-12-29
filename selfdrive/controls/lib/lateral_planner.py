@@ -179,7 +179,7 @@ class LateralPlanner:
     # Parse model predictions
     self.LP.parse_model(md)
     lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
-    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, sm['controlsState'].leftBlinker_ext, sm['controlsState'].rightBlinker_ext)
+    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, sm['controlsState'].leftBlinkerExt, sm['controlsState'].rightBlinkerExt)
 
     if self.v_ego*3.6 >= self.useLaneLineSpeed + 2:
       self.useLaneLineMode = True
