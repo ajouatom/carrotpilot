@@ -700,6 +700,8 @@ struct ControlsState @0x97ff69c53601abf1 {
 
   debugText1 @66 : Text;
   debugText2 @67 : Text;
+  leftBlinker_ext @68 : Bool;
+  rightBlinker_ext @69 : Bool;
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
     preEnabled @1;
