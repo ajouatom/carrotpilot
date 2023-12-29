@@ -107,7 +107,7 @@ class LateralPlanner:
       self.l_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeLeft]
       self.r_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeRight]
     lane_change_prob = self.l_lane_change_prob + self.r_lane_change_prob
-    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, sm['controlsState'].leftBlinker_ext, sm['controlsState'].rightBlinker_ext)
+    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, sm['controlsState'].leftBlinkerExt, sm['controlsState'].rightBlinkerExt)
 
   def publish(self, sm, pm):
     if self.useLaneLineSpeed > 0:

@@ -72,10 +72,10 @@ class DesireHelper:
     # Return the smallest between the two
     return min(distance_to_lane, distance_to_road_edge)
 
-  def update(self, carstate, modeldata, lateral_active, lane_change_prob, leftBlinker_ext, rightBlinker_ext):
+  def update(self, carstate, modeldata, lateral_active, lane_change_prob, leftBlinkerExt, rightBlinkerExt):
     v_ego = carstate.vEgo
-    leftBlinker = carstate.leftBlinker or leftBlinker_ext
-    rightBlinker = carstate.rightBlinker or rightBlinker_ext
+    leftBlinker = carstate.leftBlinker or leftBlinkerExt
+    rightBlinker = carstate.rightBlinker or rightBlinkerExt
     one_blinker = leftBlinker != rightBlinker
     below_lane_change_speed = v_ego < LANE_CHANGE_SPEED_MIN
 

@@ -87,8 +87,8 @@ class VCruiseHelper:
     self.debugText2 = ""
     self._first = True
     self.activeAPM = 0
-    self.rightBlinker_ext = False
-    self.leftBlinker_ext = False
+    self.rightBlinkerExt = False
+    self.leftBlinkerExt = False
     
     #ajouatom: params
     self.params_count = 0
@@ -349,13 +349,13 @@ class VCruiseHelper:
       #      v_cruise_kph = 20
       elif msg.xCmd == "LANECHANGE":
         if msg.xArg == "RIGHT":
-          self.rightBlinker_ext = True
+          self.rightBlinkerExt = True
         elif msg.xArg == "LEFT":
-          self.leftBlinker_ext = True
+          self.leftBlinkerExt = True
       elif msg.xCmd == "DETECT":
         self.debugText2 = "DETECT[{}]={}".format(msg.xIndex, msg.xArg)
     else:
-      self.rightBlinker_ext = self.leftBlinker_ext = False
+      self.rightBlinkerExt = self.leftBlinkerExt = False
     return v_cruise_kph
 
   def _add_log(self, log):

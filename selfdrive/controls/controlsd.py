@@ -913,8 +913,8 @@ class Controls:
     controlsState.debugText1 = self.v_cruise_helper.debugText
     controlsState.debugText2 = self.v_cruise_helper.debugText2
 
-    controlsState.leftBlinker_ext = self.v_cruise_helper.leftBlinker_ext
-    controlsState.rightBlinker_ext = self.v_cruise_helper.rightBlinker_ext
+    controlsState.leftBlinkerExt = self.v_cruise_helper.leftBlinkerExt
+    controlsState.rightBlinkerExt = self.v_cruise_helper.rightBlinkerExt
 
     lat_tuning = self.CP.lateralTuning.which()
     if self.joystick_mode:
