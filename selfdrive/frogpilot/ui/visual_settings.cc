@@ -48,7 +48,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
     } else if (param == "CustomTheme") {
       ParamManageControl *customThemeToggle = new ParamManageControl(param, title, desc, icon, this);
       connect(customThemeToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
-        paramsMemory.putBool("FrogPilotTogglesOpen", true);
+        paramsMemory.putInt("FrogPilotTogglesOpen", 1);
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(customThemeKeys.find(key.c_str()) != customThemeKeys.end());
         }
@@ -61,7 +61,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
     } else if (param == "CustomUI") {
       ParamManageControl *customUIToggle = new ParamManageControl(param, title, desc, icon, this);
       connect(customUIToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
-        paramsMemory.putBool("FrogPilotTogglesOpen", true);
+        paramsMemory.putInt("FrogPilotTogglesOpen", 1);
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(customOnroadUIKeys.find(key.c_str()) != customOnroadUIKeys.end());
         }
@@ -71,7 +71,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
     } else if (param == "ModelUI") {
       ParamManageControl *modelUIToggle = new ParamManageControl(param, title, desc, icon, this);
       connect(modelUIToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
-        paramsMemory.putBool("FrogPilotTogglesOpen", true);
+        paramsMemory.putInt("FrogPilotTogglesOpen", 1);
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(modelUIKeys.find(key.c_str()) != modelUIKeys.end());
         }
@@ -129,7 +129,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
 
 void FrogPilotVisualsPanel::updateMetric() {
   if (isVisible()) {
-    if (!paramsMemory.getBool("FrogPilotTogglesOpen")) {
+    if (paramsMemory.getInt("FrogPilotTogglesOpen") == 2) {
       hideSubToggles();
     }
   }
@@ -190,7 +190,7 @@ void FrogPilotVisualsPanel::hideSubToggles() {
 }
 
 void FrogPilotVisualsPanel::hideEvent(QHideEvent *event) {
-  paramsMemory.putBool("FrogPilotTogglesOpen", false);
+  paramsMemory.putInt("FrogPilotTogglesOpen", 0);
 
   hideSubToggles();
 }

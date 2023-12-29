@@ -425,8 +425,8 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   sidebar_layout->addSpacing(10);
   sidebar_layout->addWidget(close_btn, 0, Qt::AlignRight);
   QObject::connect(close_btn, &QPushButton::clicked, [this]() {
-    if (paramsMemory.getBool("FrogPilotTogglesOpen")) {
-      paramsMemory.putBool("FrogPilotTogglesOpen", false);
+    if (paramsMemory.getInt("FrogPilotTogglesOpen") == 1) {
+      paramsMemory.putInt("FrogPilotTogglesOpen", 2);
     } else {
       this->closeSettings();
     }
