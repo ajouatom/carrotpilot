@@ -665,6 +665,9 @@ class VCruiseHelper:
 
     return v_cruise_kph_apply
 
+  def auto_turn_control(self, controls):
+    pass
+
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
