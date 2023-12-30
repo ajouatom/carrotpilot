@@ -35,10 +35,8 @@ void MapETA::updateETA(float s, float s_typical, float d) {
                         : std::pair{eta_t.toString("h:mm a").split(' ')[0], eta_t.toString("a")};
 
   // Remaining time
-                        printf("rem\n");
   auto remaining = s < 3600 ? std::pair{QString::number(int(s / 60)), tr("min")}
                             : std::pair{QString("%1:%2").arg((int)s / 3600).arg(((int)s % 3600) / 60, 2, 10, QLatin1Char('0')), tr("hr")};
-                            printf("rem2\n");
   QString color = "#25DA6E";
   if (s / s_typical > 1.5)
     color = "#DA3025";
@@ -48,12 +46,10 @@ void MapETA::updateETA(float s, float s_typical, float d) {
   // Distance
   auto distance = map_format_distance(d, uiState()->scene.is_metric);
 
-  printf("eta\n");
   eta_doc.setHtml(QString(R"(<body><table><tr style="vertical-align:bottom;"><td><b>%1</b></td><td>%2</td>
                              <td style="padding-left:40px;color:%3;"><b>%4</b></td><td style="padding-right:40px;color:%3;">%5</td>
                              <td><b>%6</b></td><td>%7</td></tr></body>)")
                       .arg(eta.first, eta.second, color, remaining.first, remaining.second, distance.first, distance.second));
-  printf("eta2\n");
   setVisible(d >= MANEUVER_TRANSITION_THRESHOLD);
   update();
 }
