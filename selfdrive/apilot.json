@@ -379,6 +379,58 @@
       "unit": 1
     },
     {
+      "group": "조향일반",
+      "name": "AutoTurnControl",
+      "title": "NOO Helper(0)",
+      "descr": "0:사용안함,1:Navi Helper, 2:자동차로변경",
+      "egroup": "LATSET",
+      "etitle": "NOO Helper(0)",
+      "edescr": "0: Not used, 1:Navi Helper, 2:laneChange",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "unit": 1
+    },
+    {
+      "group": "조향일반",
+      "name": "AutoTurnControlSpeedLaneChange",
+      "title": "NOO Helper 차선변경속도(60)",
+      "descr": "0:사용안함, 차선변경시 적용속도",
+      "egroup": "LATSET",
+      "etitle": "NOO Helper LC Speed(60)",
+      "edescr": "0: Not used, Lane Change Speed",
+      "min": 0,
+      "max": 100,
+      "default": 60,
+      "unit": 5
+    },
+    {
+      "group": "조향일반",
+      "name": "AutoTurnControlSpeedTurn",
+      "title": "NOO Helper 턴속도(20)",
+      "descr": "0:사용안함, 턴시 적용속도",
+      "egroup": "LATSET",
+      "etitle": "NOO Helper Turn Speed(20)",
+      "edescr": "0: Not used, Turn Speed",
+      "min": 0,
+      "max": 100,
+      "default": 20,
+      "unit": 5
+    },
+    {
+      "group": "조향일반",
+      "name": "AutoTurnControlTurnEnd",
+      "title": "NOO Helper 시간거리(3)",
+      "descr": "NOO완료 시간거리(속도*시간)",
+      "egroup": "LATSET",
+      "etitle": "NOO Speed Ctrl left Time(3)",
+      "edescr": "",
+      "min": 0,
+      "max": 30,
+      "default": 3,
+      "unit": 1
+    },
+    {
       "group": "버튼설정",
       "name": "CruiseSpeedUnit",
       "title": "크루즈버튼속도단위(10)",

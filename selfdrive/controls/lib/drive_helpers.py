@@ -89,6 +89,8 @@ class VCruiseHelper:
     self.activeAPM = 0
     self.rightBlinkerExtCount = 0
     self.leftBlinkerExtCount = 0
+    self.naviDistance = 0
+    self.naviSpeed = 0
     
     #ajouatom: params
     self.params_count = 0
@@ -110,6 +112,10 @@ class VCruiseHelper:
     self.cruiseOnDist = float(int(Params().get("CruiseOnDist", encoding="utf8"))) / 100.
     self.softHoldMode = Params().get_int("SoftHoldMode")
     self.cruiseSpeedMin = Params().get_int("CruiseSpeedMin")
+    self.autoTurnControl = Params().get_int("AutoTurnControl")
+    self.autoTurnControlTurnEnd = Params().get_int("autoTurnControlTurnEnd")
+    self.AutoTurnControlSpeedLaneChange = Params().get_int("AutoTurnControlSpeedLaneChange")
+    self.AutoTurnControlSpeedTurn = Params().get_int("AutoTurnControlSpeedTurn")
 
   def _params_update(self):
     self.frame += 1
@@ -132,6 +138,11 @@ class VCruiseHelper:
       self.steerRatioApply = float(self.params.get_int("SteerRatioApply")) * 0.1
       self.liveSteerRatioApply = float(self.params.get_int("LiveSteerRatioApply")) * 0.01
       self.autoSpeedUptoRoadSpeedLimit = float(self.params.get_int("AutoSpeedUptoRoadSpeedLimit")) * 0.01
+    elif self.params_count == 40:
+      self.autoTurnControl = Params().get_int("AutoTurnControl")
+      self.autoTurnControlTurnEnd = Params().get_int("autoTurnControlTurnEnd")
+      self.AutoTurnControlSpeedLaneChange = Params().get_int("AutoTurnControlSpeedLaneChange")
+      self.AutoTurnControlSpeedTurn = Params().get_int("AutoTurnControlSpeedTurn")
     elif self.params_count >= 100:
       self.autoCurveSpeedCtrlUse = Params().get_int("AutoCurveSpeedCtrlUse")
       self.autoCurveSpeedFactor = float(Params().get_int("AutoCurveSpeedFactor"))*0.01
@@ -630,7 +641,18 @@ class VCruiseHelper:
     else:
       applySpeed = 255
 
-    apTbtSpeed = apTbtDistance = 0
+    apTbtDistance = self.naviDistance
+    apTbtSpeed = self.naviSpeed
+    if apTbtSpeed > 0 and apTbtDistance > 0:
+      safeTbtDist = self.autoTurnControlTurnEnd * v_ego
+      applyTbtSpeed = self.decelerate_for_speed_camera(apTbtSpeed/3.6, safeTbtDist, self.v_cruise_kph_apply/3.6, self.autoNaviSpeedDecelRate, apTbtDistance) * 3.6
+      if applyTbtSpeed < applySpeed:
+        applySpeed = applyTbtSpeed
+        safeSpeed = apTbtSpeed
+        leftDist = apTbtDistance
+        safeDist = safeTbtDist
+        speedLimitType = 4
+
     log = "{:.1f}<{:.1f}/{:.1f},{:.1f} B{} A{:.1f}/{:.1f} N{:.1f}/{:.1f} C{:.1f}/{:.1f} V{:.1f}/{:.1f} ".format(
                   applySpeed, safeSpeed, leftDist, safeDist,
                   1 if isSpeedBump else 0, 
@@ -665,9 +687,56 @@ class VCruiseHelper:
 
     return v_cruise_kph_apply
 
-  def auto_turn_control(self, controls):
-    pass
+  def auto_navi_control(self, controls):
+    if self.autoTurnControl > 0:
+      navInstruction = controls.sm['navInstruction']
+      roadLimitSpeed = controls.sm['roadLimitSpeed']
 
+      nav_distance = navInstruction.maneuverDistance;
+      nav_type = navInstruction.maneuverType;
+      nav_modifier = navInstruction.maneuverModifier;
+      nav_turn = False
+      nav_speedDown = False
+      direction = 0 #1:left, 2:right
+      if nav_type in ['turn', 'fork', 'off ramp']:
+        nav_turn = True if nav_type == 'turn' and nav_modifier in ['left', 'right'] else False
+        direction = 1 if nav_modifier in ['slight left', 'left'] else 2 if nav_modifier in ['slight right', 'right'] else 0
+      else:
+        nav_distance = roadLimitSpeed.xDistToTurn
+        nav_type = roadLimitSpeed.xTurnInfo
+        nav_turn = True if nav_type in [1,2] else False
+        nav_speedDown = True if nav_turn or nav_type == 5 else False
+        direction = 1 if nav_type in [1,3] else 2 if nav_type in [2,4,43] else 0
+
+      ## lanechange, turn : 300m left
+      if 5 < nav_distance < 300 and direction != 0:
+        if nav_turn:
+          if nav_distance < 60:
+            # start Turn
+            pass
+          elif nav_distance < 200:
+            nav_turn = False
+            nav_direction = direction
+          else:
+            nav_turn = False
+            nav_direction = 0
+        elif nav_distance < 180:
+          nav_direction = direction
+      else:
+        nav_turn = False
+        nav_direction = 0
+
+      self.naviDistance = 0
+      self.naviSpeed = 0
+      if self.autoTurnControl >= 2:
+        if nav_turn or nav_speedDown or direction != 0:
+          self.naviDistance = nav_distance
+          self.naviSpeed = self.autoTurnControlSpeedTurn if nav_turn or nav_speedDown else self.autoTurnControlSpeedLaneChange
+
+      if nav_direction == 1 and nav_turn and False: # 왼쪽차선변경은 위험하니 턴인경우만 하자, 하지만 지금은 안함.
+        self.leftBlinkerExtCount = 10
+      elif nav_direction == 2:
+        self.rightBlinkerExtCount = 10
 
 def apply_deadzone(error, deadzone):
   if error > deadzone:
