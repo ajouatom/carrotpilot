@@ -646,7 +646,7 @@ class VCruiseHelper:
     apTbtSpeed = self.naviSpeed
     if apTbtSpeed > 0 and apTbtDistance > 0:
       safeTbtDist = self.autoTurnControlTurnEnd * v_ego
-      applyTbtSpeed = self.decelerate_for_speed_camera(apTbtSpeed/3.6, safeTbtDist, self.v_cruise_kph_apply/3.6, self.autoNaviSpeedDecelRate, apTbtDistance) * 3.6
+      applyTbtSpeed = self.decelerate_for_speed_camera(apTbtSpeed/3.6, safeTbtDist, v_cruise_kph_prev/3.6, self.autoNaviSpeedDecelRate, apTbtDistance) * 3.6
       if applyTbtSpeed < applySpeed:
         applySpeed = applyTbtSpeed
         safeSpeed = apTbtSpeed
