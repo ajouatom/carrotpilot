@@ -428,7 +428,7 @@ class LongitudinalMpc:
     self.v_ego_prev = v_ego
     return np.full(N+1, t_follow)
 
-  def update(self, sm, reset_state, conditional_experimental_mode, radarstate, v_cruise, x, v, a, j, have_lead, aggressive_acceleration, increased_stopping_distance, smoother_braking, custom_personalities, aggressive_follow, standard_follow, relaxed_follow, personality=log.LongitudinalPersonality.standard):
+  def update(self, sm, reset_state, carrot_light_detect, radarstate, v_cruise, x, v, a, j, have_lead, aggressive_acceleration, increased_stopping_distance, smoother_braking, custom_personalities, aggressive_follow, standard_follow, relaxed_follow, personality=log.LongitudinalPersonality.standard):
     #self.debugLongText = "v_cruise ={:.1f}".format(v_cruise)
     carstate = sm['carState']
     model = sm['modelV2']
@@ -478,7 +478,7 @@ class LongitudinalMpc:
     self.params[:,0] = ACCEL_MIN if not reset_state else a_ego
     self.params[:,1] = self.max_a if not reset_state else a_ego
 
-    if not conditional_experimental_mode:
+    if carrot_light_detect:
       v_cruise, stop_x, self.mode = self.update_apilot(carstate, radarstate, model, v_cruise)
       self.debugLongText = "{},{},{:.1f},tf={:.2f},{:.1f},stop={:.1f},{:.1f},xv={:.0f},{:.0f}".format(
         str(self.xState), str(self.trafficState), v_cruise*3.6, t_follow[0], t_follow[0]*v_ego+6.0, stop_x, self.stopDist,x[-1],v[-1])
