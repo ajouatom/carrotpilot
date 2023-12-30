@@ -113,9 +113,9 @@ class VCruiseHelper:
     self.softHoldMode = Params().get_int("SoftHoldMode")
     self.cruiseSpeedMin = Params().get_int("CruiseSpeedMin")
     self.autoTurnControl = Params().get_int("AutoTurnControl")
-    self.autoTurnControlTurnEnd = Params().get_int("autoTurnControlTurnEnd")
-    self.AutoTurnControlSpeedLaneChange = Params().get_int("AutoTurnControlSpeedLaneChange")
-    self.AutoTurnControlSpeedTurn = Params().get_int("AutoTurnControlSpeedTurn")
+    self.autoTurnControlTurnEnd = Params().get_int("AutoTurnControlTurnEnd")
+    self.autoTurnControlSpeedLaneChange = Params().get_int("AutoTurnControlSpeedLaneChange")
+    self.autoTurnControlSpeedTurn = Params().get_int("AutoTurnControlSpeedTurn")
 
   def _params_update(self):
     self.frame += 1
@@ -140,9 +140,9 @@ class VCruiseHelper:
       self.autoSpeedUptoRoadSpeedLimit = float(self.params.get_int("AutoSpeedUptoRoadSpeedLimit")) * 0.01
     elif self.params_count == 40:
       self.autoTurnControl = Params().get_int("AutoTurnControl")
-      self.autoTurnControlTurnEnd = Params().get_int("autoTurnControlTurnEnd")
-      self.AutoTurnControlSpeedLaneChange = Params().get_int("AutoTurnControlSpeedLaneChange")
-      self.AutoTurnControlSpeedTurn = Params().get_int("AutoTurnControlSpeedTurn")
+      self.autoTurnControlTurnEnd = Params().get_int("AutoTurnControlTurnEnd")
+      self.autoTurnControlSpeedLaneChange = Params().get_int("AutoTurnControlSpeedLaneChange")
+      self.autoTurnControlSpeedTurn = Params().get_int("AutoTurnControlSpeedTurn")
     elif self.params_count >= 100:
       self.autoCurveSpeedCtrlUse = Params().get_int("AutoCurveSpeedCtrlUse")
       self.autoCurveSpeedFactor = float(Params().get_int("AutoCurveSpeedFactor"))*0.01
