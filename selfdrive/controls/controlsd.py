@@ -84,7 +84,7 @@ class Controls:
     fire_the_babysitter = self.params.get_bool("FireTheBabysitter")
     mute_dm = fire_the_babysitter and self.params.get_bool("MuteDM")
 
-    ignore = self.sensor_packets + ['testJoystick']
+    ignore = self.sensor_packets + ['testJoystick', 'navInstruction']
     if SIMULATION:
       ignore += ['driverCameraState', 'managerState']
     if mute_dm:
@@ -94,7 +94,7 @@ class Controls:
                                    'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
                                    'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters',
                                    'testJoystick', 'frogpilotLongitudinalPlan', 'navInstruction', 'roadLimitSpeed'] + self.camera_packets + self.sensor_packets,
-                                  ignore_alive=ignore, ignore_avg_freq=['radarState', 'testJoystick'], ignore_valid=['testJoystick', ])
+                                  ignore_alive=ignore, ignore_avg_freq=['radarState', 'testJoystick', ], ignore_valid=['testJoystick', ])
 
     if CI is None:
       # wait for one pandaState and one CAN packet
