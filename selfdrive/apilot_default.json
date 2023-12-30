@@ -9,11 +9,11 @@
   },
   {
     "filename": "ALeadTau",
-    "content": "150"
+    "content": "135"
   },
   {
     "filename": "ALeadTauStart",
-    "content": "50"
+    "content": "40"
   },
   {
     "filename": "AccelerationPath",
@@ -33,7 +33,7 @@
   },
   {
     "filename": "AdjustLaneOffset",
-    "content": "15"
+    "content": "10"
   },
   {
     "filename": "AdjustablePersonalities",

@@ -497,6 +497,7 @@ void FrogPilotControlsPanel::setDefaults() {
     {"LateralTune", "1"},
     {"LongitudinalTune", "1"},
     {"MTSCEnabled", "1"},
+    {"NoLogging", "1"},
     {"MuteDM", FrogsGoMoo ? "1" : "0"},
     {"MuteDoor", FrogsGoMoo ? "1" : "0"},
     {"MuteOverheated", FrogsGoMoo ? "1" : "0"},
