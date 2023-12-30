@@ -790,7 +790,7 @@
       "etitle": "Laneline: Use(0)",
       "edescr": "Lainline mode, lat_mpc control used",
       "min": 0,
-      "max": 1,
+      "max": 200,
       "default": 0,
       "unit": 1
     },
