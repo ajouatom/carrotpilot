@@ -308,6 +308,7 @@ def main():
   nTBTDist = -1
   nRoadLimitSpeed = -1
   xIndex = 0
+  roadcate = 7    # roadCategory, 0,1: highway, 
   
   prev_recvTime = time.monotonic()
   #autoNaviSpeedCtrl = int(Params().get("AutoNaviSpeedCtrl"))
@@ -474,6 +475,7 @@ def main():
           nSdiBlockDist = float(server.get_apilot_val("nSdiBlockDist", nSdiBlockDist))
           nTBTDist = float(server.get_apilot_val("nTBTDist", nTBTDist))
           nRoadLimitSpeed = int(server.get_apilot_val("nRoadLimitSpeed", nRoadLimitSpeed))
+          roadcate = int(server.get_apilot_val("roadcate", roadcate))
 
         #print("O:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
 
@@ -595,6 +597,7 @@ def main():
         dat.roadLimitSpeed.xCmd = "" if xCmd is None else xCmd
         dat.roadLimitSpeed.xArg = "" if xArg is None else xArg
         dat.roadLimitSpeed.xIndex = xIndex
+        dat.roadLimitSpeed.roadcate = roadcate
 
         roadLimitSpeed.send(dat.to_bytes())
         if now - send_time > 1.0:

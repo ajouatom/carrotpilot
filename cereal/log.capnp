@@ -2225,6 +2225,7 @@ struct RoadLimitSpeed {
     xCmd @20 : Text;
     xArg @21 : Text;
     xIndex @22 : Int16;
+    roadcate @23 : Int16;
 }
 
 struct Event {
