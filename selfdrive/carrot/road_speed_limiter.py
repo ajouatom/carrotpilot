@@ -123,7 +123,7 @@ class RoadLimitSpeedServer:
             if broadcast_address is not None and self.remote_addr is None:
               print('broadcast', broadcast_address)
 
-              msg = msg = 'APMSERVICE:C3:V1'.encode() if TICI else 'APMSERVICE:C2:V1'.encode()
+              msg = 'APMSERVICE:C3:V1'.encode()
               for i in range(1, 255):
                 ip_tuple = socket.inet_aton(broadcast_address)
                 new_ip = ip_tuple[:-1] + bytes([i])
@@ -140,7 +140,7 @@ class RoadLimitSpeedServer:
 
   def send_sdp(self, sock):
     try:
-      sock.sendto('APMSERVICE:C3:V1'.encode() if TICI else 'APMSERVICE:C2:V1'.encode(), (self.remote_addr[0], Port.BROADCAST_PORT))
+      sock.sendto('APMSERVICE:C3:V1'.encode(), (self.remote_addr[0], Port.BROADCAST_PORT))
     except:
       pass
 
@@ -264,6 +264,7 @@ class RoadLimitSpeedServer:
 
 
 def main():
+  print("RoadLimitSpeed Started.....")
   server = RoadLimitSpeedServer()
   roadLimitSpeed = messaging.pub_sock('roadLimitSpeed')
 
