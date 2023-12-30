@@ -291,7 +291,7 @@ class VCruiseHelper:
     v_cruise_kph = self.v_cruise_kph_set    
     v_cruise_kph = self._update_cruise_buttons(CS, v_cruise_kph, controls)
     v_cruise_kph_apply = self.cruise_control_speed(v_cruise_kph)
-    self.auto_navi_control(self, controls)
+    self.auto_navi_control(controls)
     apn_limit_kph = self.update_speed_apilot(CS, controls, self.v_cruise_kph)
     v_cruise_kph_apply = min(v_cruise_kph_apply, apn_limit_kph)
     self.curveSpeed = self.apilot_curve(CS, controls)
