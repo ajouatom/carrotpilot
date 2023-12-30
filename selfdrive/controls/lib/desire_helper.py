@@ -54,6 +54,8 @@ class DesireHelper:
     self.turn_completed = False
     self.lane_change_wait_timer = 0
 
+    self.lane_available_prev = False
+
   # Lane detection
   def calculate_lane_width(self, lane, current_lane, road_edge):
     # Interpolate lane values at current_lane.x positions
@@ -135,8 +137,10 @@ class DesireHelper:
         # Conduct a nudgeless lane change if all the conditions are true
         self.lane_change_wait_timer += DT_MDL
         need_torque = False
-        if leftBlinkerExt or rightBlinkerExt:
-          if lane_available:
+        if (not carstate.leftBlinker and leftBlinkerExt) or (not carstate.rightBlinker and rightBlinkerExt):
+          if not self.lane_available_prev and lane_available:
+            need_torque = False
+          elif lane_available:
             need_torque = True
         if not need_torque and self.nudgeless and lane_available and not self.lane_change_completed and self.lane_change_wait_timer >= self.lane_change_delay:          
           torque_applied = True
@@ -177,6 +181,7 @@ class DesireHelper:
       self.lane_change_timer += DT_MDL
 
     self.prev_one_blinker = one_blinker
+    self.lane_available_prev = lane_available
     
     steering_pressed = carstate.steeringPressed and \
                      ((carstate.steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.left) or
