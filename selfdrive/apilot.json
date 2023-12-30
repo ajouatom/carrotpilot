@@ -432,6 +432,19 @@
     },
     {
       "group": "버튼설정",
+      "name": "CruiseButtonMode",
+      "title": "크루즈버튼작동모드(0)",
+      "descr": "0:일반,1:사용자1,2:사용자2",
+      "egroup": "BUTN",
+      "etitle": "Cruise Button Mode(0)",
+      "edescr": "0:General,1:User1,2:User2",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "unit": 1
+    },
+    {
+      "group": "버튼설정",
       "name": "CruiseSpeedUnit",
       "title": "크루즈버튼속도단위(10)",
       "descr": "",

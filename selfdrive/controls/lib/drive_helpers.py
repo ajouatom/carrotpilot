@@ -104,6 +104,7 @@ class VCruiseHelper:
     self.autoResumeFromGasSpeed = Params().get_int("AutoResumeFromGasSpeed")
     self.autoCancelFromGasMode = Params().get_int("AutoCancelFromGasMode")
     self.autoCruiseControl = Params().get_int("AutoCruiseControl")
+    self.cruiseButtonMode = Params().get_int("CruiseButtonMode")
     self.steerRatioApply = float(self.params.get_int("SteerRatioApply")) * 0.1
     self.liveSteerRatioApply = float(self.params.get_int("LiveSteerRatioApply")) * 0.01
     self.autoSpeedUptoRoadSpeedLimit = float(self.params.get_int("AutoSpeedUptoRoadSpeedLimit")) * 0.01
@@ -132,6 +133,7 @@ class VCruiseHelper:
       self.autoResumeFromGasSpeed = Params().get_int("AutoResumeFromGasSpeed")
       self.autoCancelFromGasMode = Params().get_int("AutoCancelFromGasMode")
       self.autoCruiseControl = Params().get_int("AutoCruiseControl")
+      self.cruiseButtonMode = Params().get_int("CruiseButtonMode")
       self.cruiseOnDist = float(Params().get_int("CruiseOnDist")) / 100.
       self.softHoldMode = Params().get_int("SoftHoldMode")
       self.cruiseSpeedMin = Params().get_int("CruiseSpeedMin")
@@ -471,9 +473,14 @@ class VCruiseHelper:
           if self.softHoldActive > 0:
             self.softHoldActive = 0
           else:
-            v_cruise_kph = self.v_cruise_speed_up(v_cruise_kph)
+            if self.cruiseButtonMode == 0:
+              v_cruise_kph = button_kph
+            elif self.cruiseButtonMode in [1,2]:
+              v_cruise_kph = self.v_cruise_speed_up(v_cruise_kph)
         elif button_type == ButtonType.decelCruise:
-          if v_cruise_kph > self.v_ego_kph_set + 2:
+          if self.autoCruiseControl == 0 or self.cruiseButtonMode in [0,1]:
+            v_cruise_kph = button_kph
+          elif v_cruise_kph > self.v_ego_kph_set + 2:
             v_cruise_kph = self.v_ego_kph_set
           else:
             #v_cruise_kph = button_kph
