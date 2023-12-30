@@ -664,6 +664,7 @@ class VCruiseHelper:
     #if applySpeed < 200:
     #  print(log)
     #controls.debugText1 = log
+    self.debugText2 = log
     return applySpeed #, roadSpeed, leftDist, speedLimitType
 
   def cruise_control_speed(self, v_cruise_kph):
