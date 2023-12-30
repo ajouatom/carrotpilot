@@ -147,12 +147,13 @@ class RoadLimitSpeedServer:
   def udp_recv(self, sock, wait_time):
     ret = False
     try:
+      print("udp_recv")
       ready = select.select([sock], [], [], wait_time)
       ret = bool(ready[0])
       if ret:
         data, self.remote_addr = sock.recvfrom(2048)
         json_obj = json.loads(data.decode())
-        #print(json_obj)
+        print(json_obj)
 
         if 'cmd' in json_obj:
           try:
@@ -315,17 +316,8 @@ def main():
 
   with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
     try:
-      if True:#int(Params().get("AutoNaviSpeedCtrl")) != 3:
-        sock.bind(('0.0.0.0', Port.RECEIVE_PORT))
-        print("AutoNaviSpeed != 3")
-
-      else:
-        print("AutoNaviSpeed == 3")
-        try:
-          sock.bind(('0.0.0.0', 843))
-        except:
-          sock.bind(('0.0.0.0', Port.RECEIVE_PORT))
-
+      sock.bind(('0.0.0.0', Port.RECEIVE_PORT))
+      print("AutoNaviSpeed != 3")
 
       sock.setblocking(False)
 
