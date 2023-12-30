@@ -738,7 +738,7 @@ class VCruiseHelper:
         nav_direction = 0
 
       blinkerExtState = self.rightBlinkerExtCount + self.rightBlinkerExtCount
-      if nav_direction == 1 and nav_turn and False: # 왼쪽차선변경은 위험하니 턴인경우만 하자, 하지만 지금은 안함.
+      if nav_direction == 1 and nav_turn: # 왼쪽차선변경은 위험하니 턴인경우만 하자, 하지만 지금은 안함.
         self.leftBlinkerExtCount = 10
       elif nav_direction == 2:
         self.rightBlinkerExtCount = 10
