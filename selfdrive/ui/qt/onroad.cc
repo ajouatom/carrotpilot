@@ -1220,7 +1220,7 @@ void AnnotatedCameraWidget::updateFrogPilotWidgets(QPainter &p) {
 
   if (!showDriverCamera) {
     if (leadInfo) {
-      drawLeadInfo(p);
+      //drawLeadInfo(p);
     }
 
     if (alwaysOnLateral || conditionalExperimental || roadNameUI) {
