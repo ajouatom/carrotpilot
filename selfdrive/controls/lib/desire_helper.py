@@ -134,7 +134,7 @@ class DesireHelper:
 
         # Conduct a nudgeless lane change if all the conditions are true
         self.lane_change_wait_timer += DT_MDL
-        noo_need_torque = False
+        need_torque = False
         if leftBlinkerExt or rightBlinkerExt:
           if lane_available:
             need_torque = True
