@@ -539,6 +539,10 @@ def main():
           if nRoadLimitSpeed >= 200:
             nRoadLimitSpeed = (nRoadLimitSpeed - 20) / 10
           xRoadLimitSpeed = nRoadLimitSpeed
+        #sdiBlockType
+        # 1: startOSEPS: 구간단속시작
+        # 2: inOSEPS: 구간단속중
+        # 3: endOSEPS: 구간단속종료
         #sdiType: 
         # 0: speedLimit, 1: speedLimitPos, 2:SpeedBlockStartPos, 3: SpeedBlockEndPos, 4:SpeedBlockMidPos, 
         # 5: Tail, 6: SignalAccidentPos, 7: SpeedLimitDangerous, 8:BoxSpeedLimit, 9: BusLane, 
@@ -551,8 +555,11 @@ def main():
           xSpdLimit = nSdiSpeedLimit
           xSpdDist = nSdiDist
           sdiType = nSdiType
-          if sdiType == 4: ## 구간단속
-            xSpdDist = nSdiBlockDist if nSdiBlockDist > 0 else 80
+          if nSdiBlockType in [1,2,3]: #구간단속
+            sdiType = 4
+            xSpdDist = nSdiBlockDist
+          #if sdiType == 4: ## 구간단속
+          #  xSpdDist = nSdiBlockDist if nSdiBlockDist > 0 else 80
           elif sdiType == 7: ##이동식카메라?
             xSpdLimit = xSpdDist = -1
         elif nSdiPlusType == 22 or nSdiType == 22: # SpeedBump

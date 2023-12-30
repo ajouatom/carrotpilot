@@ -623,10 +623,10 @@ class VCruiseHelper:
     safeSpeed *= self.autoNaviSpeedSafetyFactor
 
     log = ""
-    if isSectionLimit:
-      applySpeed = safeSpeed
-    elif leftDist > 0 and safeSpeed > 0 and safeDist > 0:
+    if leftDist > 0 and safeSpeed > 0 and safeDist > 0:
       applySpeed = self.decelerate_for_speed_camera(safeSpeed/3.6, safeDist, v_cruise_kph_prev * CV.KPH_TO_MS, self.autoNaviSpeedDecelRate, leftDist) * CV.MS_TO_KPH
+      if isSectionLimit and applySpeed > safeSpeed:
+        applySpeed = safeSpeed
     else:
       applySpeed = 255
 
