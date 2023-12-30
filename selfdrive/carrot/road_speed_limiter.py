@@ -147,13 +147,13 @@ class RoadLimitSpeedServer:
   def udp_recv(self, sock, wait_time):
     ret = False
     try:
-      print("udp_recv")
+      #print("udp_recv")
       ready = select.select([sock], [], [], wait_time)
       ret = bool(ready[0])
       if ret:
         data, self.remote_addr = sock.recvfrom(2048)
         json_obj = json.loads(data.decode())
-        print(json_obj)
+        #print(json_obj)
 
         if 'cmd' in json_obj:
           try:
@@ -237,9 +237,10 @@ class RoadLimitSpeedServer:
 
     if now - self.last_updated_active > 6.:
       self.active = 0
-      self.remote_addr = None
+      #self.remote_addr = None
     if now - self.last_updated_apilot > 6.:
       self.active_apilot = 0
+      self.remote_addr = None
 
 
   def get_limit_val(self, key, default=None):
