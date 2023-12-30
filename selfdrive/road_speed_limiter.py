@@ -1,8 +1,10 @@
+#!/usr/bin/env python3
 import json
 import os
 import random
 
 import select
+import subprocess
 import threading
 import time
 import socket
@@ -12,6 +14,7 @@ from threading import Thread
 from cereal import messaging, log
 from openpilot.common.numpy_fast import clip
 from openpilot.common.conversions import Conversions as CV
+from openpilot.common.realtime import Ratekeeper
 from openpilot.system.hardware import TICI
 from openpilot.common.params import Params
 import subprocess
@@ -46,78 +49,63 @@ class RoadLimitSpeedServer:
       Port.RECEIVE_PORT = 7707
 
     broadcast = Thread(target=self.broadcast_thread, args=[])
-    broadcast.setDaemon(True)
+    broadcast.daemon = True
     broadcast.start()
 
     self.gps_sm = messaging.SubMaster(['gpsLocationExternal'], poll=['gpsLocationExternal'])
     self.gps_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
+    self.location = None
+
     self.gps_event = threading.Event()
     gps_thread = Thread(target=self.gps_thread, args=[])
-    gps_thread.setDaemon(True)
+    gps_thread.daemon = True
     gps_thread.start()
 
   def gps_thread(self):
-    try:
-      period = 1.0
-      wait_time = period
-      i = 0.
-      frame = 1
-      start_time = time.monotonic()
-      while True:
-        self.gps_event.wait(wait_time)
-        self.gps_timer()
-
-        now = time.monotonic()
-        error = (frame * period - (now - start_time))
-        i += error * 0.1
-        wait_time = period + error * 0.5 + i
-        wait_time = clip(wait_time, 0.8, 1.0)
-        frame += 1
-
-    except:
-      pass
+    rk = Ratekeeper(3.0, print_delay_threshold=None)
+    while True:
+      self.gps_timer()
+      rk.keep_time()
 
   def gps_timer(self):
     try:
       if self.remote_gps_addr is not None:
         self.gps_sm.update(0)
         if self.gps_sm.updated['gpsLocationExternal']:
-          location = self.gps_sm['gpsLocationExternal']
+          self.location = self.gps_sm['gpsLocationExternal']
 
-          if location.accuracy < 10.:
-            json_location = json.dumps({"location": [
-              location.latitude,
-              location.longitude,
-              location.altitude,
-              location.speed,
-              location.bearingDeg,
-              location.accuracy,
-              location.timestamp,
-              # location.source,
-              # location.vNED,
-              location.verticalAccuracy,
-              location.bearingAccuracyDeg,
-              location.speedAccuracy,
-            ]})
+        if self.location is not None:
+          json_location = json.dumps({"location": [
+            self.location.latitude,
+            self.location.longitude,
+            self.location.altitude,
+            self.location.speed,
+            self.location.bearingDeg,
+            self.location.accuracy,
+            self.location.unixTimestampMillis,
+            # self.location.source,
+            # self.location.vNED,
+            self.location.verticalAccuracy,
+            self.location.bearingAccuracyDeg,
+            self.location.speedAccuracy,
+          ]})
 
-            address = (self.remote_gps_addr[0], Port.LOCATION_PORT)
-            self.gps_socket.sendto(json_location.encode(), address)
+          address = (self.remote_gps_addr[0], Port.LOCATION_PORT)
+          self.gps_socket.sendto(json_location.encode(), address)
+
     except:
       self.remote_gps_addr = None
 
   def get_broadcast_address(self):
     try:
-      s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-      ip = fcntl.ioctl(
-        s.fileno(),
-        0x8919,
-        struct.pack('256s', 'wlan0'.encode('utf-8'))
-      )[20:24]
-
-      broadcast_address = socket.inet_ntoa(ip)
-      s.close()
-      return broadcast_address
+      with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+        ip = fcntl.ioctl(
+          s.fileno(),
+          0x8919,
+          struct.pack('256s', 'wlan0'.encode('utf-8'))
+        )[20:24]
+        return socket.inet_ntoa(ip)
     except:
       return None
 
@@ -128,8 +116,7 @@ class RoadLimitSpeedServer:
 
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
       try:
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
+        #sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
         while True:
 
           try:
@@ -137,16 +124,15 @@ class RoadLimitSpeedServer:
             if broadcast_address is None or frame % 10 == 0:
               broadcast_address = self.get_broadcast_address()
 
-            #print('broadcast_address', broadcast_address)
+            if broadcast_address is not None and self.remote_addr is None:
+              print('broadcast', broadcast_address)
 
-            if broadcast_address is not None:
-              address = (broadcast_address, Port.BROADCAST_PORT)
-                  
-              if True:#int(Params().get("AutoNaviSpeedCtrl")) != 3:
-                msg = 'APMSERVICE:C3:V1' if TICI else 'APMSERVICE:C2:V1'
-              else:        
-                msg = 'EON:ROAD_LIMIT_SERVICE:v1'
-              sock.sendto(msg.encode(), address)
+              msg = msg = 'APMSERVICE:C3:V1'.encode() if TICI else 'APMSERVICE:C2:V1'.encode()
+              for i in range(1, 255):
+                ip_tuple = socket.inet_aton(broadcast_address)
+                new_ip = ip_tuple[:-1] + bytes([i])
+                address = (socket.inet_ntoa(new_ip), Port.BROADCAST_PORT)
+                sock.sendto(msg, address)
           except:
             pass
 
@@ -158,11 +144,7 @@ class RoadLimitSpeedServer:
 
   def send_sdp(self, sock):
     try:
-      if True:#int(Params().get("AutoNaviSpeedCtrl")) != 3:
-        msg = 'APMSERVICE:C3:V1' if TICI else 'APMSERVICE:C2:V1'
-      else:        
-        msg = 'EON:ROAD_LIMIT_SERVICE:v1'
-      sock.sendto(msg.encode(), (self.remote_addr[0], Port.BROADCAST_PORT))
+      sock.sendto('APMSERVICE:C3:V1'.encode() if TICI else 'APMSERVICE:C2:V1'.encode(), (self.remote_addr[0], Port.BROADCAST_PORT))
     except:
       pass
 
@@ -183,15 +165,6 @@ class RoadLimitSpeedServer:
           except:
             pass
 
-        if 'cmd_eco' in json_obj:
-          try:
-            process = subprocess.Popen([json_obj['cmd_eco']], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            stdout, stderr = process.communicate()
-            sock.sendto(stdout.encode(), self.remote_addr[0])
-            ret = False
-          except:
-            pass
-
         if 'request_gps' in json_obj:
           try:
             if json_obj['request_gps'] == 1:
@@ -205,6 +178,15 @@ class RoadLimitSpeedServer:
         if 'echo' in json_obj:
           try:
             echo = json.dumps(json_obj["echo"])
+            sock.sendto(echo.encode(), (self.remote_addr[0], Port.BROADCAST_PORT))
+            ret = False
+          except:
+            pass
+
+        if 'echo_cmd' in json_obj:
+          try:
+            result = subprocess.run(json_obj['echo_cmd'], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            echo = json.dumps({"echo_cmd": json_obj['echo_cmd'], "result": result.stdout})
             sock.sendto(echo.encode(), (self.remote_addr[0], Port.BROADCAST_PORT))
             ret = False
           except:
@@ -258,6 +240,7 @@ class RoadLimitSpeedServer:
 
     if now - self.last_updated_active > 6.:
       self.active = 0
+      self.remote_addr = None
     if now - self.last_updated_apilot > 6.:
       self.active_apilot = 0
 

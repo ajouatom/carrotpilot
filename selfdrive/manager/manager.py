@@ -220,7 +220,7 @@ def is_running_on_wsl2():
 
 def manager_thread() -> None:
 
-  Process(name="road_speed_limiter", target=launcher, args=("openpilot.selfdrive.road_speed_limiter", "road_speed_limiter")).start()
+  #Process(name="road_speed_limiter", target=launcher, args=("openpilot.selfdrive.road_speed_limiter", "road_speed_limiter")).start()
   cloudlog.bind(daemon="manager")
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})
