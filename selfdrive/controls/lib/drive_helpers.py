@@ -710,6 +710,13 @@ class VCruiseHelper:
         nav_speedDown = True if nav_turn or nav_type == 5 else False
         direction = 1 if nav_type in [1,3] else 2 if nav_type in [2,4,43] else 0
 
+      self.naviDistance = 0
+      self.naviSpeed = 0
+      if self.autoTurnControl >= 2:
+        if nav_turn or nav_speedDown or direction != 0:
+          self.naviDistance = nav_distance
+          self.naviSpeed = self.autoTurnControlSpeedTurn if nav_turn or nav_speedDown else self.autoTurnControlSpeedLaneChange
+
       ## lanechange, turn : 300m left
       if 5 < nav_distance < 300 and direction != 0:
         if nav_turn:
@@ -724,16 +731,11 @@ class VCruiseHelper:
             nav_direction = 0
         elif nav_distance < 180:
           nav_direction = direction
+        else:
+          nav_direction = 0
       else:
         nav_turn = False
         nav_direction = 0
-
-      self.naviDistance = 0
-      self.naviSpeed = 0
-      if self.autoTurnControl >= 2:
-        if nav_turn or nav_speedDown or direction != 0:
-          self.naviDistance = nav_distance
-          self.naviSpeed = self.autoTurnControlSpeedTurn if nav_turn or nav_speedDown else self.autoTurnControlSpeedLaneChange
 
       if nav_direction == 1 and nav_turn and False: # 왼쪽차선변경은 위험하니 턴인경우만 하자, 하지만 지금은 안함.
         self.leftBlinkerExtCount = 10
