@@ -1436,7 +1436,8 @@ void AnnotatedCameraWidget::drawLeadInfo(QPainter &p) {
     .arg(currentAcceleration * speedConversion, 0, 'f', 2)
     .arg(unit_a);
 
-  const QString maxAccSuffix = QString(mapOpen ? "" : " - Max: %1%2")
+  //const QString maxAccSuffix = QString(mapOpen ? "" : " - Max: %1%2")
+  const QString maxAccSuffix = QString(" - Max: %1%2")
     .arg(maxAcceleration * speedConversion, 0, 'f', 2)
     .arg(unit_a);
 
