@@ -23,8 +23,8 @@ CAMERA_SPEED_FACTOR = 1.05
 
 
 class Port:
-  BROADCAST_PORT = 2899
-  RECEIVE_PORT = 2843
+  BROADCAST_PORT = 7708
+  RECEIVE_PORT = 7707
   LOCATION_PORT = BROADCAST_PORT
 
 
@@ -44,10 +44,6 @@ class RoadLimitSpeedServer:
     self.remote_gps_addr = None
     self.last_time_location = 0
     
-    if True:#int(Params().get("AutoNaviSpeedCtrl")) != 3:
-      Port.BROADCAST_PORT = 7708
-      Port.RECEIVE_PORT = 7707
-
     broadcast = Thread(target=self.broadcast_thread, args=[])
     broadcast.daemon = True
     broadcast.start()
