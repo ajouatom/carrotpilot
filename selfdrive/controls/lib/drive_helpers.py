@@ -722,14 +722,14 @@ class VCruiseHelper:
       turn_dist = interp(self.roadcate, [0,7], [100.0, 50.0])
       turn_speed = interp(self.roadcate, [0,7], [100.0, self.autoTurnControlSpeedTurn])
       laneChange_dist = interp(self.roadcate, [0,7], [300, 120])
-      laneChange_speed = interp(self.roadcate, [0,7], [100, self.autoTurnControlLaneChange])
+      laneChange_speed = interp(self.roadcate, [0,7], [100, self.autoTurnControlSpeedLaneChange])
 
       self.naviDistance = 0
       self.naviSpeed = 0
       if self.autoTurnControl >= 2:
         if nav_turn or nav_speedDown or direction != 0:
           self.naviDistance = nav_distance
-          self.naviSpeed = self.autoTurnControlSpeedTurn if nav_turn or nav_speedDown else self.autoTurnControlSpeedLaneChange
+          self.naviSpeed = turn_speed if nav_turn or nav_speedDown else laneChange_speed
 
       ## lanechange, turn : 300m left
       if 5 < nav_distance < 300 and direction != 0:
