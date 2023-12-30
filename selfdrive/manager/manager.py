@@ -121,6 +121,7 @@ def manager_init() -> None:
     ("EnableRadarTracks", "0"),      
     ("SccConnectedBus2", "0"),
     ("SoundVolumeAdjust", "100"),
+    ("SoundVolumeAdjustEngage", "10"),
     ("TFollowSpeedAdd", "0"),
     ("TFollowSpeedAddM", "0"),
     ("SoftHoldMode", "0"),       
