@@ -715,7 +715,7 @@ class VCruiseHelper:
         if nav_turn:
           if nav_distance < 60:
             # start Turn
-            pass
+            nav_direction = direction
           elif nav_distance < 200:
             nav_turn = False
             nav_direction = direction
