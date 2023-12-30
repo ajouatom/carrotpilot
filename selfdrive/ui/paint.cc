@@ -1713,11 +1713,11 @@ void DrawApilot::drawLeadApilot(const UIState* s) {
 
 #ifndef __TEST
     if (!sm.alive("controlsState") || !sm.alive("radarState") || !sm.alive("carControl")) {
-        printf("not ready....\n");
+        //printf("not ready....\n");
         return;
     }
     if (!sm.alive("lateralPlan") || !sm.alive("longitudinalPlan") || !sm.alive("liveParameters") || !sm.alive("roadLimitSpeed") || !sm.alive("liveTorqueParameters")) {
-        printf("not ready 2....\n");
+        //printf("not ready 2....\n");
         return;
     }
 #endif
