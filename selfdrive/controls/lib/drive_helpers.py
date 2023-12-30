@@ -656,8 +656,8 @@ class VCruiseHelper:
         safeDist = safeTbtDist
         speedLimitType = 4
 
-    log = "{:.1f}<{:.1f}/{:.1f},{:.1f} B{} A{:.1f}/{:.1f} N{:.1f}/{:.1f} C{:.1f}/{:.1f} V{:.1f}/{:.1f} ".format(
-                  applySpeed, safeSpeed, leftDist, safeDist,
+    log = "{},{:.1f}<{:.1f}/{:.1f},{:.1f} B{} A{:.1f}/{:.1f} N{:.1f}/{:.1f} C{:.1f}/{:.1f} V{:.1f}/{:.1f} ".format(
+                  self.roadcate, applySpeed, safeSpeed, leftDist, safeDist,
                   1 if isSpeedBump else 0, 
                   msg.xSpdLimit, msg.xSpdDist,
                   msg.camLimitSpeed, msg.camLimitSpeedLeftDist,
