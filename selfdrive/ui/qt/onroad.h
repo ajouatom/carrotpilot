@@ -170,7 +170,6 @@ private:
   void drawTurnSignals(QPainter &p);
   void initializeFrogPilotWidgets();
   void updateFrogPilotWidgets(QPainter &p);
-  void updateFrogPilotVariables();
 
   // FrogPilot variables
   bool accelerationPath;
