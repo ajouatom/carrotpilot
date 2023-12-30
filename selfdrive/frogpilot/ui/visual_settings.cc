@@ -48,7 +48,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
     } else if (param == "CustomTheme") {
       ParamManageControl *customThemeToggle = new ParamManageControl(param, title, desc, icon, this);
       connect(customThemeToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
-        paramsMemory.putInt("FrogPilotTogglesOpen", 1);
+        parentToggleClicked();
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(customThemeKeys.find(key.c_str()) != customThemeKeys.end());
         }
@@ -61,7 +61,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
     } else if (param == "CustomUI") {
       ParamManageControl *customUIToggle = new ParamManageControl(param, title, desc, icon, this);
       connect(customUIToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
-        paramsMemory.putInt("FrogPilotTogglesOpen", 1);
+        parentToggleClicked();
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(customOnroadUIKeys.find(key.c_str()) != customOnroadUIKeys.end());
         }
@@ -71,7 +71,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
     } else if (param == "ModelUI") {
       ParamManageControl *modelUIToggle = new ParamManageControl(param, title, desc, icon, this);
       connect(modelUIToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
-        paramsMemory.putInt("FrogPilotTogglesOpen", 1);
+        parentToggleClicked();
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(modelUIKeys.find(key.c_str()) != modelUIKeys.end());
         }
@@ -108,11 +108,11 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
       paramsMemory.putBool("FrogPilotTogglesUpdated", true);
     });
 
-    connect(dynamic_cast<ParamValueControl*>(toggles["ScreenBrightness"]), &ParamValueControl::valueChanged, [](int value) {
+    connect(static_cast<ParamValueControl*>(toggles["ScreenBrightness"]), &ParamValueControl::valueChanged, [](int value) {
       uiState()->scene.screen_brightness = value;
     });
 
-    connect(dynamic_cast<ParamValueControl*>(toggle), &ParamValueControl::buttonPressed, [this]() {
+    connect(static_cast<ParamValueControl*>(toggle), &ParamValueControl::buttonPressed, [this]() {
       paramsMemory.putBool("FrogPilotTogglesUpdated", true);
     });
   }
@@ -121,13 +121,13 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
   customThemeKeys = {"CustomColors", "CustomIcons", "CustomSignals", "CustomSounds"};
   modelUIKeys = {"AccelerationPath", "LaneLinesWidth", "PathEdgeWidth", "PathWidth", "RoadEdgesWidth", "UnlimitedLength"};
 
-  QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotVisualsPanel::updateMetric);
+  QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotVisualsPanel::updateState);
 
   hideSubToggles();
   setDefaults();
 }
 
-void FrogPilotVisualsPanel::updateMetric() {
+void FrogPilotVisualsPanel::updateState() {
   if (isVisible()) {
     if (paramsMemory.getInt("FrogPilotTogglesOpen") == 2) {
       hideSubToggles();
@@ -153,9 +153,9 @@ void FrogPilotVisualsPanel::updateMetric() {
       params.putInt("PathWidth", std::nearbyint(params.getInt("PathWidth") * speedConversion));
     }
 
-    ParamValueControl *laneLinesWidthToggle = dynamic_cast<ParamValueControl*>(toggles["LaneLinesWidth"]);
-    ParamValueControl *roadEdgesWidthToggle = dynamic_cast<ParamValueControl*>(toggles["RoadEdgesWidth"]);
-    ParamValueControl *pathWidthToggle = dynamic_cast<ParamValueControl*>(toggles["PathWidth"]);
+    ParamValueControl *laneLinesWidthToggle = static_cast<ParamValueControl*>(toggles["LaneLinesWidth"]);
+    ParamValueControl *roadEdgesWidthToggle = static_cast<ParamValueControl*>(toggles["RoadEdgesWidth"]);
+    ParamValueControl *pathWidthToggle = static_cast<ParamValueControl*>(toggles["PathWidth"]);
 
     if (isMetric) {
       laneLinesWidthToggle->setDescription("Customize the lane line width.\n\nDefault matches the Vienna average of 10 centimeters.");
@@ -178,6 +178,10 @@ void FrogPilotVisualsPanel::updateMetric() {
 
     previousIsMetric = isMetric;
   }).detach();
+}
+
+void FrogPilotVisualsPanel::parentToggleClicked() {
+  paramsMemory.putInt("FrogPilotTogglesOpen", 1);
 }
 
 void FrogPilotVisualsPanel::hideSubToggles() {
