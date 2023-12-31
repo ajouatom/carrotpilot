@@ -849,10 +849,10 @@
     {
       "group": "조향일반",
       "name": "UseLaneLineSpeed",
-      "title": "레인모드:사용(0)",
+      "title": "레인모드: 속도(0)",
       "descr": "레인(차선)모드 사용하면 기존의 조향제어(lat_mpc)를 사용합니다.",
       "egroup": "LAT",
-      "etitle": "Laneline: Use(0)",
+      "etitle": "Laneline: Speed(0)",
       "edescr": "Lainline mode, lat_mpc control used",
       "min": 0,
       "max": 200,
