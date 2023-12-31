@@ -332,6 +332,7 @@ class VCruiseHelper:
     #print(msg.xCmd, msg.xArg, msg.xIndex)
 
     if msg.xIndex > 0 and msg.xIndex != self.xIndex:
+      print("msg.roadcate=", msg.roadcate)
       self.roadcate = msg.roadcate
       self.xIndex = msg.xIndex
       if msg.xCmd == "SPEED":
