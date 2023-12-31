@@ -93,7 +93,7 @@ class Controls:
     self.sm = messaging.SubMaster(['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
                                    'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
                                    'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters',
-                                   'testJoystick', 'frogpilotLongitudinalPlan', 'navInstruction', 'roadLimitSpeed'] + self.camera_packets + self.sensor_packets,
+                                   'testJoystick', 'frogpilotLongitudinalPlan', 'frogpilotLateralPlan', 'navInstruction', 'roadLimitSpeed'] + self.camera_packets + self.sensor_packets,
                                   ignore_alive=ignore, ignore_avg_freq=['radarState', 'testJoystick', ], ignore_valid=['testJoystick', 'navInstruction'], poll=['navInstruction'])
 
     if CI is None:

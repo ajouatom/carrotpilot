@@ -30,6 +30,8 @@ enum FrogPilotEvents @0xf35cc4560bbf6ec2 {
 struct FrogPilotLateralPlan @0xda96579883444c35 {
   laneWidthLeft @0 :Float32;
   laneWidthRight @1 :Float32;
+  distanceToRoadEdgeLeft @2 :Float32;
+  distanceToRoadEdgeRight @3 :Float32;
 }
 
 struct FrogPilotLongitudinalPlan @0x80ae746ee2596b11 {

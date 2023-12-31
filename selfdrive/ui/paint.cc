@@ -1838,7 +1838,7 @@ void DrawApilot::drawDebugText(UIState* s, bool show) {
 
     nvgTextAlign(s->vg, NVG_ALIGN_RIGHT | NVG_ALIGN_BOTTOM);
 
-    int y = 350, dy = 40;
+    int y = 450, dy = 40;
 
     const int text_x = s->fb_w - 220;
     const auto live_torque_params = sm["liveTorqueParameters"].getLiveTorqueParameters();

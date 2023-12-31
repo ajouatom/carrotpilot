@@ -148,6 +148,8 @@ class LateralPlanner:
 
     frogpilotLateralPlan.laneWidthLeft = float(self.DH.lane_width_left)
     frogpilotLateralPlan.laneWidthRight = float(self.DH.lane_width_right)
+    frogpilotLateralPlan.distanceToRoadEdgeLeft = float(self.DH.distance_to_road_edge_left)
+    frogpilotLateralPlan.distanceToRoadEdgeRight = float(self.DH.distance_to_road_edge_right)
 
     pm.send('frogpilotLateralPlan', frogpilot_plan_send)
 

@@ -703,6 +703,9 @@ class VCruiseHelper:
     if self.autoTurnControl > 0:
       navInstruction = controls.sm['navInstruction']
       roadLimitSpeed = controls.sm['roadLimitSpeed']
+      frogpilotLateralPlan = controls.sm['frogpilotLateralPlan']
+      distanceToRoadEdgeLeft = frogpilotLateralPlan.distanceToRoadEdgeLeft
+      distanceToRoadEdgeRight = frogpilotLateralPlan.distanceToRoadEdgeRight
 
       nav_distance = navInstruction.maneuverDistance;
       nav_type = navInstruction.maneuverType;
@@ -720,6 +723,9 @@ class VCruiseHelper:
         nav_speedDown = True if nav_turn or nav_type == 5 else False
         direction = 1 if nav_type in [1,3] else 2 if nav_type in [2,4,43] else 0
 
+      roadcate = roadLimitSpeed.roadcate
+      if roadcate > 7 and (distanceToRoadEdgeLeft + distanceToRoadEdgeRight) > 5.5:
+        roadcate = 5
       turn_dist = interp(roadLimitSpeed.roadcate, [0,7], [100.0, 50.0])
       turn_speed = interp(roadLimitSpeed.roadcate, [0,7], [100.0, self.autoTurnControlSpeedTurn])
       laneChange_dist = interp(roadLimitSpeed.roadcate, [0,7], [300, 160])

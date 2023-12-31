@@ -316,6 +316,18 @@ def main():
   sockWaitTime = 0.2
   send_time = time.monotonic()
 
+  road_category_map = {
+    0: "고속도로0",
+    1: "고속도로1",
+    2: "넓은도로2",
+    3: "넓은도로3",
+    4: "일반도로4",
+    5: "일반도로5",
+    6: "좁은도로6",
+    7: "좁은도로7",
+    8: "XX도로8"
+    }
+
   with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
     try:
       sock.bind(('0.0.0.0', Port.RECEIVE_PORT))
@@ -597,7 +609,7 @@ def main():
         dat.roadLimitSpeed.xRoadLimitSpeed = int(xRoadLimitSpeed)
         if xRoadLimitSpeed > 0:
           dat.roadLimitSpeed.roadLimitSpeed = int(xRoadLimitSpeed)
-        dat.roadLimitSpeed.xRoadName = xRoadName + sdiDebugText
+        dat.roadLimitSpeed.xRoadName = xRoadName + "[{}]".format(road_category_map.get(roadcate,"X")) + sdiDebugText
 
         dat.roadLimitSpeed.xCmd = "" if xCmd is None else xCmd
         dat.roadLimitSpeed.xArg = "" if xArg is None else xArg
