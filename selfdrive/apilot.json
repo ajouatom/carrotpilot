@@ -427,7 +427,7 @@
       "edescr": "",
       "min": 0,
       "max": 30,
-      "default": 3,
+      "default": 6,
       "unit": 1
     },
     {
