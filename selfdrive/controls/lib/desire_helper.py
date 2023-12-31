@@ -104,7 +104,8 @@ class DesireHelper:
       desired_lane = modeldata.laneLines[blinker_index if leftBlinker else blinker_index + 2]
       road_edge = modeldata.roadEdges[blinker_index]
       # Check if the lane width exceeds the threshold
-      lane_available = self.calculate_lane_width(desired_lane, current_lane, road_edge) >= min_lane_threshold
+      lane_width, distance_to_road_edge = self.calculate_lane_width(desired_lane, current_lane, road_edge)
+      lane_available = lane_width >= min_lane_threshold
 
     if not lateral_active or self.lane_change_timer > LANE_CHANGE_TIME_MAX:
       self.lane_change_state = LaneChangeState.off
