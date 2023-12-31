@@ -162,6 +162,7 @@ class VCruiseHelper:
 
     self._params_update()
 
+    print("msg.roadcate=", controls.sm['roadLimitSpeed'].roadcate)
     if CS.cruiseState.available:
       if not self.CP.pcmCruise:
         # if stock cruise is completely disabled, then we can use our own set speed logic
@@ -331,8 +332,7 @@ class VCruiseHelper:
     msg = controls.sm['roadLimitSpeed']
     #print(msg.xCmd, msg.xArg, msg.xIndex)
 
-    if msg.xIndex > 0 and msg.xIndex != self.xIndex:
-      print("msg.roadcate=", msg.roadcate)
+    if msg.xIndex > 0 and msg.xIndex != self.xIndex:      
       self.roadcate = msg.roadcate
       self.xIndex = msg.xIndex
       if msg.xCmd == "SPEED":
