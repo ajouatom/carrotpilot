@@ -153,7 +153,7 @@ class RoadLimitSpeedServer:
       if ret:
         data, self.remote_addr = sock.recvfrom(2048)
         json_obj = json.loads(data.decode())
-        print(json_obj)
+        #print(json_obj)
 
         if 'cmd' in json_obj:
           try:
@@ -476,7 +476,7 @@ def main():
           nTBTDist = float(server.get_apilot_val("nTBTDist", nTBTDist))
           nRoadLimitSpeed = int(server.get_apilot_val("nRoadLimitSpeed", nRoadLimitSpeed))
           roadcate = int(server.get_apilot_val("roadcate", roadcate))
-          print("roadcate=", roadcate)
+          #print("roadcate=", roadcate)
 
         #print("O:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
 

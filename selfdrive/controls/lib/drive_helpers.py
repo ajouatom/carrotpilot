@@ -91,7 +91,6 @@ class VCruiseHelper:
     self.leftBlinkerExtCount = 0
     self.naviDistance = 0
     self.naviSpeed = 0
-    self.roadcate = 7
     
     #ajouatom: params
     self.params_count = 0
@@ -162,7 +161,6 @@ class VCruiseHelper:
 
     self._params_update()
 
-    print("msg.roadcate=", controls.sm['roadLimitSpeed'].roadcate)
     if CS.cruiseState.available:
       if not self.CP.pcmCruise:
         # if stock cruise is completely disabled, then we can use our own set speed logic
@@ -333,7 +331,6 @@ class VCruiseHelper:
     #print(msg.xCmd, msg.xArg, msg.xIndex)
 
     if msg.xIndex > 0 and msg.xIndex != self.xIndex:      
-      self.roadcate = msg.roadcate
       self.xIndex = msg.xIndex
       if msg.xCmd == "SPEED":
         if msg.xArg == "UP":
@@ -665,7 +662,7 @@ class VCruiseHelper:
         speedLimitType = 4
 
     log = "{},{:.1f}<{:.1f}/{:.1f},{:.1f} B{} A{:.1f}/{:.1f} N{:.1f}/{:.1f} C{:.1f}/{:.1f} V{:.1f}/{:.1f} ".format(
-                  self.roadcate, applySpeed, safeSpeed, leftDist, safeDist,
+                  msg.roadcate, applySpeed, safeSpeed, leftDist, safeDist,
                   1 if isSpeedBump else 0, 
                   msg.xSpdLimit, msg.xSpdDist,
                   msg.camLimitSpeed, msg.camLimitSpeedLeftDist,
@@ -720,10 +717,10 @@ class VCruiseHelper:
         nav_speedDown = True if nav_turn or nav_type == 5 else False
         direction = 1 if nav_type in [1,3] else 2 if nav_type in [2,4,43] else 0
 
-      turn_dist = interp(self.roadcate, [0,7], [100.0, 50.0])
-      turn_speed = interp(self.roadcate, [0,7], [100.0, self.autoTurnControlSpeedTurn])
-      laneChange_dist = interp(self.roadcate, [0,7], [300, 160])
-      laneChange_speed = interp(self.roadcate, [0,7], [100, self.autoTurnControlSpeedLaneChange])
+      turn_dist = interp(roadLimitSpeed.roadcate, [0,7], [100.0, 50.0])
+      turn_speed = interp(roadLimitSpeed.roadcate, [0,7], [100.0, self.autoTurnControlSpeedTurn])
+      laneChange_dist = interp(roadLimitSpeed.roadcate, [0,7], [300, 160])
+      laneChange_speed = interp(roadLimitSpeed.roadcate, [0,7], [100, self.autoTurnControlSpeedLaneChange])
 
       self.naviDistance = 0
       self.naviSpeed = 0
