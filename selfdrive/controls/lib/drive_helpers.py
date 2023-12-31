@@ -54,8 +54,8 @@ CRUISE_INTERVAL_SIGN = {
 class VCruiseHelper:
   def __init__(self, CP):
     self.CP = CP
-    self.v_cruise_kph = V_CRUISE_UNSET
-    self.v_cruise_cluster_kph = V_CRUISE_UNSET
+    self.v_cruise_kph = V_CRUISE_INITIAL #V_CRUISE_UNSET
+    self.v_cruise_cluster_kph = V_CRUISE_INITIAL #V_CRUISE_UNSET
     self.v_cruise_kph_last = 0
     self.button_timers = {ButtonType.decelCruise: 0, ButtonType.accelCruise: 0}
     self.button_change_states = {btn: {"standstill": False, "enabled": False} for btn in self.button_timers}
@@ -69,7 +69,7 @@ class VCruiseHelper:
     self.button_prev = ButtonType.unknown
     self.cruiseActivate = 0
     self.params = Params()
-    self.v_cruise_kph_set = V_CRUISE_UNSET
+    self.v_cruise_kph_set = V_CRUISE_INITIAL #V_CRUISE_UNSET
     self.cruiseSpeedTarget = 0
     self.roadSpeed = 30
     self.xState = 0
@@ -175,9 +175,9 @@ class VCruiseHelper:
         self.v_cruise_kph = CS.cruiseState.speed * CV.MS_TO_KPH
         self.v_cruise_cluster_kph = self.v_cruise_kph_set = CS.cruiseState.speedCluster * CV.MS_TO_KPH
     else:
-      self.v_cruise_kph = V_CRUISE_UNSET
-      self.v_cruise_cluster_kph = V_CRUISE_UNSET
-      self.v_cruise_kph_set = V_CRUISE_UNSET
+      self.v_cruise_kph = V_CRUISE_INITIAL#V_CRUISE_UNSET
+      self.v_cruise_cluster_kph = V_CRUISE_INITIAL#V_CRUISE_UNSET
+      self.v_cruise_kph_set = V_CRUISE_INITIAL#V_CRUISE_UNSET
       self.cruiseActivate = 0
 
   def _update_v_cruise_non_pcm(self, CS, enabled, is_metric, reverse_cruise_increase):
