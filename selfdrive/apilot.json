@@ -515,7 +515,7 @@
       "descr": "빠른주행중 적색신호, 속도줄이다가 70Km/h이하에서 작동",
       "egroup": "CRUISE",
       "etitle": "BrakeCruiseON: Stopping,Traffic",
-      "edescr": "Brake off and traffic signal is RED",
+      "edescr": "Brake off and RED traffic light",
       "min": 0,
       "max": 1,
       "default": 0,

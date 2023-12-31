@@ -102,6 +102,7 @@ class VCruiseHelper:
     self.autoNaviSpeedCtrl = 2
     self.autoResumeFromGasSpeed = Params().get_int("AutoResumeFromGasSpeed")
     self.autoCancelFromGasMode = Params().get_int("AutoCancelFromGasMode")
+    self.autoResumeFromBrakeReleaseTrafficSign = Params().get_int("AutoResumeFromBrakeReleaseTrafficSign")
     self.autoCruiseControl = Params().get_int("AutoCruiseControl")
     self.cruiseButtonMode = Params().get_int("CruiseButtonMode")
     self.steerRatioApply = float(self.params.get_int("SteerRatioApply")) * 0.1
@@ -131,6 +132,7 @@ class VCruiseHelper:
     elif self.params_count == 20:
       self.autoResumeFromGasSpeed = Params().get_int("AutoResumeFromGasSpeed")
       self.autoCancelFromGasMode = Params().get_int("AutoCancelFromGasMode")
+      self.autoResumeFromBrakeReleaseTrafficSign = Params().get_int("AutoResumeFromBrakeReleaseTrafficSign")
       self.autoCruiseControl = Params().get_int("AutoCruiseControl")
       self.cruiseButtonMode = Params().get_int("CruiseButtonMode")
       self.cruiseOnDist = float(Params().get_int("CruiseOnDist")) / 100.
@@ -527,8 +529,9 @@ class VCruiseHelper:
           self._add_log("Cruise Activate from Speed")          
         self.cruiseActivate = 1
     elif self.brake_pressed_count == -1 and self.softHoldActive == 0:
-      if not controls.enabled and self.v_ego_kph_set < 70.0 and controls.experimental_mode and Params().get_bool("AutoResumeFromBrakeReleaseTrafficSign"):
-        self._add_log("Cruise Activate from TrafficSign")
+      if self.autoResumeFromGasSpeed < self.v_ego_kph_set and self.autoResumeFromBrakeReleaseTrafficSign:
+        v_cruise_kph = self.v_ego_kph_set
+        self._add_log("Cruise Activate Brake Release")
         self.cruiseActivate = 1
 
     if self.gas_pressed_count > 0 and self.v_ego_kph_set > v_cruise_kph:
@@ -537,8 +540,8 @@ class VCruiseHelper:
       self._add_log("Cruise Activete from SoftHold")
       self.softHoldActive = 2
       self.cruiseActivate = 1
-    elif self.brake_pressed_count == -1 and self.xState == 3:
-      v_cruise_kph = self.v_ego_kph_set
+    elif self.brake_pressed_count == -1 and self.xState == 3 and self.autoResumeFromBrakeReleaseTrafficSign:
+      #v_cruise_kph = self.v_ego_kph_set
       self._add_log("Cruise Activate from Traffic sign stop")
       self.cruiseActivate = 1
     elif self.brake_pressed_count == -1 and (0 < self.lead_dRel < 20):
