@@ -48,10 +48,13 @@ What is the useful features of CarrotPilot?
   - If the speed exceeds the set speed, it automatically switches to lane mode. This method uses lat_mpc
     
 **Automatic Engage: HKG car only, APILOT feature**
-  * Setting - Carrot - Cruise (설정/당근/크루즈)
-    * (HKG) Auto Cruise Control : 1
+  * Setting - APM/Carrot - Cruise (설정/당근/크루즈)
+    * (HKG) Auto Cruise Control (자동 크루즈 제어)
+      * 1: Enable Automatic cruise control (자동크루즈 제어 켜기)
+      * 2: Enable Automatic cruies control, and auto cruise activate when the lead car approaches and you do not gas/brake press. (자동크루즈 제어켜기, 선행차가 가까와질때)
   * Setting - APM - Cruise
-    * BrakeCruiseON: Stopping, Traffic(브레이크해제 크루즈ON)
+    * BrakeCruiseON: Stopping, Traffic (브레이크해제 크루즈ON)
+      * At brake release, Automatic cruise activate when RED traffic light is detect or speed is faster than setting speed[GasCruise ON: Speed] 
     * GasCruise ON: Speed (엑셀 크루즈ON:속도)
       * If the gas pedal is pressed and the speed exceeds the set speed, Enage automatically activates
     * GasCruise OFF: Mode (엑셀 크루즈OFF:모드)
