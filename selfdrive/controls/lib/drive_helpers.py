@@ -388,7 +388,7 @@ class VCruiseHelper:
 
   def _update_cruise_buttons(self, CS, v_cruise_kph, controls):
 
-    self.cruiseButtonMode = 2    
+    #self.cruiseButtonMode = 2    
 
     if v_cruise_kph > 200:
       self._add_log("VCruise: speed initialize....")
