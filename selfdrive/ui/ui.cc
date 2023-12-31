@@ -602,10 +602,13 @@ static void update_state(UIState *s) {
     }
     scene.adjusted_cruise = frogpilotLongitudinalPlan.getAdjustedCruise();
   }
-  if (sm.updated("gpsLocation")) {
-    const auto gpsLocation = sm["gpsLocation"].getGpsLocation();
+  if (sm.updated("liveLocationKalman")) {
+    const auto liveLocationKalman = sm["liveLocationKalman"].getLiveLocationKalman();
     if (scene.compass) {
-      scene.bearing_deg = gpsLocation.getBearingDeg();
+      auto orientation = liveLocationKalman.getCalibratedOrientationNED();
+      if (orientation.getValid()) {
+        scene.bearing_deg = RAD2DEG(orientation.getValue()[2]);
+      }
     }
   }
   if (sm.updated("wideRoadCameraState")) {
@@ -751,7 +754,7 @@ UIState::UIState(QObject *parent) : QObject(parent) {
   sm = std::make_unique<SubMaster, const std::initializer_list<const char *>>({
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState", "roadCameraState",
     "pandaStates", "carParams", "driverMonitoringState", "carState", "liveLocationKalman", "driverStateV2",
-    "wideRoadCameraState", "managerState", "navInstruction", "navRoute", "uiPlan", "gpsLocation", 
+    "wideRoadCameraState", "managerState", "navInstruction", "navRoute", "uiPlan", "liveLocationKalman",
     "frogpilotCarControl", "frogpilotDeviceState", "frogpilotLateralPlan", "frogpilotLongitudinalPlan",
     "lateralPlan", "longitudinalPlan","carControl", "liveParameters", "roadLimitSpeed", "liveTorqueParameters",
   });

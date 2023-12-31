@@ -299,10 +299,8 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : ListWid
     addItem(toggle);
     toggles[param.toStdString()] = toggle;
 
-    connect(toggles["AlwaysOnLateral"], &ToggleControl::toggleFlipped, [this](bool state) {
-      if (toggles.find("AlwaysOnLateralMain") != toggles.end()) {
-        toggles["AlwaysOnLateralMain"]->setVisible(state);
-      }
+    QObject::connect(toggles["AlwaysOnLateral"], &ToggleControl::toggleFlipped, [this](bool state) {
+      toggles["AlwaysOnLateralMain"]->setVisible(state);
     });
 
     QObject::connect(toggle, &ToggleControl::toggleFlipped, [this]() {
@@ -323,10 +321,14 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : ListWid
   speedLimitControllerKeys = {"Offset1", "Offset2", "Offset3", "Offset4", "SLCFallback", "SLCPriority"};
   visionTurnControlKeys = {"CurveSensitivity", "TurnAggressiveness"};
 
-  QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotControlsPanel::updateMetric);
+  QObject::connect(toggles["AlwaysOnLateralMain"], &ToggleControl::toggleFlipped, [parent](bool state) {
+    if (state) {
+      ConfirmationDialog::toggleAlert("WARNING: This is very experimental and isn't guaranteed to work. If you run into any issues, please report it in the FrogPilot Discord!", "I understand the risks.", parent);
+    }
+  });
 
-  std::set<std::string> keys = {"AlwaysOnLateral", "AlwaysOnLateralMain", "FireTheBabysitter", "NoLogging", "MuteDM", "NNFF"};
-  for (const std::string &key : keys) {
+  std::set<std::string> rebootKeys = {"AlwaysOnLateral", "AlwaysOnLateralMain", "FireTheBabysitter", "NoLogging", "MuteDM", "NNFF"};
+  for (const std::string &key : rebootKeys) {
     QObject::connect(toggles[key], &ToggleControl::toggleFlipped, [parent]() {
       if (ConfirmationDialog::toggle("Reboot required to take effect.", "Reboot Now", parent)) {
         Hardware::reboot();
@@ -334,13 +336,16 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : ListWid
     });
   }
 
+  QObject::connect(uiState(), &UIState::uiUpdate, this, &FrogPilotControlsPanel::updateState);
+
   hideSubToggles();
   setDefaults();
 }
 
-void FrogPilotControlsPanel::updateMetric() {
+void FrogPilotControlsPanel::updateState() {
   if (isVisible()) {
-    if (!paramsMemory.getBool("FrogPilotTogglesOpen")) {
+    if (paramsMemory.getInt("FrogPilotTogglesOpen") == 2) {
+      paramsMemory.putInt("FrogPilotTogglesOpen", 0);
       hideSubToggles();
     }
   }
@@ -425,7 +430,7 @@ void FrogPilotControlsPanel::updateMetric() {
 }
 
 void FrogPilotControlsPanel::parentToggleClicked() {
-  paramsMemory.putBool("FrogPilotTogglesOpen", true);
+  paramsMemory.putInt("FrogPilotTogglesOpen", 1);
   conditionalSpeedsImperial->setVisible(false);
   conditionalSpeedsMetric->setVisible(false);
   modelSelectorButton->setVisible(false);
@@ -455,7 +460,7 @@ void FrogPilotControlsPanel::hideSubToggles() {
 }
 
 void FrogPilotControlsPanel::hideEvent(QHideEvent *event) {
-  paramsMemory.putBool("FrogPilotTogglesOpen", false);
+  paramsMemory.putInt("FrogPilotTogglesOpen", 0);
 
   hideSubToggles();
 }
@@ -492,6 +497,7 @@ void FrogPilotControlsPanel::setDefaults() {
     {"LateralTune", "1"},
     {"LongitudinalTune", "1"},
     {"MTSCEnabled", "1"},
+    {"NoLogging", "1"},
     {"MuteDM", FrogsGoMoo ? "1" : "0"},
     {"MuteDoor", FrogsGoMoo ? "1" : "0"},
     {"MuteOverheated", FrogsGoMoo ? "1" : "0"},

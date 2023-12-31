@@ -81,6 +81,10 @@ def manager_init() -> None:
     ("AutoCurveSpeedCtrlUse", "0"),
     ("AutoCurveSpeedFactor", "100"),
     ("AutoCurveSpeedFactorIn", "50"),
+    ("AutoTurnControl", "0"),
+    ("AutoTurnControlSpeedLaneChange", "60"),
+    ("AutoTurnControlSpeedTurn", "20"),
+    ("AutoTurnControlTurnEnd", "6"),
     ("AutoNaviSpeedCtrlEnd", "6"),
     ("AutoNaviSpeedBumpTime", "1"),
     ("AutoNaviSpeedBumpSpeed", "35"),
@@ -96,6 +100,7 @@ def manager_init() -> None:
     ("ALeadTau", "150"), 
     ("ALeadTauStart", "50"), 
     ("TrafficStopMode", "1"),         
+    ("CruiseButtonMode", "0"),      
     ("CruiseSpeedUnit", "10"),      
     ("MyDrivingMode", "3"),      
     ("MySafeModeFactor", "60"),      
@@ -116,6 +121,7 @@ def manager_init() -> None:
     ("EnableRadarTracks", "0"),      
     ("SccConnectedBus2", "0"),
     ("SoundVolumeAdjust", "100"),
+    ("SoundVolumeAdjustEngage", "10"),
     ("TFollowSpeedAdd", "0"),
     ("TFollowSpeedAddM", "0"),
     ("SoftHoldMode", "0"),       
@@ -220,7 +226,7 @@ def is_running_on_wsl2():
 
 def manager_thread() -> None:
 
-  Process(name="road_speed_limiter", target=launcher, args=("openpilot.selfdrive.road_speed_limiter", "road_speed_limiter")).start()
+  #Process(name="road_speed_limiter", target=launcher, args=("openpilot.selfdrive.road_speed_limiter", "road_speed_limiter")).start()
   cloudlog.bind(daemon="manager")
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})

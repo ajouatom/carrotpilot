@@ -255,7 +255,8 @@ class LongitudinalPlanner:
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
     x, v, a, j = self.parse_model(sm['modelV2'], self.v_model_error)
     self.v_cruise_last = v_cruise
-    self.mpc.update(sm, reset_state, self.conditional_experimental_mode, sm['radarState'], v_cruise, x, v, a, j, 
+    carrot_light_detect = not self.conditional_experimental_mode# or (self.conditional_experimental_mode and not self.params.get_bool("CEStopLights"))
+    self.mpc.update(sm, reset_state, carrot_light_detect, sm['radarState'], v_cruise, x, v, a, j, 
                     have_lead, self.aggressive_acceleration, self.increased_stopping_distance, self.smoother_braking,
                     self.custom_personalities, self.aggressive_follow, self.standard_follow, self.relaxed_follow, personality=self.personality)
 

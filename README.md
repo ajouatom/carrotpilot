@@ -48,10 +48,13 @@ What is the useful features of CarrotPilot?
   - If the speed exceeds the set speed, it automatically switches to lane mode. This method uses lat_mpc
     
 **Automatic Engage: HKG car only, APILOT feature**
-  * Setting - Carrot - Cruise (설정/당근/크루즈)
-    * (HKG) Auto Cruise Control : 1
+  * Setting - APM/Carrot - Cruise (설정/당근/크루즈)
+    * (HKG) Auto Cruise Control (자동 크루즈 제어)
+      * 1: Enable Automatic cruise control (자동크루즈 제어 켜기)
+      * 2: Enable Automatic cruies control, and auto cruise activate when the lead car approaches and you do not gas/brake press. (자동크루즈 제어켜기, 선행차가 가까와질때)
   * Setting - APM - Cruise
-    * BrakeCruiseON: Stopping, Traffic(브레이크해제 크루즈ON)
+    * BrakeCruiseON: Stopping, Traffic (브레이크해제 크루즈ON)
+      * At brake release, Automatic cruise activate when RED traffic light is detect or speed is faster than setting speed[GasCruise ON: Speed] 
     * GasCruise ON: Speed (엑셀 크루즈ON:속도)
       * If the gas pedal is pressed and the speed exceeds the set speed, Enage automatically activates
     * GasCruise OFF: Mode (엑셀 크루즈OFF:모드)
@@ -64,32 +67,43 @@ What is the useful features of CarrotPilot?
 **Voice Recognition: APM, Korean only, APILOT feature, under construction!**
   - The connected APM supports voice recognition. It allows for lane changes and speed control using voice commands.
 
-**HKG차량을 위한 설정방법**
+**Settings - Carrot**
+  * Start
+    * (HKG) SCC Module connected BUS2
+    * (HKG) EnableRadarTracks
+    * Adjust Sound Volume
+    * Adjust Sound Volume, Engage
+    * Mapbox Style
+  * Cruise
+    * (HKG) Auto Cruise control
+    * Button: Cruise Button Mode
+    * Button: Cruise Speed Unit
+    * STOPPING: Traffic Stop Mode
+    * CRUISE: Eco control
+    * CRUISE: Auto ON distance
+    * lol! too many..
+  * Speed
+  * Tuning
+  * Disp
+  * Path
+
+**HKG차량을 위한 설정방법(롱컨이용가능차량)**
+  * Setting - Device(장치)
+    * Set to default(for HKG) : 누르고, 재시작(재부팅)    * 
   * Setting - Carrot(당근)
     * Start(시작) : 차량에 맞게 설정
     * 나머지는 APILOT과 거의 동일함.
   * Setting - Control
-    * Adjustable Personalites : Wheel
-    * Always on Lateral/No disengage : ON
-    * Enable AOL On Cruise Main : ON
-    * Conditional Experimental Mode : OFF
+    * Adjustable Personalites : [Steering Wheel] or [Wheel + Button]
+    * Conditional Experimental Mode : OFF (ON하면 Carrot의 기능작동정지)
     * Custom Driving Personalities : ON (변경하고 싶으면)
     * Fire the Babysitter : ON (OFF하고, DM을 끄면 banned 될수 있음)
     * Lateral Tuning: 맘대로
     * Longitudinal Tuning: ON
-      * Acceleration Profile : Normal (이렇게 해야 apilot기능 사용가능)
-      * Increase Stopping Distance : Off
+      * Acceleration Profile : Standard (다른것으로 하면 Carrot설정이 안됨)
       * Aggressive Acceleration With Lead : Off
       * Smoother Braking Behind Lead : Off
-    * Model Selector: NLP
-    * Map Turn Speed Control : Off
-    * Nudgeless Lane Change : Instant
-    * Pause Lateral On Turn Signal : Off
-    * Speed Limit Controller : Off
-    * Turn Desires : On
-    * Vision Turn Speed Control : On
-      * Curve Dection Sensitivity: 120
-      * Turn Speed Aggressiveness : 90
+      * Increase Stopping Distance : Off
   * Setting - Navigation (맘대로)
     * ip주소:8082로 접속하여 Public/Secret Mapbox Key를 입력한다.
   * Setting - Vehicles (맘대로)

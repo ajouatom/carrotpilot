@@ -113,15 +113,6 @@ void OnroadWindow::updateState(const UIState &s) {
     bg = bgColor;
     update();
   }
-
-#ifdef ENABLE_MAPS
-  // Make sure the sidebar is always closed when the map is ope
-  if (map != nullptr) {
-    if (geometry().x() > 0 && map->isVisible()) {
-      clickTimer.start(1);
-    }
-  }
-#endif
 }
 
 void OnroadWindow::mousePressEvent(QMouseEvent* e) {
@@ -1012,7 +1003,6 @@ void AnnotatedCameraWidget::paintEvent(QPaintEvent *event) {
   const double start_draw_t = millis_since_boot();
   const cereal::ModelDataV2::Reader &model = sm["modelV2"].getModelV2();
 
-  updateFrogPilotVariables();
   // draw camera frame
   {
     std::lock_guard lk(frame_lock);
@@ -1119,7 +1109,6 @@ void AnnotatedCameraWidget::showEvent(QShowEvent *event) {
   CameraWidget::showEvent(event);
 
   ui_update_params(uiState());
-  updateFrogPilotVariables();
   prev_draw_t = millis_since_boot();
 }
 
@@ -1181,7 +1170,8 @@ void AnnotatedCameraWidget::initializeFrogPilotWidgets() {
   });
   record_timer->start(1000 / UI_FREQ);
 }
-void AnnotatedCameraWidget::updateFrogPilotVariables() {
+
+void AnnotatedCameraWidget::updateFrogPilotWidgets(QPainter &p) {
   accelerationPath = scene.acceleration_path;
   adjacentPath = scene.adjacent_path;
   alwaysOnLateral = scene.always_on_lateral_active;
@@ -1215,8 +1205,6 @@ void AnnotatedCameraWidget::updateFrogPilotVariables() {
   stoppedEquivalenceStock = scene.stopped_equivalence_stock;
   turnSignalLeft = scene.turn_signal_left;
   turnSignalRight = scene.turn_signal_right;
-}
-void AnnotatedCameraWidget::updateFrogPilotWidgets(QPainter &p) {
 
   if (!showDriverCamera) {
     if (leadInfo) {
@@ -1448,7 +1436,8 @@ void AnnotatedCameraWidget::drawLeadInfo(QPainter &p) {
     .arg(currentAcceleration * speedConversion, 0, 'f', 2)
     .arg(unit_a);
 
-  const QString maxAccSuffix = QString(mapOpen ? "" : " - Max: %1%2")
+  //const QString maxAccSuffix = QString(mapOpen ? "" : " - Max: %1%2")
+  const QString maxAccSuffix = QString(" - Max: %1%2")
     .arg(maxAcceleration * speedConversion, 0, 'f', 2)
     .arg(unit_a);
 

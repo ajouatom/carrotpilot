@@ -700,6 +700,8 @@ struct ControlsState @0x97ff69c53601abf1 {
 
   debugText1 @66 : Text;
   debugText2 @67 : Text;
+  leftBlinkerExt @68 : Bool;
+  rightBlinkerExt @69 : Bool;
   enum OpenpilotState @0xdbe58b96d2d1ac61 {
     disabled @0;
     preEnabled @1;
@@ -2223,6 +2225,7 @@ struct RoadLimitSpeed {
     xCmd @20 : Text;
     xArg @21 : Text;
     xIndex @22 : Int16;
+    roadcate @23 : Int16;
 }
 
 struct Event {

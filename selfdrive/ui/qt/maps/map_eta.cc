@@ -50,7 +50,6 @@ void MapETA::updateETA(float s, float s_typical, float d) {
                              <td style="padding-left:40px;color:%3;"><b>%4</b></td><td style="padding-right:40px;color:%3;">%5</td>
                              <td><b>%6</b></td><td>%7</td></tr></body>)")
                       .arg(eta.first, eta.second, color, remaining.first, remaining.second, distance.first, distance.second));
-
   setVisible(d >= MANEUVER_TRANSITION_THRESHOLD);
   update();
 }

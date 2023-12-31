@@ -54,6 +54,8 @@ class DesireHelper:
     self.turn_completed = False
     self.lane_change_wait_timer = 0
 
+    self.lane_available_prev = False
+
   # Lane detection
   def calculate_lane_width(self, lane, current_lane, road_edge):
     # Interpolate lane values at current_lane.x positions
@@ -72,9 +74,11 @@ class DesireHelper:
     # Return the smallest between the two
     return min(distance_to_lane, distance_to_road_edge)
 
-  def update(self, carstate, modeldata, lateral_active, lane_change_prob):
+  def update(self, carstate, modeldata, lateral_active, lane_change_prob, leftBlinkerExt, rightBlinkerExt):
     v_ego = carstate.vEgo
-    one_blinker = carstate.leftBlinker != carstate.rightBlinker
+    leftBlinker = carstate.leftBlinker or leftBlinkerExt
+    rightBlinker = carstate.rightBlinker or rightBlinkerExt
+    one_blinker = leftBlinker != rightBlinker
     below_lane_change_speed = v_ego < LANE_CHANGE_SPEED_MIN
 
     # Calculate left and right lane widths for the blindspot path
@@ -93,9 +97,9 @@ class DesireHelper:
       # Set the minimum lane threshold to 2.8 meters
       min_lane_threshold = 2.8
       # Set the blinker index based on which signal is on
-      blinker_index = 0 if carstate.leftBlinker else 1
+      blinker_index = 0 if leftBlinker else 1
       current_lane = modeldata.laneLines[blinker_index + 1]
-      desired_lane = modeldata.laneLines[blinker_index if carstate.leftBlinker else blinker_index + 2]
+      desired_lane = modeldata.laneLines[blinker_index if leftBlinker else blinker_index + 2]
       road_edge = modeldata.roadEdges[blinker_index]
       # Check if the lane width exceeds the threshold
       lane_available = self.calculate_lane_width(desired_lane, current_lane, road_edge) >= min_lane_threshold
@@ -104,7 +108,7 @@ class DesireHelper:
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
     elif one_blinker and below_lane_change_speed and self.turn_desires:
-      self.turn_direction = TurnDirection.turnLeft if carstate.leftBlinker else TurnDirection.turnRight
+      self.turn_direction = TurnDirection.turnLeft if leftBlinker else TurnDirection.turnRight
       # Set the "turn_completed" flag to prevent lane changes after completing a turn
       self.turn_completed = True
     else:
@@ -121,7 +125,7 @@ class DesireHelper:
       elif self.lane_change_state == LaneChangeState.preLaneChange:
         # Set lane change direction
         self.lane_change_direction = LaneChangeDirection.left if \
-          carstate.leftBlinker else LaneChangeDirection.right
+          leftBlinker else LaneChangeDirection.right
 
         torque_applied = carstate.steeringPressed and \
                          ((carstate.steeringTorque > 0 and self.lane_change_direction == LaneChangeDirection.left) or
@@ -132,7 +136,13 @@ class DesireHelper:
 
         # Conduct a nudgeless lane change if all the conditions are true
         self.lane_change_wait_timer += DT_MDL
-        if self.nudgeless and lane_available and not self.lane_change_completed and self.lane_change_wait_timer >= self.lane_change_delay:
+        need_torque = False
+        if (not carstate.leftBlinker and leftBlinkerExt) or (not carstate.rightBlinker and rightBlinkerExt):
+          if not self.lane_available_prev and lane_available:
+            need_torque = False
+          elif lane_available:
+            need_torque = True
+        if not need_torque and self.nudgeless and lane_available and not self.lane_change_completed and self.lane_change_wait_timer >= self.lane_change_delay:          
           torque_applied = True
           self.lane_change_wait_timer = 0
 
@@ -171,6 +181,7 @@ class DesireHelper:
       self.lane_change_timer += DT_MDL
 
     self.prev_one_blinker = one_blinker
+    self.lane_available_prev = lane_available
     
     steering_pressed = carstate.steeringPressed and \
                      ((carstate.steeringTorque < 0 and self.lane_change_direction == LaneChangeDirection.left) or
