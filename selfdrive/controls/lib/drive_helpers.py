@@ -374,7 +374,7 @@ class VCruiseHelper:
         elif msg.xArg == "LEFT":
           self.leftBlinkerExtCount = 50
         if blinkerExtState <= 0 and self.rightBlinkerExtCount + self.rightBlinkerExtCount > 0:
-          self._make_event(EventName.audioLaneChange)
+          self._make_event(controls, EventName.audioLaneChange)
 
       elif msg.xCmd == "DETECT":
         self.debugText2 = "DETECT[{}]={}".format(msg.xIndex, msg.xArg)
