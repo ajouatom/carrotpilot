@@ -75,9 +75,13 @@ class DesireHelper:
     return min(distance_to_lane, distance_to_road_edge), distance_to_road_edge
 
   def update(self, carstate, modeldata, lateral_active, lane_change_prob, leftBlinkerExt, rightBlinkerExt):
+    blinkerExtMode = int((leftBlinkerExt + rightBlinkerExt) / 10000)
+    leftBlinkerExt %= 10000
+    rightBlinkerExt %= 10000
+
     v_ego = carstate.vEgo
-    leftBlinker = carstate.leftBlinker or leftBlinkerExt
-    rightBlinker = carstate.rightBlinker or rightBlinkerExt
+    leftBlinker = carstate.leftBlinker or leftBlinkerExt > 0
+    rightBlinker = carstate.rightBlinker or rightBlinkerExt > 0
     one_blinker = leftBlinker != rightBlinker
     below_lane_change_speed = v_ego < LANE_CHANGE_SPEED_MIN
 
@@ -140,10 +144,10 @@ class DesireHelper:
         # Conduct a nudgeless lane change if all the conditions are true
         self.lane_change_wait_timer += DT_MDL
         need_torque = False
-        if (not carstate.leftBlinker and leftBlinkerExt) or (not carstate.rightBlinker and rightBlinkerExt):
+        if (not carstate.leftBlinker and leftBlinkerExt > 0) or (not carstate.rightBlinker and rightBlinkerExt > 0):
           if not self.lane_available_prev and lane_available:
             need_torque = False
-          elif lane_available:
+          elif lane_available and blinkerExtMode == 0:
             need_torque = True
         if not need_torque and self.nudgeless and lane_available and not self.lane_change_completed and self.lane_change_wait_timer >= self.lane_change_delay:          
           torque_applied = True
