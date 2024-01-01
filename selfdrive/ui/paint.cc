@@ -1077,7 +1077,7 @@ void DrawApilot::drawSpeed(const UIState* s, int x, int y) {
     float cur_speed = getVEgo() * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH);
     if (cur_speed < 0.0) cur_speed = 0.0;
     auto controls_state = sm["controlsState"].getControlsState();
-    auto carstate = sm["cateState"].getCarState();
+    auto carstate = sm["carState"].getCarState();
     const auto road_limit_speed = sm["roadLimitSpeed"].getRoadLimitSpeed();
     //const auto car_params = sm["carParams"].getCarParams();
     if (s->show_mode == 3) {
