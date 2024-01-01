@@ -1,3 +1,9 @@
+Version 0.9.6 (2024-01-02)
+========================
+* CarrotMan 0.04
+* NOO helper
+* Cruise button mode
+
 Version 0.9.6 (2023-12-14)
 ========================
 * AGNOS 9
