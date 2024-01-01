@@ -94,7 +94,7 @@ class Controls:
                                    'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
                                    'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters',
                                    'testJoystick', 'frogpilotLongitudinalPlan', 'frogpilotLateralPlan', 'navInstruction', 'roadLimitSpeed'] + self.camera_packets + self.sensor_packets,
-                                  ignore_alive=ignore, ignore_avg_freq=['radarState', 'testJoystick', ], ignore_valid=['testJoystick', 'navInstruction'], poll=['navInstruction'])
+                                  ignore_alive=ignore, ignore_avg_freq=['radarState', 'testJoystick', ], ignore_valid=['testJoystick', 'navInstruction', 'roadLimitSpeed'], poll=['navInstruction', 'roadLimitSpeed'])
 
     if CI is None:
       # wait for one pandaState and one CAN packet
