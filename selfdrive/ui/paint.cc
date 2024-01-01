@@ -1109,7 +1109,7 @@ void DrawApilot::drawSpeed(const UIState* s, int x, int y) {
         //cruiseAdjustment = 0.1 * s->scene.cruiseAdjustment * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH) + 0.9 * cruiseAdjustment;
         //cruiseAdjustment = fmax((0.1 * fmax(setSpeed - scene.adjusted_cruise - setSpeed, 0) * (is_metric ? MS_TO_KPH : MS_TO_MPH) + 0.9 * cruiseAdjustment) - 1, 0);
         float vCluRatio = carstate.getVCluRatio();
-        if (vCluRatio < 0.5) vCluRatio = 1.0
+        if (vCluRatio < 0.5) vCluRatio = 1.0;
         cruiseAdjustment = s->scene.adjusted_cruise / vCluRatio  * (s->scene.is_metric ? MS_TO_KPH : MS_TO_MPH) * 0.1 + cruiseAdjustment * 0.9;
         bool speedCtrlActive = false;
         //if (curveSpeed < 0) {
