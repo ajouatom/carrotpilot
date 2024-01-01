@@ -1159,23 +1159,25 @@ void DrawApilot::drawSpeed(const UIState* s, int x, int y) {
         xDistToTurn = 120;
 #endif
 
-        auto navInstruction = sm["navInstruction"].getNavInstruction();
-        float navDistance = navInstruction.getManeuverDistance();
-        //float distance_remaining = navInstruction.getDistanceRemaining();
-        QString navType = QString::fromStdString(navInstruction.getManeuverType());
-        QString navModifier = QString::fromStdString(navInstruction.getManeuverModifier());
-        //navText = QString::fromStdString(navInstruction.getManeuverSecondaryText());
+        if (xTurnInfo < 0 && xDistToTurn <= 0) {
+            auto navInstruction = sm["navInstruction"].getNavInstruction();
+            float navDistance = navInstruction.getManeuverDistance();
+            //float distance_remaining = navInstruction.getDistanceRemaining();
+            QString navType = QString::fromStdString(navInstruction.getManeuverType());
+            QString navModifier = QString::fromStdString(navInstruction.getManeuverModifier());
+            //navText = QString::fromStdString(navInstruction.getManeuverSecondaryText());
 
-        if (navType == "turn") {
-            if (navModifier == "sharp left" || navModifier == "slight left" || navModifier == "left") xTurnInfo = 1; // left turn
-            else if (navModifier == "sharp right" || navModifier == "slight right" || navModifier == "right") xTurnInfo = 2;
-            else if (navModifier == "uturn") xTurnInfo = 5;
-            xDistToTurn = navDistance;
-        }
-        else if (navType == "fork" || navType == "off ramp") {
-            if (navModifier == "slight left" || navModifier == "left") xTurnInfo = 3; // left turn
-            else if (navModifier == "slight right" || navModifier == "right") xTurnInfo = 4;
-            xDistToTurn = navDistance;
+            if (navType == "turn") {
+                if (navModifier == "sharp left" || navModifier == "slight left" || navModifier == "left") xTurnInfo = 1; // left turn
+                else if (navModifier == "sharp right" || navModifier == "slight right" || navModifier == "right") xTurnInfo = 2;
+                else if (navModifier == "uturn") xTurnInfo = 5;
+                xDistToTurn = navDistance;
+            }
+            else if (navType == "fork" || navType == "off ramp") {
+                if (navModifier == "slight left" || navModifier == "left") xTurnInfo = 3; // left turn
+                else if (navModifier == "slight right" || navModifier == "right") xTurnInfo = 4;
+                xDistToTurn = navDistance;
+            }
         }
         if (limit_speed > 0);
         else if (xSpdLimit > 0 && xSpdDist > 0) {
