@@ -293,7 +293,7 @@ class VCruiseHelper:
     self.rightBlinkerExtCount = max(self.rightBlinkerExtCount - 1, 0)
     self.leftBlinkerExtCount = max(self.leftBlinkerExtCount - 1, 0)
     if self.rightBlinkerExtCount + self.leftBlinkerExtCount <= 0:
-      self.v_cruise_helper.blinkerExtMode = 0
+      self.blinkerExtMode = 0
 
     self._update_lead(controls)
     self.v_ego_kph_set = int(CS.vEgoCluster * CV.MS_TO_KPH + 0.5)
