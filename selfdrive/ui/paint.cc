@@ -1331,8 +1331,8 @@ void DrawApilot::drawTurnInfo(const UIState* s, int x, int y) {
     }
     auto car_state = sm["carState"].getCarState();
     auto controls_state = sm["controlsState"].getControlsState();
-    bool leftBlinker = car_state.getLeftBlinker() || (controls_state.getLeftBlinkerExt() > 0);
-    bool rightBlinker = car_state.getRightBlinker() || (controls_state.getRightBlinkerExt() > 0);
+    bool leftBlinker = car_state.getLeftBlinker() || (controls_state.getLeftBlinkerExt()%10000 > 0);
+    bool rightBlinker = car_state.getRightBlinker() || (controls_state.getRightBlinkerExt()%10000 > 0);
     bool bsd_l = car_state.getLeftBlindspot();
     bool bsd_r = car_state.getRightBlindspot();
 
