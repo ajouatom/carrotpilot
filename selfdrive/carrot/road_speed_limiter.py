@@ -457,8 +457,9 @@ def main():
         if ret or now - prev_recvTime > 2.0: # 수신값이 있거나, 2.0초가 지난경우 데이터를 초기화함.
           nTBTTurnType = nSdiType = nSdiSpeedLimit = nSdiPlusType = nSdiPlusSpeedLimit = nSdiBlockType = -1
           nSdiBlockSpeed = nRoadLimitSpeed = -1
-          roadcate = 8
-          nLaneCount = 0
+          if not ret:
+            roadcate = 8
+            nLaneCount = 0
 
         nSdiDist -= delta_dist
         nSdiPlusDist -= delta_dist
