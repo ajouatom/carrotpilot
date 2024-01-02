@@ -87,7 +87,7 @@ class VCruiseHelper:
     self.debugText2 = ""
     self._first = True
     self.activeAPM = 0
-    self.v_cruise_helper.blinkerExtMode = 0 # 0: Normal, 10000: voice
+    self.blinkerExtMode = 0 # 0: Normal, 10000: voice
     self.rightBlinkerExtCount = 0
     self.leftBlinkerExtCount = 0
     self.naviDistance = 0
