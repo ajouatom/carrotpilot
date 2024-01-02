@@ -47,7 +47,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
 
     } else if (param == "CustomTheme") {
       ParamManageControl *customThemeToggle = new ParamManageControl(param, title, desc, icon, this);
-      connect(customThemeToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
+      QObject::connect(customThemeToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
         parentToggleClicked();
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(customThemeKeys.find(key.c_str()) != customThemeKeys.end());
@@ -60,7 +60,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
 
     } else if (param == "CustomUI") {
       ParamManageControl *customUIToggle = new ParamManageControl(param, title, desc, icon, this);
-      connect(customUIToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
+      QObject::connect(customUIToggle, &ParamManageControl::manageButtonClicked, this, [this]() {
         parentToggleClicked();
         for (auto &[key, toggle] : toggles) {
           toggle->setVisible(customOnroadUIKeys.find(key.c_str()) != customOnroadUIKeys.end());
@@ -104,16 +104,24 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : ListWidge
     addItem(toggle);
     toggles[param.toStdString()] = toggle;
 
-    connect(toggle, &ToggleControl::toggleFlipped, [this]() {
-      paramsMemory.putBool("FrogPilotTogglesUpdated", true);
+    QObject::connect(toggle, &ToggleControl::toggleFlipped, [this]() {
+      std::thread([this]() {
+        paramsMemory.putBool("FrogPilotTogglesUpdated", true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        paramsMemory.putBool("FrogPilotTogglesUpdated", false);
+      }).detach();
     });
 
-    connect(static_cast<ParamValueControl*>(toggles["ScreenBrightness"]), &ParamValueControl::valueChanged, [](int value) {
+    QObject::connect(static_cast<ParamValueControl*>(toggles["ScreenBrightness"]), &ParamValueControl::valueChanged, [](int value) {
       uiState()->scene.screen_brightness = value;
     });
 
-    connect(static_cast<ParamValueControl*>(toggle), &ParamValueControl::buttonPressed, [this]() {
-      paramsMemory.putBool("FrogPilotTogglesUpdated", true);
+    QObject::connect(static_cast<ParamValueControl*>(toggle), &ParamValueControl::buttonPressed, [this]() {
+      std::thread([this]() {
+        paramsMemory.putBool("FrogPilotTogglesUpdated", true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        paramsMemory.putBool("FrogPilotTogglesUpdated", false);
+      }).detach();
     });
   }
 
