@@ -378,10 +378,8 @@ class VCruiseHelper:
         blinkerExtState = self.rightBlinkerExtCount + self.rightBlinkerExtCount
         if msg.xArg == "RIGHT":
           self.rightBlinkerExtCount = 50
-          self.blinkerExtMode = 10000
         elif msg.xArg == "LEFT":
           self.leftBlinkerExtCount = 50
-          self.blinkerExtMode = 10000
         if blinkerExtState <= 0 and self.rightBlinkerExtCount + self.rightBlinkerExtCount > 0:
           self._make_event(controls, EventName.audioLaneChange)
 
@@ -771,8 +769,10 @@ class VCruiseHelper:
       blinkerExtState = self.rightBlinkerExtCount + self.rightBlinkerExtCount
       if nav_direction == 1 and nav_turn: # 왼쪽차선변경은 위험하니 턴인경우만 하자, 하지만 지금은 안함.
         self.leftBlinkerExtCount = 10
+        self.blinkerExtMode = 20000 if nav_turn else 10000
       elif nav_direction == 2:
         self.rightBlinkerExtCount = 10
+        self.blinkerExtMode = 20000 if nav_turn else 10000
 
       if blinkerExtState <= 0 and self.rightBlinkerExtCount + self.rightBlinkerExtCount > 0:
         self._make_event(controls, EventName.audioTurn if nav_turn else EventName.audioLaneChange)

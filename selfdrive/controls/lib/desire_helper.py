@@ -114,7 +114,7 @@ class DesireHelper:
     if not lateral_active or self.lane_change_timer > LANE_CHANGE_TIME_MAX:
       self.lane_change_state = LaneChangeState.off
       self.lane_change_direction = LaneChangeDirection.none
-    elif one_blinker and below_lane_change_speed and self.turn_desires:
+    elif one_blinker and below_lane_change_speed and self.turn_desires and blinkerExtMode in [0,2]:
       self.turn_direction = TurnDirection.turnLeft if leftBlinker else TurnDirection.turnRight
       # Set the "turn_completed" flag to prevent lane changes after completing a turn
       self.turn_completed = True
@@ -147,7 +147,7 @@ class DesireHelper:
         if (not carstate.leftBlinker and leftBlinkerExt > 0) or (not carstate.rightBlinker and rightBlinkerExt > 0):
           if not self.lane_available_prev and lane_available:
             need_torque = False
-          elif lane_available and blinkerExtMode == 0:
+          elif lane_available and blinkerExtMode > 0:  #0: voice etc, 1:noo helper lanechange, 2: noo helper turn
             need_torque = True
         if not need_torque and self.nudgeless and lane_available and not self.lane_change_completed and self.lane_change_wait_timer >= self.lane_change_delay:          
           torque_applied = True
