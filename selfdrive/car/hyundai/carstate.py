@@ -58,7 +58,7 @@ class CarState(CarStateBase):
 
     self.totalDistance = 0.0
     self.speedLimitDistance = 0
-    self.lkas_previously_pressed = false
+    self.lkas_previously_pressed = False
 
   def update(self, cp, cp_cam):
     if self.CP.carFingerprint in CANFD_CAR:
