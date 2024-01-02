@@ -308,7 +308,8 @@ def main():
   nTBTDist = -1
   nRoadLimitSpeed = -1
   xIndex = 0
-  roadcate = 7    # roadCategory, 0,1: highway, 
+  roadcate = 7    # roadCategory, 0,1: highway,
+  nLaneCount = 0
   
   prev_recvTime = time.monotonic()
   #autoNaviSpeedCtrl = int(Params().get("AutoNaviSpeedCtrl"))
@@ -490,7 +491,7 @@ def main():
           nTBTDist = float(server.get_apilot_val("nTBTDist", nTBTDist))
           nRoadLimitSpeed = int(server.get_apilot_val("nRoadLimitSpeed", nRoadLimitSpeed))
           roadcate = int(server.get_apilot_val("roadcate", roadcate))
-          nLaneCount = int(server.get_apilot_val("nLaneCount", roadcate))
+          nLaneCount = int(server.get_apilot_val("nLaneCount", nLaneCount))
           roadcate = 8 if nLaneCount == 0 else roadcate
           #print("roadcate=", roadcate)
 
