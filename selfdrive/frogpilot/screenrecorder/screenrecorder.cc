@@ -1,154 +1,193 @@
+#include <CL/cl.h>
+#include <algorithm>
+#include <time.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+
 #include "libyuv.h"
+#include "common/clutil.h"
 
 #include "selfdrive/frogpilot/screenrecorder/screenrecorder.h"
 #include "selfdrive/ui/qt/util.h"
+#include "selfdrive/ui/ui.h"
+#include "system/hardware/hw.h"
 
-static long long milliseconds() {
-  struct timespec t;
-  clock_gettime(CLOCK_REALTIME, &t);
-  return static_cast<long long>(t.tv_sec * 1000.0 + t.tv_nsec * 1e-6);
+static long long milliseconds(void) {
+    struct timeval tv;
+    gettimeofday(&tv,NULL);
+    return (((long long)tv.tv_sec)*1000)+(tv.tv_usec/1000);
 }
 
-ScreenRecorder::ScreenRecorder(QWidget *parent) : QPushButton(parent), image_queue(30), recording(false), started(0), frame(0) {
-  setFixedSize(192 / 2 + 25, 192 / 2);
+ScreenRecorder::ScreenRecorder(QWidget *parent) : QPushButton(parent), image_queue(30)
+{
+
+  recording = false;
+  started = 0;
+  frame = 0;
+
+  const int size = 190;
+  setFixedSize(size, size);
   setFocusPolicy(Qt::NoFocus);
 
-  screen_height = 1080;
-  screen_width = 2160;
-  recording_height = 720;
-  recording_width = (screen_width * recording_height) / screen_height + (recording_width % 2);
+  QObject::connect(this, &QPushButton::clicked, [=]() { toggle(); });
+  QObject::connect(uiState(), &UIState::offroadTransition, [=](bool offroad) {
+    if(offroad) {
+      stop(true);
+    }
+  });
 
-  rgb_scale_buffer = std::make_unique<uint8_t[]>(recording_width * recording_height * 4);
+  std::string path = "/data/media/0/videos";
+  src_width = 2160;
+  src_height = 1080;
 
-  connect(this, &QPushButton::released, this, &ScreenRecorder::toggle);
+  dst_height = 720;
+  dst_width = src_width * dst_height / src_height;
+  if(dst_width % 2 != 0)
+      dst_width += 1;
 
-  initializeEncoder();
-}
-
-void ScreenRecorder::initializeEncoder() {
-  const std::string path = "/data/media/0/videos";
-  encoder = std::make_unique<OmxEncoder>(path.c_str(), recording_width, recording_height, 60, 2 * 1024 * 1024, false, false);
+  rgb_buffer = std::make_unique<uint8_t[]>(src_width*src_height*4);
+  rgb_scale_buffer = std::make_unique<uint8_t[]>(dst_width*dst_height*4);
+  encoder = std::make_unique<OmxEncoder>(path.c_str(), dst_width, dst_height, UI_FREQ, 2*1024*1024, false, false);
 }
 
 ScreenRecorder::~ScreenRecorder() {
-  stop();
+  stop(false);
 }
 
 void ScreenRecorder::applyColor() {
-  if (frame % (UI_FREQ / 2) == 0) {
-    recording_color = (frame % UI_FREQ < (UI_FREQ / 2)) ? QColor::fromRgbF(1, 1, 1, 1) : QColor::fromRgbF(0, 0, 0, 1);
+
+  if(frame % (UI_FREQ/2) == 0) {
+
+    if(frame % UI_FREQ < (UI_FREQ/2))
+      recording_color = QColor::fromRgbF(1, 0, 0, 0.6);
+    else
+      recording_color = QColor::fromRgbF(0, 0, 0, 0.3);
+
     update();
   }
 }
 
 void ScreenRecorder::paintEvent(QPaintEvent *event) {
-  QPainter p(this);
-  p.setRenderHint(QPainter::Antialiasing);
 
-  QRect fullRect(0, 0, 192 / 2, 192 / 2);
-  QColor outerColor = recording ? recording_color : QColor::fromRgbF(1, 1, 1, 1);
-  int outerRedWidth = fullRect.width() * 0.05;
+    QRect r = QRect(0, 0, width(), height());
+    r -= QMargins(5, 5, 5, 5);
+    QPainter p(this);
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    p.setPen(QPen(QColor::fromRgbF(1, 1, 1, 0.4), 10, Qt::SolidLine, Qt::FlatCap));
 
-  QRect outerRect = fullRect;
-  p.setBrush(outerColor);
-  p.setPen(Qt::NoPen);
-  p.drawEllipse(outerRect);
+    p.setBrush(QBrush(QColor::fromRgbF(0, 0, 0, 0)));
+    p.drawEllipse(r);
 
-  QRect middleRect = fullRect.marginsRemoved(QMargins(outerRedWidth, outerRedWidth, outerRedWidth, outerRedWidth));
-  p.setBrush(QColor::fromRgbF(1, 0, 0, 1));
-  p.drawEllipse(middleRect);
+    r -= QMargins(40, 40, 40, 40);
+    p.setPen(Qt::NoPen);
+
+    QColor bg = recording ? recording_color : QColor::fromRgbF(0, 0, 0, 0.3);
+    p.setBrush(QBrush(bg));
+    p.drawEllipse(r);
 }
 
-void ScreenRecorder::openEncoder(const char *filename) {
-  encoder->encoder_open(filename);
+void ScreenRecorder::openEncoder(const char* filename) {
+    encoder->encoder_open(filename);
 }
 
 void ScreenRecorder::closeEncoder() {
-  if (encoder) {
-    encoder->encoder_close();
-  }
+  if(encoder)
+      encoder->encoder_close();
 }
 
 void ScreenRecorder::toggle() {
-  if (!recording) {
-    start();
-  } else {
-    stop();
-  }
+
+  if(!recording)
+      start(true);
+  else
+      stop(true);
 }
 
-void ScreenRecorder::start() {
-  if (recording) return;
+void ScreenRecorder::start(bool sound) {
+
+  if(recording)
+    return;
 
   char filename[64];
-  const time_t t = time(NULL);
-  const struct tm tm = *localtime(&t);
-  snprintf(filename, sizeof(filename), "%04d%02d%02d-%02d%02d%02d.mp4",
-           tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday,
-           tm.tm_hour, tm.tm_min, tm.tm_sec);
+  time_t t = time(NULL);
+  struct tm tm = *localtime(&t);
+  snprintf(filename,sizeof(filename),"%04d%02d%02d-%02d%02d%02d.mp4", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
   recording = true;
   frame = 0;
-  QWidget *widget = this;
-  while (widget->parentWidget() != nullptr) {
+
+  QWidget* widget = this;
+  while (widget->parentWidget() != Q_NULLPTR)
     widget = widget->parentWidget();
-  }
+
   rootWidget = widget;
+
   openEncoder(filename);
-  encoding_thread = std::thread(&ScreenRecorder::encoding_thread_func, this);
+  encoding_thread = std::thread([=] { encoding_thread_func(); });
 
   update();
+
   started = milliseconds();
+  if (sound) {
+    params.putBool("StopRecord", false);
+    params.putBool("StartRecord", true);
+  }
 }
 
 void ScreenRecorder::encoding_thread_func() {
-  const uint64_t start_time = nanos_since_boot() - 1;
-  while (recording && encoder) {
+  uint64_t start_time = nanos_since_boot() -1;
+  while(recording && encoder) {
     QImage popImage;
-    if (image_queue.pop_wait_for(popImage, std::chrono::milliseconds(10))) {
-      const QImage image = popImage.convertToFormat(QImage::Format_RGBA8888);
-      libyuv::ARGBScale(image.bits(), image.width() * 4,
-                        image.width(), image.height(),
-                        rgb_scale_buffer.get(), recording_width * 4,
-                        recording_width, recording_height,
-                        libyuv::kFilterLinear);
-      encoder->encode_frame_rgba(rgb_scale_buffer.get(), recording_width, recording_height,
-                                 static_cast<uint64_t>(nanos_since_boot() - start_time));
+    if(image_queue.pop_wait_for(popImage, std::chrono::milliseconds(10))) {
+
+      QImage image = popImage.convertToFormat(QImage::Format_RGBA8888);
+
+      libyuv::ARGBScale(image.bits(), image.width()*4,
+            image.width(), image.height(),
+            rgb_scale_buffer.get(), dst_width*4,
+            dst_width, dst_height,
+            libyuv::kFilterLinear);
+
+      encoder->encode_frame_rgba(rgb_scale_buffer.get(), dst_width, dst_height, ((uint64_t)nanos_since_boot() - start_time ));
     }
   }
 }
 
-void ScreenRecorder::stop() {
-  if (!recording) return;
+void ScreenRecorder::stop(bool sound) {
+  if(recording) {
+    recording = false;
+    update();
 
-  recording = false;
-  update();
-  closeEncoder();
-  image_queue.clear();
-  if (encoding_thread.joinable()) {
-    encoding_thread.join();
+    closeEncoder();
+    image_queue.clear();
+    if(encoding_thread.joinable())
+      encoding_thread.join();
+  }
+  if(sound) {
+    params.putBool("StartRecord", false);
+    params.putBool("StopRecord", true);
   }
 }
 
 void ScreenRecorder::update_screen() {
-  if (!uiState()->scene.started) {
-    if (recording) {
-      stop();
+
+  if(recording) {
+
+    if(milliseconds() - started > 1000*60*3) {
+      stop(false);
+      start(false);
+      return;
     }
-    return;
-  }
-  if (!recording) return;
 
-  if (milliseconds() - started > 1000 * 60 * 3) {
-    stop();
-    start();
-    return;
+    applyColor();
+
+    if(rootWidget != nullptr) {
+      QPixmap pixmap = rootWidget->grab();
+      image_queue.push(pixmap.toImage());
+    }
   }
 
-  applyColor();
-  if (rootWidget != nullptr) {
-    const QPixmap pixmap = rootWidget->grab();
-    image_queue.push(pixmap.toImage());
-  }
   frame++;
 }

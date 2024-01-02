@@ -137,6 +137,8 @@ def manager_init() -> None:
     ("SteerActuatorDelay", "40"),       
     ("CruiseOnDist", "0"),
     ("SteerRatioApply", "0"),
+    ("StartRecord", "0"),
+    ("StopRecord", "0"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))

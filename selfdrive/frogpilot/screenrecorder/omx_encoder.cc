@@ -38,15 +38,17 @@ int ABGRToNV12(const uint8_t* src_abgr,
       ABGRToUVRow_C;
   void (*ABGRToYRow)(const uint8_t* src_abgr, uint8_t* dst_y, int width) =
       ABGRToYRow_C;
-  void (*MergeUVRow_)(const uint8_t* src_u, const uint8_t* src_v, uint8_t* dst_uv, int width) = MergeUVRow_C;
+  void (*MergeUVRow_)(const uint8_t* src_u, const uint8_t* src_v,
+                      uint8_t* dst_uv, int width) = MergeUVRow_C;
   if (!src_abgr || !dst_y || !dst_uv || width <= 0 || height == 0) {
     return -1;
   }
-if (height < 0) {  // Negative height means invert the image.
-  height = -height;
-  src_abgr = src_abgr + (height - 1) * src_stride_abgr;
-  src_stride_abgr = -src_stride_abgr;
-}
+  // Negative height means invert the image.
+  if (height < 0) {
+    height = -height;
+    src_abgr = src_abgr + (height - 1) * src_stride_abgr;
+    src_stride_abgr = -src_stride_abgr;
+  }
 #if defined(HAS_ABGRTOYROW_SSSE3) && defined(HAS_ABGRTOUVROW_SSSE3)
   if (TestCpuFlag(kCpuHasSSSE3)) {
     ABGRToUVRow = ABGRToUVRow_Any_SSSE3;
@@ -217,6 +219,7 @@ OMX_ERRORTYPE OmxEncoder::event_handler(OMX_HANDLETYPE component, OMX_PTR app_da
 
 OMX_ERRORTYPE OmxEncoder::empty_buffer_done(OMX_HANDLETYPE component, OMX_PTR app_data,
                                                    OMX_BUFFERHEADERTYPE *buffer) {
+  // printf("empty_buffer_done\n");
   OmxEncoder *e = (OmxEncoder*)app_data;
   e->free_in.push(buffer);
   return OMX_ErrorNone;
@@ -224,6 +227,7 @@ OMX_ERRORTYPE OmxEncoder::empty_buffer_done(OMX_HANDLETYPE component, OMX_PTR ap
 
 OMX_ERRORTYPE OmxEncoder::fill_buffer_done(OMX_HANDLETYPE component, OMX_PTR app_data,
                                                   OMX_BUFFERHEADERTYPE *buffer) {
+  // printf("fill_buffer_done\n");
   OmxEncoder *e = (OmxEncoder*)app_data;
   e->done_out.push(buffer);
   return OMX_ErrorNone;
@@ -287,8 +291,11 @@ static const char* omx_color_fomat_name(uint32_t format) {
   case OMX_SEC_COLOR_FormatNV12Tiled: return "OMX_SEC_COLOR_FormatNV12Tiled";
   case OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar32m: return "OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar32m";
 
+  // case QOMX_COLOR_FormatYVU420SemiPlanar: return "QOMX_COLOR_FormatYVU420SemiPlanar";
   case QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka: return "QOMX_COLOR_FormatYVU420PackedSemiPlanar32m4ka";
   case QOMX_COLOR_FormatYUV420PackedSemiPlanar16m2ka: return "QOMX_COLOR_FormatYUV420PackedSemiPlanar16m2ka";
+  // case QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka: return "QOMX_COLOR_FormatYUV420PackedSemiPlanar64x32Tile2m8ka";
+  // case QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m: return "QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m";
   case QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mMultiView: return "QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mMultiView";
   case QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mCompressed: return "QOMX_COLOR_FORMATYUV420PackedSemiPlanar32mCompressed";
   case QOMX_COLOR_Format32bitRGBA8888: return "QOMX_COLOR_Format32bitRGBA8888";
@@ -321,6 +328,8 @@ OmxEncoder::OmxEncoder(const char* path, int width, int height, int fps, int bit
   if (err != OMX_ErrorNone) {
     LOGE("error getting codec: %x", err);
   }
+  assert(err == OMX_ErrorNone);
+  // printf("handle: %p\n", this->handle);
 
   // setup input port
 
@@ -333,9 +342,11 @@ OmxEncoder::OmxEncoder(const char* path, int width, int height, int fps, int bit
   in_port.format.video.nFrameHeight = this->height;
   in_port.format.video.nStride = VENUS_Y_STRIDE(COLOR_FMT_NV12, this->width);
   in_port.format.video.nSliceHeight = this->height;
+  // in_port.nBufferSize = (this->width * this->height * 3) / 2;
   in_port.nBufferSize = VENUS_BUFFER_SIZE(COLOR_FMT_NV12, this->width, this->height);
   in_port.format.video.xFramerate = (this->fps * 65536);
   in_port.format.video.eCompressionFormat = OMX_VIDEO_CodingUnused;
+  // in_port.format.video.eColorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
   in_port.format.video.eColorFormat = (OMX_COLOR_FORMATTYPE)QOMX_COLOR_FORMATYUV420PackedSemiPlanar32m;
 
   OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamPortDefinition, (OMX_PTR) &in_port));
@@ -415,6 +426,29 @@ OmxEncoder::OmxEncoder(const char* path, int width, int height, int fps, int bit
     OMX_CHECK(OMX_SetParameter(this->handle, OMX_IndexParamVideoAvc, &avc));
   }
 
+
+  // for (int i = 0; ; i++) {
+  //   OMX_VIDEO_PARAM_PORTFORMATTYPE video_port_format = {0};
+  //   video_port_format.nSize = sizeof(video_port_format);
+  //   video_port_format.nIndex = i;
+  //   video_port_format.nPortIndex = PORT_INDEX_IN;
+  //   if (OMX_GetParameter(this->handle, OMX_IndexParamVideoPortFormat, &video_port_format) != OMX_ErrorNone)
+  //       break;
+  //   printf("in %d: compression 0x%x format 0x%x %s\n", i,
+  //          video_port_format.eCompressionFormat, video_port_format.eColorFormat,
+  //          omx_color_fomat_name(video_port_format.eColorFormat));
+  // }
+
+  // for (int i=0; i<32; i++) {
+  //   OMX_VIDEO_PARAM_PROFILELEVELTYPE params = {0};
+  //   params.nSize = sizeof(params);
+  //   params.nPortIndex = PORT_INDEX_OUT;
+  //   params.nProfileIndex = i;
+  //   if (OMX_GetParameter(this->handle, OMX_IndexParamVideoProfileLevelQuerySupported, &params) != OMX_ErrorNone)
+  //       break;
+  //   printf("profile %d level 0x%x\n", params.eProfile, params.eLevel);
+  // }
+
   OMX_CHECK(OMX_SendCommand(this->handle, OMX_CommandStateSet, OMX_StateIdle, NULL));
 
   for (auto &buf : this->in_buf_headers) {
@@ -435,6 +469,7 @@ OmxEncoder::OmxEncoder(const char* path, int width, int height, int fps, int bit
 
   // give omx all the output buffers
   for (auto &buf : this->out_buf_headers) {
+    // printf("fill %p\n", this->out_buf_headers[i]);
     OMX_CHECK(OMX_FillThisBuffer(this->handle, buf));
   }
 
@@ -460,6 +495,7 @@ void OmxEncoder::handle_out_buf(OmxEncoder *e, OMX_BUFFERHEADERTYPE *out_buf) {
   }
 
   if (e->of) {
+    //printf("write %d flags 0x%x\n", out_buf->nFilledLen, out_buf->nFlags);
     fwrite(buf_data, out_buf->nFilledLen, 1, e->of);
   }
 
@@ -519,6 +555,7 @@ int OmxEncoder::encode_frame_rgba(const uint8_t *ptr, int in_width, int in_heigh
 
   // this sometimes freezes... put it outside the encoder lock so we can still trigger rotates...
   // THIS IS A REALLY BAD IDEA, but apparently the race has to happen 30 times to trigger this
+  //pthread_mutex_unlock(&this->lock);
   OMX_BUFFERHEADERTYPE* in_buf = nullptr;
   while (!this->free_in.try_pop(in_buf, 20)) {
     if (do_exit) {
@@ -526,14 +563,33 @@ int OmxEncoder::encode_frame_rgba(const uint8_t *ptr, int in_width, int in_heigh
     }
   }
 
+  //pthread_mutex_lock(&this->lock);
+
   int ret = this->counter;
 
   uint8_t *in_buf_ptr = in_buf->pBuffer;
+  // printf("in_buf ptr %p\n", in_buf_ptr);
 
   uint8_t *in_y_ptr = in_buf_ptr;
   int in_y_stride = VENUS_Y_STRIDE(COLOR_FMT_NV12, this->width);
   int in_uv_stride = VENUS_UV_STRIDE(COLOR_FMT_NV12, this->width);
+  // uint8_t *in_uv_ptr = in_buf_ptr + (this->width * this->height);
   uint8_t *in_uv_ptr = in_buf_ptr + (in_y_stride * VENUS_Y_SCANLINES(COLOR_FMT_NV12, this->height));
+
+  /*if (this->downscale) {
+    I420Scale(y_ptr, in_width,
+              u_ptr, in_width/2,
+              v_ptr, in_width/2,
+              in_width, in_height,
+              this->y_ptr2, this->width,
+              this->u_ptr2, this->width/2,
+              this->v_ptr2, this->width/2,
+              this->width, this->height,
+              libyuv::kFilterBilinear);
+    y_ptr = this->y_ptr2;
+    u_ptr = this->u_ptr2;
+    v_ptr = this->v_ptr2;
+  }*/
 
   err = ABGRToNV12(ptr, this->width*4,
                    in_y_ptr, in_y_stride,
@@ -541,6 +597,7 @@ int OmxEncoder::encode_frame_rgba(const uint8_t *ptr, int in_width, int in_heigh
                    this->width, this->height);
   assert(err == 0);
 
+  // in_buf->nFilledLen = (this->width*this->height) + (this->width*this->height/2);
   in_buf->nFilledLen = VENUS_BUFFER_SIZE(COLOR_FMT_NV12, this->width, this->height);
   in_buf->nFlags = OMX_BUFFERFLAG_ENDOFFRAME;
   in_buf->nOffset = 0;
