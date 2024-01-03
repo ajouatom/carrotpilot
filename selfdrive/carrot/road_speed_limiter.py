@@ -613,7 +613,7 @@ def main():
         if xRoadLimitSpeed > 0:
           dat.roadLimitSpeed.roadLimitSpeed = int(xRoadLimitSpeed)
         dat.roadLimitSpeed.xRoadName = xRoadName + "[{}]".format(road_category_map.get(roadcate,"X")) + sdiDebugText
-        print(dat.roadLimitSpeed.xRoadName)
+        #print(dat.roadLimitSpeed.xRoadName)
 
         dat.roadLimitSpeed.xCmd = "" if xCmd is None else xCmd
         dat.roadLimitSpeed.xArg = "" if xArg is None else xArg
