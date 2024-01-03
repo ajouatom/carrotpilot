@@ -494,8 +494,8 @@ def main():
           nRoadLimitSpeed = int(server.get_apilot_val("nRoadLimitSpeed", nRoadLimitSpeed))
           roadcate = int(server.get_apilot_val("roadcate", roadcate))
           nLaneCount = int(server.get_apilot_val("nLaneCount", nLaneCount))
-          roadcate = 8 if nLaneCount == 0 else roadcate
-          print("roadcate=", roadcate)
+          #roadcate = 8 if nLaneCount == 0 else roadcate
+          #print("roadcate=", roadcate)
 
         #print("O:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
 
