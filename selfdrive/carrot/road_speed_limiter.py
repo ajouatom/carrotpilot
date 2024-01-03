@@ -495,7 +495,7 @@ def main():
           roadcate = int(server.get_apilot_val("roadcate", roadcate))
           nLaneCount = int(server.get_apilot_val("nLaneCount", nLaneCount))
           roadcate = 8 if nLaneCount == 0 else roadcate
-          #print("roadcate=", roadcate)
+          print("roadcate=", roadcate)
 
         #print("O:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
 
@@ -613,6 +613,7 @@ def main():
         if xRoadLimitSpeed > 0:
           dat.roadLimitSpeed.roadLimitSpeed = int(xRoadLimitSpeed)
         dat.roadLimitSpeed.xRoadName = xRoadName + "[{}]".format(road_category_map.get(roadcate,"X")) + sdiDebugText
+        print(dat.roadLimitSpeed.xRoadName)
 
         dat.roadLimitSpeed.xCmd = "" if xCmd is None else xCmd
         dat.roadLimitSpeed.xArg = "" if xArg is None else xArg
