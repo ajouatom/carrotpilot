@@ -481,6 +481,11 @@ def main():
 
         sdi_valid = False
         if ret:
+          if int(server.get_apilot_val("nRoadLimitSpeed", -1)) != -1:
+            sdi_valid = True
+            nTBTTurnType = nSdiType = nSdiSpeedLimit = nSdiPlusType = nSdiPlusSpeedLimit = nSdiBlockType = -1
+            nSdiBlockSpeed = nRoadLimitSpeed = -1
+
           nTBTTurnType = int(server.get_apilot_val("nTBTTurnType", nTBTTurnType))
           nSdiType = int(server.get_apilot_val("nSdiType", nSdiType))
           nSdiDist = float(server.get_apilot_val("nSdiDist", nSdiDist))
@@ -497,9 +502,6 @@ def main():
           nLaneCount = int(server.get_apilot_val("nLaneCount", nLaneCount))
           #roadcate = 8 if nLaneCount == 0 else roadcate
           #print("roadcate=", roadcate)
-
-          if int(server.get_apilot_val("nRoadLimitSpeed", -1)) != -1:
-            sdi_valid = True
 
         #print("O:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
 
