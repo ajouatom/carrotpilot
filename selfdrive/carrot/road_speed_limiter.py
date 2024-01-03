@@ -460,7 +460,7 @@ def main():
           nSdiBlockSpeed = nRoadLimitSpeed = -1
           roadcate = 8
           nLaneCount = 0
-          print("Reset roadlimit...")
+          #print("Reset roadlimit...")
 
         nSdiDist -= delta_dist
         nSdiPlusDist -= delta_dist
