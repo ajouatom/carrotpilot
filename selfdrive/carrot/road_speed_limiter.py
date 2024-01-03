@@ -498,7 +498,7 @@ def main():
           #roadcate = 8 if nLaneCount == 0 else roadcate
           #print("roadcate=", roadcate)
 
-          if int(server.get_apilot_val("nSdiType", -1)) == -1:
+          if int(server.get_apilot_val("nSdiType", -1)) != -1:
             sdi_valid = True
 
         #print("O:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
@@ -533,7 +533,7 @@ def main():
           xTurnInfo = -1
         if nTBTDist > 0 and xTurnInfo >= 0:
           xDistToTurn = nTBTDist
-        sdi_valid = True if nRoadLimitSpeed >= 0 or nTBTTurnType > 0 or nSdiType >= 0 else False
+        #sdi_valid = True if nRoadLimitSpeed >= 0 or nTBTTurnType > 0 or nSdiType >= 0 else False
         if nRoadLimitSpeed > 0:
           if nRoadLimitSpeed >= 200:
             nRoadLimitSpeed = (nRoadLimitSpeed - 20) / 10
