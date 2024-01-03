@@ -479,6 +479,7 @@ def main():
 
         #print("I:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
 
+        sdi_valid = False
         if ret:
           nTBTTurnType = int(server.get_apilot_val("nTBTTurnType", nTBTTurnType))
           nSdiType = int(server.get_apilot_val("nSdiType", nSdiType))
@@ -496,6 +497,9 @@ def main():
           nLaneCount = int(server.get_apilot_val("nLaneCount", nLaneCount))
           #roadcate = 8 if nLaneCount == 0 else roadcate
           #print("roadcate=", roadcate)
+
+          if int(server.get_apilot_val("nSdiType", -1)) == -1:
+            sdi_valid = True
 
         #print("O:{:.1f},{:.1f},{:.1f},{:.2f}".format(nSdiDist, nSdiPlusDist, nTBTDist, delta_dist))
 
