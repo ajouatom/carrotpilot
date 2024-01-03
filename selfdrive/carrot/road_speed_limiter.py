@@ -455,7 +455,7 @@ def main():
 
         #for 띠맵
         #if ret or now - prev_recvTime > 2.0: # 수신값이 있거나, 2.0초가 지난경우 데이터를 초기화함.
-        if sdi_valid_count < 0: #now - prev_recvTime > 2.0: # 2.0초가 지난경우 데이터를 초기화함.
+        if sdi_valid_count <= 0: #now - prev_recvTime > 2.0: # 2.0초가 지난경우 데이터를 초기화함.
           nTBTTurnType = nSdiType = nSdiSpeedLimit = nSdiPlusType = nSdiPlusSpeedLimit = nSdiBlockType = -1
           nSdiBlockSpeed = nRoadLimitSpeed = -1
           roadcate = 8
