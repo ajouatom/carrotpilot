@@ -30,6 +30,8 @@ class CarState(CarStateBase):
     # GAP_DIST
     self.distance_button_pressed = False
 
+    # use cluster speed & vCluRatio
+    self.use_cluster_speed = True
     self.buttons_counter = 0
 
     self.single_pedal_mode = False
@@ -69,6 +71,9 @@ class CarState(CarStateBase):
     if self.CP.networkLocation == NetworkLocation.fwdCamera and not self.CP.flags & GMFlags.NO_CAMERA.value:
       self.pt_lka_steering_cmd_counter = pt_cp.vl["ASCMLKASteeringCmd"]["RollingCounter"]
       self.cam_lka_steering_cmd_counter = cam_cp.vl["ASCMLKASteeringCmd"]["RollingCounter"]
+    # use cluster speed & vCluRatio(longitudialPlanner)
+    cluSpeed = pt_cp.vl["ECMVehicleSpeed"]["VehicleSpeed"]
+    ret.vEgoCluster = cluSpeed * CV.MPH_TO_MS
 
     ret.wheelSpeeds = self.get_wheel_speeds(
       pt_cp.vl["EBCMWheelSpdFront"]["FLWheelSpd"],
@@ -76,9 +81,17 @@ class CarState(CarStateBase):
       pt_cp.vl["EBCMWheelSpdRear"]["RLWheelSpd"],
       pt_cp.vl["EBCMWheelSpdRear"]["RRWheelSpd"],
     )
-    ret.vEgoRaw = mean([ret.wheelSpeeds.fl, ret.wheelSpeeds.fr, ret.wheelSpeeds.rl, ret.wheelSpeeds.rr])
-    ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
-    # sample rear wheel speeds, standstill=True if ECM allows engagement with brake
+    # use cluster speed & vCluRatio(longitudialPlanner)
+    if self.use_cluster_speed:
+      ret.vEgoRaw = cluSpeed * CV.MPH_TO_MS
+      ret.vEgo, ret.aEgo = self.update_clu_speed_kf(ret.vEgoRaw)
+
+    else:
+      ret.vEgoRaw = mean([ret.wheelSpeeds.fl, ret.wheelSpeeds.fr, ret.wheelSpeeds.rl, ret.wheelSpeeds.rr]) * (105./100.)
+      ret.vEgo, ret.aEgo = self.update_speed_kf(ret.vEgoRaw)
+
+    ret.vCluRatio = (ret.vEgoCluster / ret.vEgo) if (ret.vEgo > 3. and ret.vEgoCluster > 3.) else 1.0
+
     ret.standstill = ret.wheelSpeeds.rl <= STANDSTILL_THRESHOLD and ret.wheelSpeeds.rr <= STANDSTILL_THRESHOLD
 
     if pt_cp.vl["ECMPRDNL2"]["ManualMode"] == 1:
@@ -266,6 +279,7 @@ class CarState(CarStateBase):
       ("EBCMFrictionBrakeStatus", 20),
       ("PSCMSteeringAngle", 100),
       ("ECMAcceleratorPos", 80),
+      ("ECMVehicleSpeed", 20),
     ]
 
     if CP.carFingerprint in SDGM_CAR:
