@@ -93,7 +93,7 @@ class CarInterface(CarInterfaceBase):
     ret.longitudinalTuning.deadzoneBP = [0.]
     ret.longitudinalTuning.deadzoneV = [0.15]
 
-    ret.longitudinalTuning.kpBP = [5., 35.]
+    ret.longitudinalTuning.kpBP = [0.]
     ret.longitudinalTuning.kiBP = [0.]
 
     if candidate in CAMERA_ACC_CAR:
@@ -106,7 +106,7 @@ class CarInterface(CarInterfaceBase):
       ret.minSteerSpeed = 10 * CV.KPH_TO_MS
 
       # Tuning for experimental long
-      ret.longitudinalTuning.kpV = [2.0, 1.5]
+      ret.longitudinalTuning.kpV = [2.0]
       ret.longitudinalTuning.kiV = [0.72]
       ret.stoppingDecelRate = 2.0  # reach brake quickly after enabling
       ret.vEgoStopping = 0.25
@@ -132,12 +132,13 @@ class CarInterface(CarInterfaceBase):
       ret.radarUnavailable = RADAR_HEADER_MSG not in fingerprint[CanBus.OBSTACLE] and not docs
       ret.pcmCruise = False  # stock non-adaptive cruise control is kept off
       # supports stop and go, but initial engage must (conservatively) be above 18mph
-      ret.minEnableSpeed = 18 * CV.MPH_TO_MS
+      ret.minEnableSpeed = -1 * CV.MPH_TO_MS if Params().get_bool("LowerVolt") else 18
       ret.minSteerSpeed = (6.7 if useEVTables else 7) * CV.MPH_TO_MS
 
       # Tuning
-      ret.longitudinalTuning.kpV = [2.4, 1.5]
+      ret.longitudinalTuning.kpV = [1.75]
       ret.longitudinalTuning.kiV = [0.36]
+      ret.stoppingDecelRate = 0.2
       if ret.enableGasInterceptor:
         # Need to set ASCM long limits when using pedal interceptor, instead of camera ACC long limits
         ret.safetyConfigs[0].safetyParam |= Panda.FLAG_GM_HW_ASCM_LONG
@@ -168,13 +169,21 @@ class CarInterface(CarInterfaceBase):
       ret.lateralTuning.pid.kf = 1.  # get_steer_feedforward_volt()
       ret.steerActuatorDelay = 0.18 if useEVTables else 0.2
 
+      ret.longitudinalTuning.kpBP = [0.]
+      ret.longitudinalTuning.kpV = [1.75]
+      ret.longitudinalTuning.kiBP = [0.]
+      ret.longitudinalTuning.kiV = [0.36]
+      ret.stoppingDecelRate = 0.2 # brake_travel/s while trying to stop
+      ret.stopAccel = -0.5
+      ret.startAccel = 0.8
+      ret.vEgoStopping = 0.1
       # softer long tune for ev table
       if useEVTables: 
-        ret.longitudinalTuning.kpBP = [5., 15., 35.]
-        ret.longitudinalTuning.kpV = [0.65, .9, 0.8]
-        ret.longitudinalTuning.kiBP = [5., 15.]
-        ret.longitudinalTuning.kiV = [0.04, 0.1]
-        ret.stoppingDecelRate = 0.02  # brake_travel/s while trying to stop
+        ret.longitudinalTuning.kpBP = [0.]
+        ret.longitudinalTuning.kpV = [1.75]
+        ret.longitudinalTuning.kiBP = [0.]
+        ret.longitudinalTuning.kiV = [0.36]
+        ret.stoppingDecelRate = 0.1 # brake_travel/s while trying to stop
         ret.stopAccel = -0.5
         ret.startAccel = 0.8
         ret.vEgoStopping = 0.1
