@@ -170,6 +170,8 @@ class CarInterface(CarInterfaceBase):
       ret.stopAccel = -0.5
       ret.startAccel = 0.8
       ret.vEgoStopping = 0.1
+      ret.enableBsm = BSM_MSG in fingerprint[0]
+
       # softer long tune for ev table
       if useEVTables: 
         ret.longitudinalTuning.kpBP = [0.]
@@ -378,7 +380,7 @@ class CarInterface(CarInterfaceBase):
       ret.flags |= GMFlags.NO_ACCELERATOR_POS_MSG.value
 
     # Detect if BSM message is present
-    ret.enableBsm = BSM_MSG in fingerprint[CanBus.POWERTRAIN]
+    ret.enableBsm = BSM_MSG in fingerprint[0]
 
     return ret
 

@@ -26,6 +26,8 @@ class CarState(CarStateBase):
     self.loopback_lka_steering_cmd_ts_nanos = 0
     self.pt_lka_steering_cmd_counter = 0
     self.cam_lka_steering_cmd_counter = 0
+    self.param = Params()
+    self.param_memory = Params("/dev/shm/params")
 
     # GAP_DIST
     self.distance_button_pressed = False
@@ -59,6 +61,7 @@ class CarState(CarStateBase):
     if self.cruise_buttons in [CruiseButtons.UNPRESS, CruiseButtons.INIT] and self.distance_button_pressed:
       self.cruise_buttons = CruiseButtons.GAP_DIST
 
+    # Forwarded BSM message
     if self.CP.enableBsm:
       if self.CP.carFingerprint in SDGM_CAR:
         ret.leftBlindspot = cam_cp.vl["BCMBSM"]["Left_BSM"] == 1
@@ -66,6 +69,8 @@ class CarState(CarStateBase):
       else:
         ret.leftBlindspot = pt_cp.vl["BCMBSM"]["Left_BSM"] == 1
         ret.rightBlindspot = pt_cp.vl["BCMBSM"]["Right_BSM"] == 1
+        print("leftBsm=", ret.leftBlindspot)
+        print("rightBsm=", ret.rightBlindspot)
 
     # Variables used for avoiding LKAS faults
     self.loopback_lka_steering_cmd_updated = len(loopback_cp.vl_all["ASCMLKASteeringCmd"]["RollingCounter"]) > 0
@@ -244,7 +249,7 @@ class CarState(CarStateBase):
         else:
           experimental_mode = self.param.get_bool("ExperimentalMode")
           # Invert the value of "ExperimentalMode"
-          put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+          self.param.put_bool_nonblocking("ExperimentalMode", not experimental_mode)
       self.lkas_previously_pressed = lkas_pressed
 
     return ret
