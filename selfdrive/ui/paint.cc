@@ -371,8 +371,13 @@ void DrawApilot::drawLaneLines(const UIState* s) {
         left_blindspot = right_blindspot  = true;
 #endif
         color = nvgRGBA(255, 215, 0, 150);
-        if (left_blindspot) ui_draw_bsd(s, scene.lane_barrier_vertices[0], &color, false); // ui_draw_line(s, scene.lane_barrier_vertices[0], &color, nullptr);
-        if (right_blindspot) ui_draw_bsd(s, scene.lane_barrier_vertices[1], &color, true); // ui_draw_line(s, scene.lane_barrier_vertices[1], &color, nullptr);
+        NVGcolor color2 = nvgRGBA(255, 102, 0, 150);
+        auto lead_left = (*s->sm)["radarState"].getRadarState().getLeadLeft();
+        auto lead_right = (*s->sm)["radarState"].getRadarState().getLeadRight();
+        if (left_blindspot) ui_draw_bsd(s, scene.lane_barrier_vertices[0], &color, false);
+        else if(lead_left.getStatus()) ui_draw_bsd(s, scene.lane_barrier_vertices[0], &color2, false);
+        if (right_blindspot) ui_draw_bsd(s, scene.lane_barrier_vertices[1], &color, true);
+        else if (lead_right.getStatus()) ui_draw_bsd(s, scene.lane_barrier_vertices[1], &color2, true);
     }
 
     // road edges
