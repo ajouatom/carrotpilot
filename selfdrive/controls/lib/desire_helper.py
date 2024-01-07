@@ -112,7 +112,7 @@ class DesireHelper:
       lane_available = True
     else:
       # Set the minimum lane threshold to 2.8 meters
-      min_lane_threshold = 2.8
+      min_lane_threshold = 2.6 #2.8
       # Set the blinker index based on which signal is on
       blinker_index = 0 if leftBlinker else 1
       current_lane = modeldata.laneLines[blinker_index + 1]

@@ -761,7 +761,7 @@ class VCruiseHelper:
       roadcate = roadLimitSpeed.roadcate
       if roadcate > 7 and (distanceToRoadEdgeLeft + distanceToRoadEdgeRight) > 5.5:
         roadcate = 5
-      turn_dist = interp(roadLimitSpeed.roadcate, [0, 1, 2, 7], [100, 100, 60, 30])
+      turn_dist = interp(roadLimitSpeed.roadcate, [0, 1, 2, 7], [100, 100, 60, 40])
       turn_speed = interp(roadLimitSpeed.roadcate, [0, 1, 2, 7], [self.autoTurnControlSpeedTurn*2, self.autoTurnControlSpeedTurn*2, self.autoTurnControlSpeedTurn*1.5, self.autoTurnControlSpeedTurn])
       laneChange_dist = interp(roadLimitSpeed.roadcate, [0, 1, 2, 7], [300, 280, 200, 160])
       laneChange_speed = interp(roadLimitSpeed.roadcate, [0, 1, 2, 7], [120, 100, self.autoTurnControlSpeedLaneChange*1.5, self.autoTurnControlSpeedLaneChange])
