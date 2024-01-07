@@ -448,15 +448,15 @@ void update_model(UIState *s,
   if (longActive == false) show_path_mode = s->show_path_mode_cruise_off;
   max_idx = get_path_length_idx(plan_position, max_distance);
   if(s->show_mode == 0) {
-  update_line_data(s, plan_position, scene.model_ui ? scene.path_width * (1 - scene.path_edge_width / 100) : 0.9, 1.22, 1.22, &scene.track_vertices, max_idx, false);
-
-  // update path edges
-  update_line_data(s, plan_position, scene.model_ui ? scene.path_width : 0, 1.22, 1.22, &scene.track_edge_vertices, max_idx, false);
-
-  // update adjacent paths
-  for (int i = 4; i <= 5; i++) {
-    update_line_data(s, lane_lines[i], scene.blind_spot_path ? (i == 4 ? scene.lane_width_left : scene.lane_width_right) / 2 : 0, 0, 0, &scene.track_adjacent_vertices[i], max_idx);
-  }
+    update_line_data(s, plan_position, scene.model_ui ? scene.path_width * (1 - scene.path_edge_width / 100) : 0.9, 1.22, 1.22, &scene.track_vertices, max_idx, false);
+  
+    // update path edges
+    update_line_data(s, plan_position, scene.model_ui ? scene.path_width : 0, 1.22, 1.22, &scene.track_edge_vertices, max_idx, false);
+  
+    // update adjacent paths
+    for (int i = 4; i <= 5; i++) {
+      update_line_data(s, lane_lines[i], scene.blind_spot_path ? (i == 4 ? scene.lane_width_left : scene.lane_width_right) / 2 : 0, 0, 0, &scene.track_adjacent_vertices[i], max_idx);
+    }
   }
   else if (show_path_mode == 0) {
       update_line_data2(s, plan_position, s->show_path_width, s->show_z_offset, s->show_z_offset, &scene.track_vertices, max_idx);
