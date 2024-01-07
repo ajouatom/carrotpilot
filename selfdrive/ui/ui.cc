@@ -421,10 +421,8 @@ void update_model(UIState *s,
     update_line_data(s, lane_lines[i], scene.model_ui ? scene.lane_line_width * scene.lane_line_probs[i] : 0.025 * scene.lane_line_probs[i], 0, 0, &scene.lane_line_vertices[i], max_idx);
   }
   // lane barriers for blind spot
-  auto lead_left = (*s->sm)["radarState"].getRadarState().getLeadLeft();
-  auto lead_right = (*s->sm)["radarState"].getRadarState().getLeadRight();
-  int max_idx_barrier_l = get_path_length_idx(plan_position, lead_left.getStatus() ? lead_left.getDRel() : 40.0);
-  int max_idx_barrier_r = get_path_length_idx(plan_position, lead_right.getStatus() ? lead_right.getDRel() : 40.0);
+  int max_idx_barrier_l = get_path_length_idx(plan_position, 40.0);
+  int max_idx_barrier_r = get_path_length_idx(plan_position, 40.0);
   update_line_data(s, plan_position, 0, 1.2 - 0.05, 1.2 - 0.6, &scene.lane_barrier_vertices[0], max_idx_barrier_l, false, -1.7); // 차선폭을 알면 좋겠지만...
   update_line_data(s, plan_position, 0, 1.2 - 0.05, 1.2 - 0.6, &scene.lane_barrier_vertices[1], max_idx_barrier_r, false, 1.7);
 
