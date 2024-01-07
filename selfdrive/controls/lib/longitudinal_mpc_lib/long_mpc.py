@@ -668,7 +668,7 @@ class LongitudinalMpc:
     self.fakeCruiseDistance = 0.0
     radar_detected = radarstate.leadOne.status & radarstate.leadOne.radar
 
-    stop_x = x[30]
+    stop_x = x[31]
     self.xStop = self.update_stop_dist(stop_x)
     stop_x = self.xStop
 
@@ -730,10 +730,8 @@ class LongitudinalMpc:
     mode = 'blended' if self.xState in [XState.e2ePrepare] else 'acc'
 
     self.comfort_brake *= self.mySafeFactor
-    self.stopDist -= (v_ego * DT_MDL)
-    if self.stopDist < 0:
-      self.stopDist = 0.
-    elif stop_x == 1000.0:
+    self.stopDist = max(0, self.stopDist - (v_ego * DT_MDL))
+    if stop_x == 1000.0:
       self.stopDist = 0.0
     elif self.stopDist > 0:
       stop_dist = v_ego ** 2 / (2.5 * 2)
