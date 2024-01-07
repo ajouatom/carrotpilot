@@ -97,6 +97,8 @@ class VCruiseHelper:
     self.leftBlinkerExtCount = 0
     self.naviDistance = 0
     self.naviSpeed = 0
+    self.nav_distance = 0  # for navInstruction
+    self.distance_traveled = 0.0
     
     #ajouatom: params
     self.params_count = 0
@@ -313,7 +315,7 @@ class VCruiseHelper:
     v_cruise_kph = self.v_cruise_kph_set    
     v_cruise_kph = self._update_cruise_buttons(CS, v_cruise_kph, controls)
     v_cruise_kph_apply = self.cruise_control_speed(v_cruise_kph)
-    self.auto_navi_control(controls)
+    self.auto_navi_control(CS, controls)
     apn_limit_kph = self.update_speed_apilot(CS, controls, self.v_cruise_kph)
     v_cruise_kph_apply = min(v_cruise_kph_apply, apn_limit_kph)
     self.curveSpeed = self.apilot_curve(CS, controls)
@@ -727,9 +729,12 @@ class VCruiseHelper:
 
     return v_cruise_kph_apply
 
-  def auto_navi_control(self, controls):
+  def auto_navi_control(self, CS, controls):
+    delta_dist = controls.distance_traveled - self.distance_traveled
+    self.distance_traveled = controls.distance_traveled
+    self.nav_distance = max(0, self.nav_distance - delta_dist)
     if self.autoTurnControl > 0:
-      navInstruction = controls.sm['navInstruction']
+      navInstruction = controls.sm['navInstruction']      
       roadLimitSpeed = controls.sm['roadLimitSpeed']
       frogpilotLateralPlan = controls.sm['frogpilotLateralPlan']
       distanceToRoadEdgeLeft = frogpilotLateralPlan.distanceToRoadEdgeLeft
@@ -741,11 +746,13 @@ class VCruiseHelper:
       nav_speedDown = False
       direction = 0 #1:left, 2:right
       if nav_type in ['turn', 'fork', 'off ramp'] and roadLimitSpeed.xDistToTurn <= 0 and roadLimitSpeed.xTurnInfo < 0:
-        nav_distance = navInstruction.maneuverDistance;
+        if controls.sm.updated['navInstruction']:
+          self.nav_distance = navInstruction.maneuverDistance;
         nav_turn = True if nav_type == 'turn' and nav_modifier in ['left', 'right'] else False
         direction = 1 if nav_modifier in ['slight left', 'left'] else 2 if nav_modifier in ['slight right', 'right'] else 0
       else:
-        nav_distance = roadLimitSpeed.xDistToTurn
+        if controls.sm.updated['roadLimitSpeed']:
+          self.nav_distance = roadLimitSpeed.xDistToTurn
         nav_type = roadLimitSpeed.xTurnInfo
         nav_turn = True if nav_type in [1,2] else False
         nav_speedDown = True if nav_turn or nav_type == 5 else False
@@ -763,22 +770,22 @@ class VCruiseHelper:
       self.naviSpeed = 0
       if self.autoTurnControl >= 2:
         if nav_turn or nav_speedDown or direction != 0:
-          self.naviDistance = nav_distance
+          self.naviDistance = self.nav_distance
           self.naviSpeed = turn_speed if nav_turn or nav_speedDown else laneChange_speed
 
       ## lanechange, turn : 300m left
-      if 5 < nav_distance < 300 and direction != 0:
+      if 5 < self.nav_distance < 300 and direction != 0:
         if nav_turn:
-          if nav_distance < turn_dist:
+          if self.nav_distance < turn_dist:
             # start Turn
             nav_direction = direction
-          elif nav_distance < laneChange_dist:
+          elif self.nav_distance < laneChange_dist:
             nav_turn = False
             nav_direction = direction
           else:
             nav_turn = False
             nav_direction = 0
-        elif nav_distance < laneChange_dist:
+        elif self.nav_distance < laneChange_dist:
           nav_direction = direction
         else:
           nav_direction = 0
@@ -787,7 +794,7 @@ class VCruiseHelper:
         nav_direction = 0
 
       self.debugTextNoo = "N{:.0f}[{}],T{}[{}],{:.0f}{:.0f}/{:.0f}{:.0f}".format(
-        nav_distance, direction, nav_direction, nav_turn,
+        self.nav_distance, direction, nav_direction, nav_turn,
         laneChange_dist, laneChange_speed, turn_dist, turn_speed)
 
       blinkerExtState = self.rightBlinkerExtCount + self.rightBlinkerExtCount
