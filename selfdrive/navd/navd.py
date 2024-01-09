@@ -318,11 +318,15 @@ class RouteEngine:
     else:
       total_time_typical = step['duration_typical'] * remaining
 
-    # Add up totals for future steps
-    for i in range(self.step_idx + 1, len(self.route)):
-      total_distance += self.route[i]['distance']
-      total_time += self.route[i]['duration']
-      total_time_typical += self.route[i]['duration_typical']
+    try:
+      # Add up totals for future steps
+      for i in range(self.step_idx + 1, len(self.route)):
+        total_distance += self.route[i]['distance']
+        total_time += self.route[i]['duration']
+        total_time_typical += self.route[i]['duration_typical']
+
+    except Exception:
+      print("navd error")
 
     msg.navInstruction.distanceRemaining = total_distance
     msg.navInstruction.timeRemaining = total_time
