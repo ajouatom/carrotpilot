@@ -122,6 +122,8 @@ def manager_init() -> None:
     ("SccConnectedBus2", "0"),
     ("SoundVolumeAdjust", "100"),
     ("SoundVolumeAdjustEngage", "10"),
+    ("StartRecord", "0"),
+    ("StopRecord", "0"),
     ("TFollowSpeedAdd", "0"),
     ("TFollowSpeedAddM", "0"),
     ("SoftHoldMode", "0"),       
