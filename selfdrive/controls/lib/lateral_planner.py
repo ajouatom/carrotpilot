@@ -77,14 +77,14 @@ class LateralPlanner:
     self.x0 = x0
     self.lat_mpc.reset(x0=self.x0)
 
-  def update(self, sm):
+  def update(self, sm, frogpilot_planner):
     self.readParams -= 1
     if self.readParams <= 0:
       self.readParams = 100
       self.useLaneLineSpeed = float(int(Params().get("UseLaneLineSpeed", encoding="utf8")))
       self.pathOffset = float(int(Params().get("PathOffset", encoding="utf8")))*0.01
     if self.useLaneLineSpeed > 0:
-      self.update_lane_mode(sm)
+      self.update_lane_mode(sm, frogpilot_planner)
       return
     v_ego_car = sm['carState'].vEgo
 
@@ -93,7 +93,7 @@ class LateralPlanner:
     if len(md.position.x) == TRAJECTORY_SIZE and len(md.velocity.x) == TRAJECTORY_SIZE and len(md.lateralPlannerSolution.x) == TRAJECTORY_SIZE:
       self.path_xyz = np.column_stack([md.position.x, md.position.y, md.position.z])
       self.velocity_xyz = np.column_stack([md.velocity.x, md.velocity.y, md.velocity.z])
-      if self.average_desired_curvature:
+      if frogpilot_planner.average_desired_curvature:
         car_speed = np.array(md.velocity.x) - get_speed_error(md, v_ego_car)
       else:
         car_speed = np.linalg.norm(self.velocity_xyz, axis=1) - get_speed_error(md, v_ego_car)
@@ -107,11 +107,11 @@ class LateralPlanner:
       self.l_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeLeft]
       self.r_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeRight]
     lane_change_prob = self.l_lane_change_prob + self.r_lane_change_prob
-    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, sm)
+    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, frogpilot_planner, sm)
 
-  def publish(self, sm, pm):
+  def publish(self, sm, pm, frogpilot_planner):
     if self.useLaneLineSpeed > 0:
-      self.publish_lane_mode(sm, pm)
+      self.publish_lane_mode(sm, pm, frogpilot_planner)
       return
     plan_send = messaging.new_message('lateralPlan')
     plan_send.valid = sm.all_checks(service_list=['carState', 'controlsState', 'modelV2'])
@@ -141,27 +141,10 @@ class LateralPlanner:
 
     pm.send('lateralPlan', plan_send)
 
-    # FrogPilot lateral variables
-    frogpilot_plan_send = messaging.new_message('frogpilotLateralPlan')
-    frogpilot_plan_send.valid = sm.all_checks(service_list=['carState', 'controlsState', 'modelV2'])
-    frogpilotLateralPlan = frogpilot_plan_send.frogpilotLateralPlan
+    frogpilot_planner.publish_lateral(sm, pm, self.DH)
 
-    frogpilotLateralPlan.laneWidthLeft = float(self.DH.lane_width_left)
-    frogpilotLateralPlan.laneWidthRight = float(self.DH.lane_width_right)
-    frogpilotLateralPlan.distanceToRoadEdgeLeft = float(self.DH.distance_to_road_edge_left)
-    frogpilotLateralPlan.distanceToRoadEdgeRight = float(self.DH.distance_to_road_edge_right)
-
-    pm.send('frogpilotLateralPlan', frogpilot_plan_send)
-
-  def update_frogpilot_params(self, params):
-    self.DH.update_frogpilot_params(params)
-
-    self.average_desired_curvature = params.get_bool("AverageCurvature")
     
-    
-    
-    
-  def update_lane_mode(self, sm):
+  def update_lane_mode(self, sm, frogpilot_planner):
     # clip speed , lateral planning is not possible at 0 speed
     measured_curvature = sm['controlsState'].curvature
     v_ego_car = sm['carState'].vEgo
@@ -181,7 +164,7 @@ class LateralPlanner:
     # Parse model predictions
     self.LP.parse_model(md)
     lane_change_prob = self.LP.l_lane_change_prob + self.LP.r_lane_change_prob
-    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, sm)
+    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob, frogpilot_planner, sm)
 
     if self.v_ego*3.6 >= self.useLaneLineSpeed + 2:
       self.useLaneLineMode = True
@@ -300,18 +283,12 @@ class LateralPlanner:
     #lateralPlan.laneWidthRight = float(self.DH.lane_width_right)
     
     self.x_sol = self.lat_mpc.x_sol
+
+
     lateralPlan.latDebugText = self.latDebugText
 
     pm.send('lateralPlan', plan_send)
 
+    frogpilot_planner.publish_lateral(sm, pm, self.DH)
 
-    # FrogPilot lateral variables
-    frogpilot_plan_send = messaging.new_message('frogpilotLateralPlan')
-    frogpilot_plan_send.valid = sm.all_checks(service_list=['carState', 'controlsState', 'modelV2'])
-    frogpilotLateralPlan = frogpilot_plan_send.frogpilotLateralPlan
-
-    frogpilotLateralPlan.laneWidthLeft = float(self.DH.lane_width_left)
-    frogpilotLateralPlan.laneWidthRight = float(self.DH.lane_width_right)
-
-    pm.send('frogpilotLateralPlan', frogpilot_plan_send)
     

@@ -439,8 +439,8 @@ class CarInterface(CarInterfaceBase):
 
     return ret
 
-  def apply(self, c, now_nanos):
-    return self.CC.update(c, self.CS, now_nanos)
+  def apply(self, c, now_nanos, sport_plus):
+    return self.CC.update(c, self.CS, now_nanos, sport_plus)
 
 #ajouatom: Enable Radar tracks
 def enable_radar_tracks(CP, logcan, sendcan):

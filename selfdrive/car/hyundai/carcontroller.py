@@ -71,7 +71,7 @@ class CarController:
     self.button_alive = 0
     self.button_alive_frame = 0
 
-  def update(self, CC, CS, now_nanos):
+  def update(self, CC, CS, now_nanos, sport_plus):
     actuators = CC.actuators
     hud_control = CC.hudControl
 
@@ -94,7 +94,10 @@ class CarController:
     self.apply_steer_last = apply_steer
 
     # accel + longitudinal
-    accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
+    if sport_plus:
+      accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX_PLUS)
+    else:
+      accel = clip(actuators.accel, CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX)
     stopping = actuators.longControlState == LongCtrlState.stopping
     set_speed_in_units = hud_control.setSpeed * (CV.MS_TO_KPH if CS.is_metric else CV.MS_TO_MPH)
 

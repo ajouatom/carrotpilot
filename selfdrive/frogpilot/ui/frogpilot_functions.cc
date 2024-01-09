@@ -18,7 +18,7 @@ bool FrogPilotConfirmationDialog::yesorno(const QString &prompt_text, QWidget *p
   return d.exec();
 }
 
-ButtonIconControl::ButtonIconControl(const QString &title, const QString &text, const QString &desc, const QString &icon, QWidget *parent) : AbstractControl(title, desc, icon, parent) {
+FrogPilotButtonIconControl::FrogPilotButtonIconControl(const QString &title, const QString &text, const QString &desc, const QString &icon, QWidget *parent) : AbstractControl(title, desc, icon, parent) {
   btn.setText(text);
   btn.setStyleSheet(R"(
     QPushButton {
@@ -37,7 +37,7 @@ ButtonIconControl::ButtonIconControl(const QString &title, const QString &text, 
     }
   )");
   btn.setFixedSize(250, 100);
-  QObject::connect(&btn, &QPushButton::clicked, this, &ButtonIconControl::clicked);
+  QObject::connect(&btn, &QPushButton::clicked, this, &FrogPilotButtonIconControl::clicked);
   hlayout->addWidget(&btn);
 }
 
@@ -47,7 +47,7 @@ void setDefaultParams() {
 
   std::map<std::string, std::string> defaultValues {
     {"AccelerationPath", FrogsGoMoo ? "1" : "0"},
-    {"AccelerationProfile", "2"},
+    {"AccelerationProfile", FrogsGoMoo ? "3" : "2"},
     {"AdjacentPath", FrogsGoMoo ? "1" : "0"},
     {"AdjustablePersonalities", "3"},
     {"AggressiveAcceleration", "1"},
@@ -82,6 +82,7 @@ void setDefaultParams() {
     {"EVTable", FrogsGoMoo ? "0" : "1"},
     {"ExperimentalModeViaPress", "1"},
     {"FireTheBabysitter", FrogsGoMoo ? "1" : "0"},
+    {"GoatScream", "1"},
     {"GreenLightAlert", "0"},
     {"LaneChangeTime", "0"},
     {"LaneDetection", "1"},
@@ -123,6 +124,7 @@ void setDefaultParams() {
     {"Sidebar", FrogsGoMoo ? "1" : "0"},
     {"SilentMode", "0"},
     {"SLCFallback", "2"},
+    {"SLCOverride", FrogsGoMoo ? "2" : "1"},
     {"SLCPriority", "1"},
     {"SmoothBraking", "1"},
     {"SNGHack", FrogsGoMoo ? "0" : "1"},

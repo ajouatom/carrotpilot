@@ -304,7 +304,11 @@ class LongitudinalMpc:
     self.reset()
     self.source = SOURCES[2]
 
-    self.t_follow = 1.45
+    # FrogPilot variables
+    self.safe_obstacle_distance = 0
+    self.safe_obstacle_distance_stock = 0
+    self.stopped_equivalence_factor = 0
+    self.t_follow = 0
 
   def reset(self):
     # self.solver = AcadosOcpSolverCython(MODEL_NAME, ACADOS_SOLVER_TYPE, N)
@@ -453,7 +457,7 @@ class LongitudinalMpc:
     # Offset by FrogAi for FrogPilot for a more natural takeoff with a lead
     if aggressive_acceleration:
       distance_factor = np.maximum(1, lead_xv_0[:,0] - (lead_xv_0[:,1] * t_follow))
-      standstill_offset = max(STOP_DISTANCE - v_ego, 0)
+      standstill_offset = max(STOP_DISTANCE + increased_stopping_distance - v_ego, 0)
       t_follow_offset = np.clip((lead_xv_0[:,1] - v_ego) + standstill_offset, 1, distance_factor)
       t_follow = t_follow / t_follow_offset
 
@@ -465,9 +469,9 @@ class LongitudinalMpc:
 
     # LongitudinalPlan variables for onroad driving insights
     if self.status:
-      self.safe_obstacle_distance = float(np.mean(get_safe_obstacle_distance(v_ego, t_follow)))
-      self.safe_obstacle_distance_stock = float(np.mean(get_safe_obstacle_distance(v_ego, self.t_follow)))
-      self.stopped_equivalence_factor = float(np.mean(get_stopped_equivalence_factor(lead_xv_0[:,1])))
+      self.safe_obstacle_distance = int(np.mean(get_safe_obstacle_distance(v_ego, t_follow)))
+      self.safe_obstacle_distance_stock = int(np.mean(get_safe_obstacle_distance(v_ego, self.t_follow)))
+      self.stopped_equivalence_factor = int(np.mean(get_stopped_equivalence_factor(lead_xv_0[:,1])))
     else:
       self.safe_obstacle_distance = 0
       self.safe_obstacle_distance_stock = 0

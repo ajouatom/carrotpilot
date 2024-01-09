@@ -274,7 +274,7 @@ class CarState(CarStateBase):
           self.param_memory.put_bool("PersonalityChangedViaWheel", True)
           self.previous_personality_profile = self.personality_profile
     # Toggle Experimental Mode from steering wheel function
-    if self.experimental_mode_via_press and ret.cruiseState.available and self.CP.flags & HyundaiFlags.HAS_LFA_BUTTON.value:
+    if ret.cruiseState.available and self.CP.flags & HyundaiFlags.HAS_LFA_BUTTON.value:
       lkas_pressed = cp.vl["BCM_PO_11"]["LFA_Pressed"]
       self.lkas_pressed_count = self.lkas_pressed_count + 1 if lkas_pressed else 0
       if self.lkas_pressed_count >= 70:

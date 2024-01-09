@@ -123,6 +123,10 @@ TogglesPanel::TogglesPanel(SettingsWindow *parent) : ListWidget(parent) {
   connect(toggles["ExperimentalLongitudinalEnabled"], &ToggleControl::toggleFlipped, [=]() {
     updateToggles();
   });
+
+  connect(toggles["IsMetric"], &ToggleControl::toggleFlipped, [=]() {
+    updateMetric();
+  });
 }
 
 void TogglesPanel::expandToggleDescription(const QString &param) {
@@ -426,8 +430,9 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
   sidebar_layout->addSpacing(10);
   sidebar_layout->addWidget(close_btn, 0, Qt::AlignRight);
   QObject::connect(close_btn, &QPushButton::clicked, [this]() {
-    if (paramsMemory.getInt("FrogPilotTogglesOpen") == 1) {
-      paramsMemory.putInt("FrogPilotTogglesOpen", 2);
+    if (frogPilotTogglesOpen) {
+      frogPilotTogglesOpen = false;
+      this->closeParentToggle();
     } else {
       this->closeSettings();
     }
@@ -440,6 +445,15 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
 
   TogglesPanel *toggles = new TogglesPanel(this);
   QObject::connect(this, &SettingsWindow::expandToggleDescription, toggles, &TogglesPanel::expandToggleDescription);
+  QObject::connect(toggles, &TogglesPanel::updateMetric, this, &SettingsWindow::updateMetric);
+
+  FrogPilotControlsPanel *controls = new FrogPilotControlsPanel(this);
+  QObject::connect(controls, &FrogPilotControlsPanel::closeParentToggle, this, [this]() {frogPilotTogglesOpen = false;});
+  QObject::connect(controls, &FrogPilotControlsPanel::openParentToggle, this, [this]() {frogPilotTogglesOpen = true;});
+
+  FrogPilotVisualsPanel *visuals = new FrogPilotVisualsPanel(this);
+  QObject::connect(visuals, &FrogPilotVisualsPanel::closeParentToggle, this, [this]() {frogPilotTogglesOpen = false;});
+  QObject::connect(visuals, &FrogPilotVisualsPanel::openParentToggle, this, [this]() {frogPilotTogglesOpen = true;});
 
   QList<QPair<QString, QWidget *>> panels = {
     {tr("Device"), device},
@@ -447,10 +461,10 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
     {tr("Toggles"), toggles},
     {tr("Software"), new SoftwarePanel(this)},
     {tr("Carrot"), new CarrotPanel(this)},
-    {tr("Controls"), new FrogPilotControlsPanel(this)},
+    {tr("Controls"), controls},
     {tr("Navigation"), new FrogPilotNavigationPanel(this)},
     {tr("Vehicles"), new FrogPilotVehiclesPanel(this)},
-    {tr("Visuals"), new FrogPilotVisualsPanel(this)},
+    {tr("Visuals"), visuals},
   };
 
   nav_btns = new QButtonGroup(this);
@@ -487,7 +501,7 @@ SettingsWindow::SettingsWindow(QWidget *parent) : QFrame(parent) {
       QScrollBar *scrollbar = panel_frame->verticalScrollBar();
 
       QObject::connect(scrollbar, &QScrollBar::valueChanged, this, [this](int value) {
-        if (paramsMemory.getInt("FrogPilotTogglesOpen") == 0) {
+        if (!frogPilotTogglesOpen) {
           previousScrollPosition = value;
         }
       });

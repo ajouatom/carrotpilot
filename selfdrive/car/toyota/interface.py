@@ -15,8 +15,11 @@ SteerControlType = car.CarParams.SteerControlType
 
 class CarInterface(CarInterfaceBase):
   @staticmethod
-  def get_pid_accel_limits(CP, current_speed, cruise_speed):
-    return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX
+  def get_pid_accel_limits(CP, current_speed, cruise_speed, sport_plus):
+    if sport_plus:
+      return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX_PLUS
+    else:
+      return CarControllerParams.ACCEL_MIN, CarControllerParams.ACCEL_MAX
 
   @staticmethod
   def _get_params(ret, candidate, fingerprint, car_fw, experimental_long, docs):
@@ -267,7 +270,7 @@ class CarInterface(CarInterfaceBase):
       # TSS2 tune - Credit goes to the DragonPilot team!
       tune.kpBP = [0., 5., 20.]
       tune.kpV = [1.3, 1.0, 0.7]
-      # In MPH  = [ 0.,   2,    5,   11,   27,  45,  52,  67,   90] ??
+      # In MPH  = [ 0.,   2,    5,   11,   27,  45,  52,  67,   90] ​​
       tune.kiBP = [ 0.,  1.,   2.,   5.,  12., 20., 23., 30.,  40.]
       tune.kiV =  [.33, .33, .313, .245, .215, .17, .10, .01, .001]
       if candidate in TSS2_CAR:
@@ -331,5 +334,5 @@ class CarInterface(CarInterfaceBase):
 
   # pass in a car.CarControl
   # to be called @ 100hz
-  def apply(self, c, now_nanos):
-    return self.CC.update(c, self.CS, now_nanos)
+  def apply(self, c, now_nanos, sport_plus):
+    return self.CC.update(c, self.CS, now_nanos, sport_plus)

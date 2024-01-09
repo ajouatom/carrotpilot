@@ -51,6 +51,7 @@ ButtonType = car.CarState.ButtonEvent.Type
 SafetyModel = car.CarParams.SafetyModel
 
 FrogPilotEventName = custom.FrogPilotEvents
+
 IGNORED_SAFETY_MODES = (SafetyModel.silent, SafetyModel.noOutput)
 CSID_MAP = {"1": EventName.roadCameraError, "2": EventName.wideRoadCameraError, "0": EventName.driverCameraError}
 ACTUATOR_FIELDS = tuple(car.CarControl.Actuators.schema.fields.keys())
@@ -84,6 +85,7 @@ class Controls:
     fire_the_babysitter = self.params.get_bool("FireTheBabysitter")
     mute_dm = fire_the_babysitter and self.params.get_bool("MuteDM")
 
+    self.stopped_for_light_previously = False
     ignore = self.sensor_packets + ['testJoystick']
     if SIMULATION:
       ignore += ['driverCameraState', 'managerState']
@@ -494,8 +496,14 @@ class Controls:
       if self.sm['modelV2'].frameDropPerc > 20:
         self.events.add(EventName.modeldLagging)
 
-    if self.sm['frogpilotLongitudinalPlan'].greenLight:
-      self.events.add(FrogPilotEventName.greenLight)
+    # Green light alert
+    if self.green_light_alert and self.enabled:
+      stopped_for_light = self.sm['frogpilotLongitudinalPlan'].redLight and CS.standstill
+      green_light = not stopped_for_light and self.stopped_for_light_previously and not CS.gasPressed
+      self.stopped_for_light_previously = stopped_for_light
+
+      if green_light:
+        self.events.add(FrogPilotEventName.greenLight)
 
     #kans: screen recording
     if self.start_sound:
@@ -736,7 +744,7 @@ class Controls:
 
     if not self.joystick_mode:
       # accel PID loop
-      pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_helper.v_cruise_kph * CV.KPH_TO_MS)
+      pid_accel_limits = self.CI.get_pid_accel_limits(self.CP, CS.vEgo, self.v_cruise_helper.v_cruise_kph * CV.KPH_TO_MS, self.sport_plus)
       t_since_plan = (self.sm.frame - self.sm.rcv_frame['longitudinalPlan']) * DT_CTRL
       actuators.accel, actuators.jerk = self.LoC.update(CC.longActive, CS, long_plan, pid_accel_limits, t_since_plan, CC)
 
@@ -897,7 +905,7 @@ class Controls:
     if not self.CP.passive and self.initialized:
       # send car controls over can
       now_nanos = self.can_log_mono_time if REPLAY else int(time.monotonic() * 1e9)
-      self.last_actuators, can_sends = self.CI.apply(CC, now_nanos)
+      self.last_actuators, can_sends = self.CI.apply(CC, now_nanos, self.sport_plus)
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
       CC.actuatorsOutput = self.last_actuators
       if self.CP.steerControlType == car.CarParams.SteerControlType.angle:
@@ -1076,9 +1084,12 @@ class Controls:
     self.custom_theme = self.params.get_bool("CustomTheme")
     self.custom_sounds = self.params.get_int("CustomSounds") if self.custom_theme else 0
     self.frog_sounds = self.custom_sounds == 1
+    self.goat_scream = self.params.get_bool("GoatScream") and self.frog_sounds
 
+    self.green_light_alert = self.params.get_bool("GreenLightAlert")
     self.pause_lateral_on_signal = self.params.get_bool("PauseLateralOnSignal")
     self.reverse_cruise_increase = self.params.get_bool("ReverseCruise")
+    self.sport_plus = self.params.get_int("AccelerationProfile") == 3
 
 def main():
   controls = Controls()
