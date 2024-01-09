@@ -5,6 +5,7 @@
 #include "omx_encoder.h"
 #include "blocking_queue.h"
 #include "selfdrive/ui/ui.h"
+#include "common/params.h" //kans
 
 class ScreenRecorder : public QPushButton {
 #ifdef WSL2
@@ -33,8 +34,9 @@ private:
   void encoding_thread_func();
   void initializeEncoder();
   void openEncoder(const char *filename);
-  void start();
-  void stop();
+  void start(bool sound);//kans
+  void stop(bool sound);//kans
+  Params params;//kans
 
   bool recording;
   int frame;

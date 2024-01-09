@@ -31,7 +31,7 @@ void ScreenRecorder::initializeEncoder() {
 }
 
 ScreenRecorder::~ScreenRecorder() {
-  stop();
+  stop(false); //kans
 }
 
 void ScreenRecorder::applyColor() {
@@ -71,13 +71,13 @@ void ScreenRecorder::closeEncoder() {
 
 void ScreenRecorder::toggle() {
   if (!recording) {
-    start();
+    start(true); //kans
   } else {
-    stop();
+    stop(true); //kans
   }
 }
 
-void ScreenRecorder::start() {
+void ScreenRecorder::start(bool sound) { //kans
   if (recording) return;
 
   char filename[64];
@@ -99,6 +99,11 @@ void ScreenRecorder::start() {
 
   update();
   started = milliseconds();
+  //kans
+  if (sound) {
+    params.putBool("StopRecord", false);
+    params.putBool("StartRecord", true);
+  }
 }
 
 void ScreenRecorder::encoding_thread_func() {
@@ -118,7 +123,7 @@ void ScreenRecorder::encoding_thread_func() {
   }
 }
 
-void ScreenRecorder::stop() {
+void ScreenRecorder::stop(bool sound) { //kans
   if (!recording) return;
 
   recording = false;
@@ -128,20 +133,25 @@ void ScreenRecorder::stop() {
   if (encoding_thread.joinable()) {
     encoding_thread.join();
   }
+  //kans
+  if(sound) {
+    params.putBool("StartRecord", false);
+    params.putBool("StopRecord", true);
+  }
 }
 
 void ScreenRecorder::update_screen() {
   if (!uiState()->scene.started) {
     if (recording) {
-      stop();
+      stop(true); //kans
     }
     return;
   }
   if (!recording) return;
 
   if (milliseconds() - started > 1000 * 60 * 3) {
-    stop();
-    start();
+    stop(false); //kans
+    start(false); //kans
     return;
   }
 

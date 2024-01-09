@@ -134,6 +134,13 @@ class Controls:
     openpilot_enabled_toggle = self.params.get_bool("OpenpilotEnabledToggle")
     passive = self.params.get_bool("Passive") or not openpilot_enabled_toggle
 
+    #kans: screen recording
+    self.readParamCount = 0
+    self.start_record = False
+    self.stop_record = False
+    self.start_sound = False
+    self.stop_sound = False
+
     # detect sound card presence and ensure successful init
     sounds_available = HARDWARE.get_sound_card_online()
 
@@ -229,6 +236,23 @@ class Controls:
 
     self.carrotCruiseActivate = 0 #carrot
 
+  #kans: screen recording
+  def update_params(self):
+    self.readParamCount += 1
+    if self.readParamCount == 10:
+      self.start_record = self.params.get_bool("StartRecord")
+      self.stop_record = self.params.get_bool("StopRecord")
+      if self.start_record:
+        print("start_record=", self.start_record)
+        self.start_sound = True
+        self.start_record = self.params.put_bool_nonblocking("StartRecord", False)
+      elif self.stop_record:
+        print("stop_record=", self.stop_record)
+        self.stop_sound = True
+        self.stop_record = self.params.put_bool_nonblocking("StopRecord", False)
+    elif self.readParamCount >= 30:
+      self.readParamCount = 0
+	  
   def set_initial_state(self):
     if REPLAY:
       controls_state = Params().get("ReplayControlsState")
@@ -241,6 +265,9 @@ class Controls:
 
   def update_events(self, CS):
     """Compute onroadEvents from carState"""
+
+    #kans: screen recording
+    self.update_params()
 
     self.events.clear()
 
@@ -469,6 +496,16 @@ class Controls:
 
     if self.sm['frogpilotLongitudinalPlan'].greenLight:
       self.events.add(FrogPilotEventName.greenLight)
+
+    #kans: screen recording
+    if self.start_sound:
+      print("start_sound=", self.start_sound)
+      self.events.add(EventName.startingRecord)
+      self.start_sound = False
+    if self.stop_sound:
+      print("stop_sound=", self.stop_sound)
+      self.events.add(EventName.stoppingRecord)
+      self.stop_sound = False
 
   def data_sample(self):
     """Receive data from sockets and update carState"""
