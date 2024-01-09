@@ -249,7 +249,7 @@ class LateralPlanner:
     else:
       self.solution_invalid_cnt = 0
 
-  def publish_lane_mode(self, sm, pm):
+  def publish_lane_mode(self, sm, pm, frogpilot_planner):
     plan_solution_valid = self.solution_invalid_cnt < 2
     plan_send = messaging.new_message('lateralPlan')
     plan_send.valid = sm.all_checks(service_list=['carState', 'controlsState', 'modelV2'])
