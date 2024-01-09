@@ -221,7 +221,7 @@ class LongitudinalPlanner:
     longitudinalPlan.personality = self.personality
 
     longitudinalPlan.debugLongText = self.mpc.debugLongText
-    longitudinalPlan.debugLongText2 = "VC:{:.1f},MTSC:{:.1f},VTSC:{:.1f},SLC:{:.1f}".format(self.v_cruise_last*3.6, self.mtsc_target*3.6, self.vtsc_target*3.6, self.slc_target*3.6)
+    longitudinalPlan.debugLongText2 = "VC:{:.1f},MTSC:{:.1f},VTSC:{:.1f},SLC:{:.1f}".format(self.v_cruise_last*3.6, frogpilot_planner.mtsc_target*3.6, frogpilot_planner.vtsc_target*3.6, frogpilot_planner.slc_target*3.6)
     longitudinalPlan.trafficState = self.mpc.trafficState.value
     longitudinalPlan.xState = self.mpc.xState.value
 
