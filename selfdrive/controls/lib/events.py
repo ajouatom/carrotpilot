@@ -1097,6 +1097,13 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   EventName.audioTurn: {
      ET.WARNING: EngagementAlert(AudibleAlert.audioTurn),
   },
+  #kans: screen recording
+  EventName.startingRecord: {
+    ET.WARNING: EngagementAlert(AudibleAlert.startRecord),
+  },
+  EventName.stoppingRecord: {
+    ET.WARNING: EngagementAlert(AudibleAlert.stopRecord),
+  }, #kans: to this line
 }
 
 
