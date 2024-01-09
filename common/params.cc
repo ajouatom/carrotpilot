@@ -288,6 +288,8 @@ std::unordered_map<std::string, uint32_t> keys = {
     { "SccConnectedBus2", PERSISTENT },
     { "SoundVolumeAdjust", PERSISTENT },
     { "SoundVolumeAdjustEngage", PERSISTENT },
+    { "StartRecord", PERSISTENT },
+    { "StopRecord", PERSISTENT },
     { "TFollowSpeedAdd", PERSISTENT },
     { "TFollowSpeedAddM", PERSISTENT },
     { "UseLaneLineSpeed", PERSISTENT },
